@@ -57,7 +57,7 @@ function renderTree(index) {
       const el = document.createElement("div");
       el.className = "tree-node";
       el.dataset.type = node.type;
-      const gt = ">".repeat(depth + 1);
+      const gt = Array(depth + 1).fill(">").join("&#8201;");
       const caret = node.type === "folder" ? (node.collapsed ? "▸" : "▾") : " ";
       const extMatch =
         node.type === "file" ? node.name.match(/(\.[^.]+)$/) : null;
