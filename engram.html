@@ -1,0 +1,1808 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Engram</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+
+<style>
+  /* ============= THEME TOKENS ============= */
+  :root {
+    --bg: #0a0e0a;
+    --bg-deep: #050805;
+    --bg-elev: #0f140f;
+    --fg: #c9ffd8;
+    --fg-dim: #7CFFB2;
+    --fg-mute: rgba(124, 255, 178, 0.45);
+    --fg-faint: rgba(124, 255, 178, 0.18);
+    --accent: #7CFFB2;
+    --accent-glow: rgba(124, 255, 178, 0.6);
+    --rule: rgba(124, 255, 178, 0.22);
+    --rule-strong: rgba(124, 255, 178, 0.5);
+    --serif: "Lora", "IBM Plex Serif", Georgia, serif;
+    --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+    --reading-bg: #0a0e0a;
+    --reading-fg: #d8f5e1;
+    --reading-mute: rgba(216, 245, 225, 0.6);
+    --reading-rule: rgba(124, 255, 178, 0.18);
+    --reading-code-bg: rgba(124, 255, 178, 0.07);
+    --scanline-opacity: 0.35;
+    --glow-strength: 1;
+    --flicker-strength: 1;
+    --grain-opacity: 0.05;
+    --chrome-radius: 2px;
+  }
+
+  /* AMBER CRT */
+  [data-theme="amber"] {
+    --bg: #120a04;
+    --bg-deep: #080502;
+    --bg-elev: #1a0f06;
+    --fg: #ffe2b0;
+    --fg-dim: #FFB454;
+    --fg-mute: rgba(255, 180, 84, 0.45);
+    --fg-faint: rgba(255, 180, 84, 0.18);
+    --accent: #FFB454;
+    --accent-glow: rgba(255, 180, 84, 0.6);
+    --rule: rgba(255, 180, 84, 0.22);
+    --rule-strong: rgba(255, 180, 84, 0.5);
+    --reading-bg: #120a04;
+    --reading-fg: #f3e3c4;
+    --reading-mute: rgba(243, 227, 196, 0.6);
+    --reading-rule: rgba(255, 180, 84, 0.18);
+    --reading-code-bg: rgba(255, 180, 84, 0.07);
+  }
+
+  /* RED ALERT */
+  [data-theme="red"] {
+    --bg: #140505;
+    --bg-deep: #090202;
+    --bg-elev: #1c0808;
+    --fg: #ffd6d6;
+    --fg-dim: #FF6B6B;
+    --fg-mute: rgba(255, 107, 107, 0.45);
+    --fg-faint: rgba(255, 107, 107, 0.18);
+    --accent: #FF4D4D;
+    --accent-glow: rgba(255, 77, 77, 0.6);
+    --rule: rgba(255, 77, 77, 0.22);
+    --rule-strong: rgba(255, 77, 77, 0.5);
+    --reading-bg: #140505;
+    --reading-fg: #f5d8d8;
+    --reading-mute: rgba(245, 216, 216, 0.6);
+    --reading-rule: rgba(255, 77, 77, 0.18);
+    --reading-code-bg: rgba(255, 77, 77, 0.07);
+  }
+
+  /* CYAN TERMINAL */
+  [data-theme="cyan"] {    --bg: #07111c;
+    --bg-deep: #03080f;
+    --bg-elev: #0a1828;
+    --fg: #d6ecff;
+    --fg-dim: #7CC8FF;
+    --fg-mute: rgba(124, 200, 255, 0.45);
+    --fg-faint: rgba(124, 200, 255, 0.18);
+    --accent: #7CC8FF;
+    --accent-glow: rgba(124, 200, 255, 0.6);
+    --rule: rgba(124, 200, 255, 0.22);
+    --rule-strong: rgba(124, 200, 255, 0.5);
+    --reading-bg: #07111c;
+    --reading-fg: #dbecff;
+    --reading-mute: rgba(219, 236, 255, 0.6);
+    --reading-rule: rgba(124, 200, 255, 0.18);
+    --reading-code-bg: rgba(124, 200, 255, 0.07);
+  }
+
+  /* MONOCHROME */
+  [data-theme="mono"] {
+    --bg: #0a0a0f;
+    --bg-deep: #050507;
+    --bg-elev: #111114;
+    --fg: #e8e8e8;
+    --fg-dim: #c8c8c8;
+    --fg-mute: rgba(232, 232, 232, 0.45);
+    --fg-faint: rgba(232, 232, 232, 0.18);
+    --accent: #ffffff;
+    --accent-glow: rgba(255, 255, 255, 0.5);
+    --rule: rgba(232, 232, 232, 0.22);
+    --rule-strong: rgba(232, 232, 232, 0.5);
+    --reading-bg: #0a0a0f;
+    --reading-fg: #e8e8e8;
+    --reading-mute: rgba(232, 232, 232, 0.55);
+    --reading-rule: rgba(232, 232, 232, 0.18);
+    --reading-code-bg: rgba(255, 255, 255, 0.05);
+  }
+
+  /* CALM FOCUS — warm paper, low FX */
+  [data-theme="calm"] {
+    --bg: #f5f1e8;
+    --bg-deep: #ebe5d6;
+    --bg-elev: #fbf8f0;
+    --fg: #2a2620;
+    --fg-dim: #5a5246;
+    --fg-mute: rgba(42, 38, 32, 0.55);
+    --fg-faint: rgba(42, 38, 32, 0.15);
+    --accent: #8b6f3c;
+    --accent-glow: rgba(139, 111, 60, 0.25);
+    --rule: rgba(42, 38, 32, 0.18);
+    --rule-strong: rgba(42, 38, 32, 0.4);
+    --reading-bg: #fbf8f0;
+    --reading-fg: #2a2620;
+    --reading-mute: rgba(42, 38, 32, 0.65);
+    --reading-rule: rgba(42, 38, 32, 0.15);
+    --reading-code-bg: rgba(42, 38, 32, 0.05);
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    height: 100%;
+    background: var(--bg-deep);
+    color: var(--fg);
+    font-family: var(--mono);
+    font-size: 13px;
+    overflow: hidden;
+  }
+
+  body {
+    background: var(--bg);
+  }
+
+  /* ============= APP SHELL ============= */
+  .app {
+    position: fixed; inset: 0;
+    display: grid;
+    grid-template-columns: 280px 1fr 320px;
+    grid-template-rows: 28px 1fr 22px;
+    grid-template-areas:
+      "topbar topbar topbar"
+      "left   center right"
+      "status status status";
+    gap: 0;
+    transition: grid-template-columns 0.4s cubic-bezier(.7,0,.2,1);
+  }
+  .app[data-right-closed="true"] {
+    grid-template-columns: 280px 1fr 0px;
+  }
+  .app[data-left-closed="true"] {
+    grid-template-columns: 0px 1fr 320px;
+  }
+  .app[data-left-closed="true"][data-right-closed="true"] {
+    grid-template-columns: 0px 1fr 0px;
+  }
+
+  /* ============= TOPBAR ============= */
+  .topbar {
+    grid-area: topbar;
+    display: flex;
+    align-items: stretch;
+    border-bottom: 1px solid var(--rule);
+    background: var(--bg-deep);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--fg-mute);
+    user-select: none;
+  }
+  .topbar .brand {
+    display: flex; align-items: center; gap: 8px;
+    padding: 0 14px;
+    border-right: 1px solid var(--rule);
+    color: var(--accent);
+    text-shadow: 0 0 calc(8px * var(--glow-strength)) var(--accent-glow);
+    font-weight: 600;
+  }
+  .brand-mark {
+    width: 10px; height: 10px;
+    border: 1px solid currentColor;
+    transform: rotate(45deg);
+    position: relative;
+  }
+  .brand-mark::before {
+    content: ""; position: absolute; inset: 2px;
+    background: currentColor; opacity: 0.6;
+  }
+  .topbar .crumbs {
+    display: flex; align-items: center; gap: 10px;
+    padding: 0 14px;
+    flex: 1;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .topbar .crumbs .sep { color: var(--fg-faint); }
+  .topbar .crumbs .here { color: var(--fg); }
+  .topbar .meta {
+    display: flex; align-items: center; gap: 14px;
+    padding: 0 14px;
+    border-left: 1px solid var(--rule);
+  }
+  .theme-dd {
+    background: transparent;
+    border: 1px solid var(--rule-strong);
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    cursor: pointer;
+    outline: none;
+  }
+  .theme-dd:hover { background: var(--fg-faint); }
+  .theme-dd option { background: var(--bg-deep); color: var(--fg); }
+  .led {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 calc(8px * var(--glow-strength)) var(--accent-glow);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+  }
+
+  /* ============= LEFT SIDEBAR ============= */
+  .left-pane {
+    grid-area: left;
+    border-right: 1px solid var(--rule);
+    background: var(--bg-deep);
+    display: flex; flex-direction: column;
+    overflow: hidden;
+    min-width: 0;
+  }
+  .pane-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 14px 8px;
+    border-bottom: 1px solid var(--rule);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--fg-mute);
+  }
+  .pane-header .h-title {
+    display: flex; align-items: center; gap: 8px;
+  }
+  .pane-header .h-right {
+    display: flex; align-items: center; gap: 8px;
+  }
+  .pane-collapse {
+    background: transparent;
+    border: 1px solid var(--rule);
+    color: var(--fg-mute);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    padding: 2px 6px;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+  }
+  .pane-collapse:hover {
+    color: var(--accent);
+    border-color: var(--rule-strong);
+    background: var(--fg-faint);
+  }
+  .pane-header .h-title::before {
+    content: "▸"; color: var(--accent);
+  }
+  .pane-header .h-id {
+    font-size: 9px;
+    color: var(--fg-faint);
+  }
+
+  .sync-block {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .sync-btn {
+    width: 100%;
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px;
+    background: transparent;
+    border: 1px solid var(--rule-strong);
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-shadow: 0 0 calc(6px * var(--glow-strength)) var(--accent-glow);
+    transition: background 0.15s, border-color 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .sync-btn:hover {
+    background: var(--fg-faint);
+    border-color: var(--accent);
+  }
+  .sync-btn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, var(--fg-faint), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.6s;
+  }
+  .sync-btn:hover::before { transform: translateX(100%); }
+  .sync-btn .sync-icon {
+    display: inline-block;
+    width: 12px; height: 12px;
+    border: 1px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+  }
+  .sync-btn[data-syncing="true"] .sync-icon {
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .sync-meta {
+    display: flex; justify-content: space-between;
+    margin-top: 8px;
+    font-size: 9px;
+    color: var(--fg-mute);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .tree-block {
+    padding: 8px 0;
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    font-family: var(--mono);
+    font-size: 12px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--rule) transparent;
+  }
+  .tree-block::-webkit-scrollbar { width: 6px; }
+  .tree-block::-webkit-scrollbar-thumb { background: var(--rule); }
+
+  .tree-search {
+    padding: 4px 14px 10px;
+  }
+  .tree-search input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px dashed var(--rule);
+    color: var(--fg);
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 4px 0 4px 14px;
+    outline: none;
+    background-image: linear-gradient(var(--accent), var(--accent));
+    background-repeat: no-repeat;
+    background-size: 0% 1px;
+    background-position: 0 100%;
+    transition: background-size 0.3s;
+  }
+  .tree-search input:focus {
+    background-size: 100% 1px;
+  }
+  .tree-search .search-prefix {
+    position: relative;
+    color: var(--fg-mute);
+  }
+  .tree-search .wrap {
+    position: relative;
+  }
+  .tree-search .wrap::before {
+    content: "/";
+    position: absolute;
+    left: 0; top: 4px;
+    color: var(--accent);
+    font-size: 11px;
+  }
+
+  .tree-node {
+    display: flex; align-items: center;
+    padding: 3px 14px 3px 14px;
+    cursor: pointer;
+    color: var(--fg);
+    white-space: nowrap;
+    position: relative;
+  }
+  .tree-node:hover {
+    background: var(--fg-faint);
+  }
+  .tree-node[data-active="true"] {
+    background: var(--fg-faint);
+    color: var(--accent);
+    text-shadow: 0 0 calc(6px * var(--glow-strength)) var(--accent-glow);
+  }
+  .tree-node[data-active="true"]::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 2px;
+    background: var(--accent);
+    box-shadow: 0 0 calc(6px * var(--glow-strength)) var(--accent-glow);
+  }
+  .tree-node .caret {
+    width: 12px;
+    color: var(--fg-mute);
+    font-size: 10px;
+    text-align: center;
+  }
+  .tree-node .gt {
+    color: var(--fg-mute);
+    margin-right: 6px;
+    letter-spacing: 0;
+  }
+  .tree-node[data-type="folder"] .name { color: var(--fg-dim); }
+  .tree-node[data-type="file"] .name { color: var(--fg); opacity: 0.85; }
+  .tree-node .ext {
+    margin-left: auto;
+    color: var(--fg-faint);
+    font-size: 10px;
+    padding-left: 8px;
+  }
+  .tree-node[data-active="true"] .ext { color: var(--accent); opacity: 0.8; }
+
+  .tree-children[data-collapsed="true"] {
+    display: none;
+  }
+
+  /* ============= CENTER / READING PANE ============= */
+  .center-pane {
+    grid-area: center;
+    background: var(--reading-bg);
+    overflow: hidden;
+    display: flex; flex-direction: column;
+    min-width: 0;
+    position: relative;
+  }
+  .doc-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 22px;
+    border-bottom: 1px solid var(--rule);
+    background: var(--bg-deep);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--fg-mute);
+    flex-shrink: 0;
+  }
+  .doc-header .doc-path {
+    display: flex; align-items: center; gap: 8px;
+    color: var(--fg-dim);
+  }
+  .doc-header .doc-path .here { color: var(--accent); }
+  .doc-header .doc-actions {
+    display: flex; gap: 4px;
+  }
+  .icon-btn {
+    width: 24px; height: 22px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--fg-mute);
+    cursor: pointer;
+    font-family: var(--mono);
+    font-size: 11px;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .icon-btn:hover { border-color: var(--rule-strong); color: var(--accent); }
+  .icon-btn[data-active="true"] { color: var(--accent); border-color: var(--rule-strong); }
+
+  .doc-scroll {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: var(--rule) transparent;
+  }
+  .doc-scroll::-webkit-scrollbar { width: 8px; }
+  .doc-scroll::-webkit-scrollbar-thumb { background: var(--rule); }
+
+  .doc-frame {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 56px 48px 120px;
+    position: relative;
+  }
+  .doc-frame::before {
+    content: "// BEGIN " attr(data-doc-id);
+    position: absolute;
+    top: 22px; left: 48px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--fg-faint);
+    letter-spacing: 0.14em;
+  }
+  .doc-frame::after {
+    content: "// EOF — " attr(data-doc-bytes) " B · " attr(data-doc-words) " WORDS";
+    display: block;
+    margin-top: 48px;
+    padding-top: 18px;
+    border-top: 1px dashed var(--reading-rule);
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--fg-faint);
+    letter-spacing: 0.14em;
+  }
+
+  /* ============= RENDERED DOC STYLES (engram-doc) ============= */
+  .engram-doc {
+    font-family: var(--serif);
+    color: var(--reading-fg);
+    font-size: 17px;
+    line-height: 1.7;
+    text-wrap: pretty;
+  }
+  .engram-doc h1, .engram-doc h2, .engram-doc h3, .engram-doc h4 {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0.02em;
+    line-height: 1.3;
+    text-shadow: 0 0 calc(6px * var(--glow-strength)) var(--accent-glow);
+    text-wrap: balance;
+  }
+  [data-theme="calm"] .engram-doc h1,
+  [data-theme="calm"] .engram-doc h2,
+  [data-theme="calm"] .engram-doc h3,
+  [data-theme="calm"] .engram-doc h4 {
+    font-family: var(--serif);
+    color: var(--fg);
+    text-shadow: none;
+    font-weight: 700;
+  }
+  .engram-doc h1 {
+    font-size: 32px;
+    margin: 0 0 8px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--reading-rule);
+  }
+  .engram-doc h1::before {
+    content: "# ";
+    color: var(--fg-mute);
+    font-weight: 400;
+  }
+  .engram-doc h2 {
+    font-size: 22px;
+    margin: 40px 0 12px;
+  }
+  .engram-doc h2::before {
+    content: "## ";
+    color: var(--fg-mute);
+    font-weight: 400;
+  }
+  .engram-doc h3 {
+    font-size: 17px;
+    margin: 28px 0 8px;
+  }
+  .engram-doc h3::before {
+    content: "### ";
+    color: var(--fg-mute);
+    font-weight: 400;
+  }
+  [data-theme="calm"] .engram-doc h1::before,
+  [data-theme="calm"] .engram-doc h2::before,
+  [data-theme="calm"] .engram-doc h3::before { content: ""; }
+
+  .engram-doc .doc-meta {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--fg-mute);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    display: flex; gap: 18px; flex-wrap: wrap;
+  }
+  .engram-doc .doc-meta span::before {
+    content: "▸ ";
+    color: var(--accent);
+  }
+
+  .engram-doc p { margin: 0 0 16px; }
+  .engram-doc strong { color: var(--accent); font-weight: 600; }
+  .engram-doc em { color: var(--reading-fg); font-style: italic; }
+  .engram-doc a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px dashed var(--accent);
+  }
+  .engram-doc a:hover { background: var(--fg-faint); }
+
+  .engram-doc code {
+    font-family: var(--mono);
+    font-size: 0.88em;
+    background: var(--reading-code-bg);
+    color: var(--accent);
+    padding: 1px 6px;
+    border: 1px solid var(--reading-rule);
+    border-radius: 2px;
+  }
+  .engram-doc pre {
+    font-family: var(--mono);
+    font-size: 13px;
+    background: var(--reading-code-bg);
+    color: var(--reading-fg);
+    padding: 16px 18px;
+    border-left: 2px solid var(--accent);
+    border-top: 1px solid var(--reading-rule);
+    border-right: 1px solid var(--reading-rule);
+    border-bottom: 1px solid var(--reading-rule);
+    overflow-x: auto;
+    margin: 18px 0;
+    line-height: 1.55;
+    position: relative;
+  }
+  .engram-doc pre::before {
+    content: attr(data-lang);
+    position: absolute;
+    top: 6px; right: 10px;
+    font-size: 10px;
+    color: var(--fg-mute);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .engram-doc pre code {
+    background: transparent;
+    border: none;
+    padding: 0;
+    color: inherit;
+    font-size: inherit;
+  }
+
+  .engram-doc blockquote {
+    margin: 18px 0;
+    padding: 4px 18px;
+    border-left: 2px solid var(--accent);
+    color: var(--reading-mute);
+    font-style: italic;
+  }
+  .engram-doc ul, .engram-doc ol {
+    margin: 0 0 16px;
+    padding-left: 24px;
+  }
+  .engram-doc ul li::marker { content: "▸ "; color: var(--accent); }
+  .engram-doc li { margin-bottom: 6px; }
+  .engram-doc hr {
+    border: none;
+    border-top: 1px dashed var(--reading-rule);
+    margin: 32px 0;
+  }
+  .engram-doc table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 18px 0;
+    font-family: var(--mono);
+    font-size: 13px;
+  }
+  .engram-doc th, .engram-doc td {
+    text-align: left;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--reading-rule);
+  }
+  .engram-doc th {
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 11px;
+    border-bottom: 1px solid var(--rule-strong);
+  }
+  .engram-doc figure {
+    margin: 24px 0;
+    padding: 14px;
+    border: 1px dashed var(--reading-rule);
+  }
+  .engram-doc figcaption {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--fg-mute);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 8px;
+  }
+  .engram-doc .callout {
+    margin: 18px 0;
+    padding: 14px 18px;
+    border: 1px solid var(--reading-rule);
+    border-left: 2px solid var(--accent);
+    background: var(--reading-code-bg);
+    font-family: var(--mono);
+    font-size: 13px;
+  }
+  .engram-doc .callout::before {
+    content: "// NOTE";
+    display: block;
+    color: var(--accent);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    margin-bottom: 6px;
+  }
+
+  /* ============= RIGHT SIDEBAR ============= */
+  .right-pane {
+    grid-area: right;
+    border-left: 1px solid var(--rule);
+    background: var(--bg-deep);
+    overflow: hidden;
+    display: flex; flex-direction: column;
+    min-width: 0;
+  }
+  .right-pane .pane-body {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: var(--rule) transparent;
+  }
+  .right-pane .pane-body::-webkit-scrollbar { width: 6px; }
+  .right-pane .pane-body::-webkit-scrollbar-thumb { background: var(--rule); }
+
+  .widget {
+    border-bottom: 1px solid var(--rule);
+    padding: 14px 16px;
+  }
+  .widget .w-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--fg-mute);
+  }
+  .widget .w-head .lbl::before {
+    content: "● ";
+    color: var(--accent);
+  }
+  .widget .w-head .id {
+    color: var(--fg-faint);
+  }
+
+  /* Clock widget */
+  .clock {
+    text-align: center;
+    padding: 8px 0 4px;
+  }
+  .clock .time {
+    font-family: var(--mono);
+    font-size: 30px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0.06em;
+    text-shadow: 0 0 calc(10px * var(--glow-strength)) var(--accent-glow);
+    line-height: 1;
+  }
+  .clock .date {
+    margin-top: 6px;
+    font-size: 10px;
+    color: var(--fg-mute);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .clock .uptime {
+    margin-top: 10px;
+    font-size: 10px;
+    color: var(--fg-dim);
+    letter-spacing: 0.12em;
+  }
+
+  /* Globe */
+  .globe-wrap {
+    position: relative;
+    aspect-ratio: 1;
+    margin: 4px auto 8px;
+    width: 100%;
+    max-width: 220px;
+  }
+  .globe-svg {
+    width: 100%; height: 100%;
+    color: var(--accent);
+    filter: drop-shadow(0 0 calc(4px * var(--glow-strength)) var(--accent-glow));
+  }
+  .globe-svg .meridian {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 0.5;
+    opacity: 0.7;
+  }
+  .globe-svg .meridian-faint {
+    opacity: 0.25;
+  }
+  .globe-svg .equator {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 0.7;
+  }
+  .globe-svg .marker {
+    fill: currentColor;
+  }
+  /* globe spins via JS phase variable */
+
+  /* System stats */
+  .stat-row {
+    display: grid;
+    grid-template-columns: 50px 1fr 40px;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--fg-mute);
+    letter-spacing: 0.08em;
+  }
+  .stat-row .lbl { text-transform: uppercase; }
+  .stat-row .bar {
+    height: 8px;
+    background: var(--fg-faint);
+    border: 1px solid var(--rule);
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-row .bar .fill {
+    position: absolute; inset: 0;
+    background: var(--accent);
+    box-shadow: 0 0 calc(4px * var(--glow-strength)) var(--accent-glow);
+    transform-origin: left;
+    transition: transform 0.6s cubic-bezier(.4,0,.2,1);
+  }
+  .stat-row .val { color: var(--accent); text-align: right; }
+
+  /* Activity log */
+  .log {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--fg-mute);
+    line-height: 1.6;
+    max-height: 140px;
+    overflow: hidden;
+    position: relative;
+  }
+  .log::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 36px;
+    background: linear-gradient(transparent, var(--bg-deep));
+    pointer-events: none;
+  }
+  .log .row { display: flex; gap: 8px; }
+  .log .ts { color: var(--accent); flex-shrink: 0; opacity: 0.85; }
+  .log .msg { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* Waveform */
+  .waveform {
+    height: 36px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+  .waveform .bar {
+    flex: 1;
+    background: var(--accent);
+    box-shadow: 0 0 calc(3px * var(--glow-strength)) var(--accent-glow);
+    min-height: 2px;
+    transition: height 0.18s ease-out;
+  }
+
+  /* ============= STATUS BAR ============= */
+  .statusbar {
+    grid-area: status;
+    border-top: 1px solid var(--rule);
+    background: var(--bg-deep);
+    display: flex;
+    align-items: center;
+    padding: 0 14px;
+    gap: 18px;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--fg-mute);
+  }
+  .statusbar .item { display: flex; align-items: center; gap: 6px; }
+  .statusbar .item::before {
+    content: "▪";
+    color: var(--accent);
+  }
+  .statusbar .spacer { flex: 1; }
+  .statusbar .blink {
+    animation: blink 1s steps(2) infinite;
+    color: var(--accent);
+  }
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+
+  /* ============= FX LAYER ============= */
+  .fx {
+    position: fixed; inset: 0;
+    pointer-events: none;
+    z-index: 1000;
+    mix-blend-mode: screen;
+  }
+  [data-theme="calm"] .fx { display: none; }
+
+  .fx-scanlines {
+    position: absolute; inset: 0;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0px,
+      transparent 2px,
+      rgba(0, 0, 0, 0.45) 3px,
+      rgba(0, 0, 0, 0.45) 3px
+    );
+    opacity: var(--scanline-opacity);
+  }
+  .fx-vignette {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.6) 100%);
+    mix-blend-mode: multiply;
+  }
+  .fx-flicker {
+    position: absolute; inset: 0;
+    background: var(--accent);
+    opacity: 0;
+    mix-blend-mode: overlay;
+    animation: flicker 4s infinite;
+  }
+  @keyframes flicker {
+    0%, 100% { opacity: 0; }
+    97% { opacity: 0; }
+    97.5% { opacity: calc(0.06 * var(--flicker-strength)); }
+    98% { opacity: 0; }
+    98.5% { opacity: calc(0.04 * var(--flicker-strength)); }
+    99% { opacity: 0; }
+  }
+  .fx-grain {
+    position: absolute; inset: 0;
+    opacity: var(--grain-opacity);
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+
+  /* ============= BOOT OVERLAY ============= */
+  .boot {
+    position: fixed; inset: 0;
+    background: var(--bg-deep);
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.6;
+    z-index: 9999;
+    padding: 36px 48px;
+    overflow: hidden;
+    text-shadow: 0 0 calc(6px * var(--glow-strength)) var(--accent-glow);
+  }
+  .boot {
+    opacity: 1;
+    transition: opacity 0.6s ease;
+  }
+  .boot[data-done="true"] {
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+    transition: opacity 0.6s ease, visibility 0s linear 0.6s;
+  }
+  .boot .ascii {
+    color: var(--accent);
+    white-space: pre;
+    font-size: 11px;
+    line-height: 1.1;
+    margin-bottom: 22px;
+    opacity: 0.9;
+  }
+  .boot .lines {
+    display: flex; flex-direction: column;
+    gap: 2px;
+  }
+  .boot .line {
+    opacity: 0;
+    animation: bootline 0.05s forwards;
+  }
+  @keyframes bootline {
+    to { opacity: 1; }
+  }
+  .boot .line .ok { color: var(--accent); }
+  .boot .line .warn { color: #ffcb6b; }
+  .boot .line .dim { opacity: 0.5; }
+  .boot .cursor {
+    display: inline-block;
+    width: 0.6em; height: 1em;
+    background: var(--accent);
+    vertical-align: -2px;
+    animation: blink 1s steps(2) infinite;
+    margin-left: 4px;
+  }
+
+  /* ============= TWEAKS LAUNCHER NOTE ============= */
+  .right-collapsed-toggle {
+    position: fixed;
+    top: 36px; right: 0;
+    width: 18px; height: 60px;
+    background: var(--bg-deep);
+    border: 1px solid var(--rule);
+    border-right: none;
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 10px;
+    cursor: pointer;
+    display: none;
+    align-items: center; justify-content: center;
+    z-index: 50;
+  }
+  .app[data-right-closed="true"] ~ .right-collapsed-toggle { display: flex; }
+
+  .left-collapsed-toggle {
+    position: fixed;
+    top: 36px; left: 0;
+    width: 18px; height: 60px;
+    background: var(--bg-deep);
+    border: 1px solid var(--rule);
+    border-left: none;
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 10px;
+    cursor: pointer;
+    display: none;
+    align-items: center; justify-content: center;
+    z-index: 50;
+  }
+  .app[data-left-closed="true"] ~ .left-collapsed-toggle { display: flex; }
+
+  /* corner brackets */
+  .bracket {
+    position: absolute;
+    width: 14px; height: 14px;
+    border: 1px solid var(--accent);
+    pointer-events: none;
+    opacity: 0.6;
+  }
+  .bracket.tl { top: 6px; left: 6px; border-right: none; border-bottom: none; }
+  .bracket.tr { top: 6px; right: 6px; border-left: none; border-bottom: none; }
+  .bracket.bl { bottom: 6px; left: 6px; border-right: none; border-top: none; }
+  .bracket.br { bottom: 6px; right: 6px; border-left: none; border-top: none; }
+
+  /* tweak panel offset so it doesn't cover right pane */
+  .tweaks-panel-host { z-index: 800; }
+</style>
+</head>
+<body>
+  <!-- Boot overlay -->
+  <div class="boot" id="boot">
+    <div class="ascii">  ███████╗███╗   ██╗ ██████╗ ██████╗  █████╗ ███╗   ███╗
+  ██╔════╝████╗  ██║██╔════╝ ██╔══██╗██╔══██╗████╗ ████║
+  █████╗  ██╔██╗ ██║██║  ███╗██████╔╝███████║██╔████╔██║
+  ██╔══╝  ██║╚██╗██║██║   ██║██╔══██╗██╔══██║██║╚██╔╝██║
+  ███████╗██║ ╚████║╚██████╔╝██║  ██║██║  ██║██║ ╚═╝ ██║
+  ╚══════╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝</div>
+    <div class="lines" id="boot-lines"></div>
+  </div>
+
+  <!-- App shell -->
+  <div class="app" id="app" data-right-closed="false" data-left-closed="false">
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark"></span><span>ENGRAM</span></div>
+      <div class="crumbs" id="crumbs">
+        <span class="dim">~/notes</span>
+        <span class="sep">›</span><span>Folder A</span>
+        <span class="sep">›</span><span>Subfolder A1</span>
+        <span class="sep">›</span><span class="here">File 02 — Spectral Decomposition</span>
+      </div>
+      <div class="meta">
+        <select id="theme-select" class="theme-dd" aria-label="Theme">
+          <option value="phosphor">PHOSPHOR</option>
+          <option value="amber">AMBER</option>
+          <option value="cyan">CYAN</option>
+          <option value="red">RED ALERT</option>
+          <option value="mono">MONOCHROME</option>
+          <option value="calm">CALM FOCUS</option>
+        </select>
+        <span style="color:var(--fg-faint)">|</span>
+        <span class="led"></span><span>READ-ONLY</span>
+        <span style="color:var(--fg-faint)">|</span>
+        <span id="topbar-clock">00:00:00</span>
+      </div>
+    </header>
+
+    <!-- LEFT -->
+    <aside class="left-pane">
+      <div class="pane-header">
+        <div class="h-title">FILES</div>
+        <div class="h-right">
+          <span class="h-id">/INDEX.0</span>
+          <button class="pane-collapse" id="toggle-left" title="Collapse files pane" aria-label="Collapse files pane">[ ‹ ]</button>
+        </div>
+      </div>
+      <div class="sync-block">
+        <button class="sync-btn" id="sync-btn">
+          <span class="sync-icon"></span>
+          <span class="sync-label">SYNC FILES</span>
+        </button>
+        <div class="sync-meta">
+          <span>LAST &nbsp;<span id="last-sync">2m ago</span></span>
+          <span id="file-count">42 FILES</span>
+        </div>
+      </div>
+      <div class="tree-search">
+        <div class="wrap">
+          <input type="text" id="tree-filter" placeholder="filter..." style="padding-left:14px"/>
+        </div>
+      </div>
+      <div class="tree-block" id="tree"></div>
+    </aside>
+
+    <!-- CENTER -->
+    <main class="center-pane">
+      <div class="doc-header">
+        <div class="doc-path" id="doc-path">
+          <span>~</span>
+          <span style="color:var(--fg-faint)">/</span>
+          <span>folder-a</span>
+          <span style="color:var(--fg-faint)">/</span>
+          <span>subfolder-a1</span>
+          <span style="color:var(--fg-faint)">/</span>
+          <span class="here">file-02.engram</span>
+        </div>
+        <div class="doc-actions">
+          <button class="icon-btn" title="Replay boot" id="replay-boot">[ ↻ ]</button>
+        </div>
+      </div>
+      <div class="doc-scroll" id="doc-scroll">
+        <article class="doc-frame" id="doc-frame" data-doc-id="FILE-02" data-doc-bytes="—" data-doc-words="—">
+          <div class="engram-doc" id="engram-doc"></div>
+        </article>
+      </div>
+    </main>
+
+    <!-- RIGHT -->
+    <aside class="right-pane">
+      <div class="pane-header">
+        <div class="h-right" style="order:-1">
+          <button class="pane-collapse" id="toggle-right" title="Collapse system pane" aria-label="Collapse system pane">[ › ]</button>
+          <span class="h-id">/AUX.1</span>
+        </div>
+        <div class="h-title">SYSTEM</div>
+      </div>
+      <div class="pane-body">
+
+        <div class="widget">
+          <div class="w-head"><span class="lbl">CHRONO</span><span class="id">001</span></div>
+          <div class="clock">
+            <div class="time" id="clock-time">--:--:--</div>
+            <div class="date" id="clock-date">—</div>
+            <div class="uptime" id="clock-uptime">UPTIME 00:00:00</div>
+          </div>
+        </div>
+
+        <div class="widget">
+          <div class="w-head"><span class="lbl">DOCUMENT</span><span class="id">002</span></div>
+          <div style="display:grid;grid-template-columns:1fr auto;gap:6px 14px;font-family:var(--mono);font-size:10px;color:var(--fg-mute);letter-spacing:0.1em;text-transform:uppercase;">
+            <span>WORDS</span><span style="color:var(--accent)" id="m-words">—</span>
+            <span>BYTES</span><span style="color:var(--accent)" id="m-bytes">—</span>
+            <span>LINES</span><span style="color:var(--accent)" id="m-lines">—</span>
+            <span>READ TIME</span><span style="color:var(--accent)" id="m-read">—</span>
+          </div>
+        </div>
+
+        <div class="widget">
+          <div class="w-head"><span class="lbl">EARTH · GMT</span><span class="id">003</span></div>
+          <div class="globe-wrap">
+            <svg class="globe-svg" viewBox="-50 -50 100 100" id="globe">
+              <defs>
+                <clipPath id="globe-clip"><circle r="48" cx="0" cy="0"/></clipPath>
+              </defs>
+              <circle r="48" cx="0" cy="0" fill="none" stroke="currentColor" stroke-width="0.6" opacity="0.85"/>
+              <g clip-path="url(#globe-clip)">
+                <!-- meridians and parallels (animated by JS) -->
+                <g id="globe-meridians"></g>
+              </g>
+              <!-- crosshairs above -->
+              <line x1="-52" y1="0" x2="-50" y2="0" stroke="currentColor" stroke-width="0.6"/>
+              <line x1="50" y1="0" x2="52" y2="0" stroke="currentColor" stroke-width="0.6"/>
+              <line x1="0" y1="-52" x2="0" y2="-50" stroke="currentColor" stroke-width="0.6"/>
+              <line x1="0" y1="50" x2="0" y2="52" stroke="currentColor" stroke-width="0.6"/>
+            </svg>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:9px;color:var(--fg-mute);letter-spacing:0.14em;text-transform:uppercase">
+            <span>LAT 51.5°N</span><span>LON 0.1°W</span>
+          </div>
+        </div>
+
+        <div class="widget">
+          <div class="w-head"><span class="lbl">RESOURCES</span><span class="id">004</span></div>
+          <div class="stat-row">
+            <span class="lbl">CPU</span>
+            <span class="bar"><span class="fill" id="bar-cpu" style="transform:scaleX(0.32)"></span></span>
+            <span class="val" id="val-cpu">32%</span>
+          </div>
+          <div class="stat-row">
+            <span class="lbl">MEM</span>
+            <span class="bar"><span class="fill" id="bar-mem" style="transform:scaleX(0.47)"></span></span>
+            <span class="val" id="val-mem">47%</span>
+          </div>
+          <div class="stat-row">
+            <span class="lbl">NET</span>
+            <span class="bar"><span class="fill" id="bar-net" style="transform:scaleX(0.18)"></span></span>
+            <span class="val" id="val-net">18%</span>
+          </div>
+          <div class="stat-row">
+            <span class="lbl">I/O</span>
+            <span class="bar"><span class="fill" id="bar-io" style="transform:scaleX(0.6)"></span></span>
+            <span class="val" id="val-io">60%</span>
+          </div>
+        </div>
+
+        <div class="widget">
+          <div class="w-head"><span class="lbl">SIGNAL</span><span class="id">005</span></div>
+          <div class="waveform" id="waveform"></div>
+        </div>
+
+        <div class="widget">
+          <div class="w-head"><span class="lbl">ACTIVITY</span><span class="id">006</span></div>
+          <div class="log" id="log"></div>
+        </div>
+
+      </div>
+    </aside>
+
+    <!-- STATUS -->
+    <footer class="statusbar">
+      <span class="item">ENGRAM v0.1.4</span>
+      <span class="item">UTF-8</span>
+      <span class="item">LF</span>
+      <span class="item" id="status-doc">FILE-02.ENGRAM</span>
+      <span class="spacer"></span>
+      <span class="item"><span class="blink">●</span> READY</span>
+      <span class="item">THEME: <span id="status-theme" style="color:var(--accent)">PHOSPHOR</span></span>
+    </footer>
+  </div>
+
+  <button class="right-collapsed-toggle" id="reopen-right">‹</button>
+  <button class="left-collapsed-toggle" id="reopen-left">›</button>
+
+  <!-- FX LAYER -->
+  <div class="fx" id="fx">
+    <div class="fx-scanlines"></div>
+    <div class="fx-grain"></div>
+    <div class="fx-flicker"></div>
+    <div class="fx-vignette"></div>
+  </div>
+
+  <script>
+  /*EDITMODE-BEGIN*/
+  const TWEAK_DEFAULTS = {
+    "theme": "phosphor",
+    "fxIntensity": 65,
+    "scanlines": true,
+    "globeSpeed": 24,
+    "showLeftBrackets": false,
+    "monoBody": false,
+    "fontPair": "lora-jb"
+  };
+  /*EDITMODE-END*/
+
+  // ============== TREE DATA ==============
+  const TREE = [
+    { type:"folder", name:"Folder A", children:[
+      { type:"folder", name:"Subfolder A1", children:[
+        { type:"file", name:"File 01", ext:".eng" },
+        { type:"file", name:"File 02 — Spectral Decomposition", ext:".eng", active:true },
+        { type:"file", name:"File 03", ext:".eng" },
+      ]},
+      { type:"folder", name:"Subfolder A2", children:[
+        { type:"file", name:"File 04", ext:".eng" },
+        { type:"file", name:"File 05", ext:".eng" },
+      ]},
+      { type:"file", name:"File 06 (root of A)", ext:".eng" },
+    ]},
+    { type:"folder", name:"Folder B", collapsed:true, children:[
+      { type:"file", name:"File 07", ext:".eng" },
+      { type:"folder", name:"Subfolder B1", children:[
+        { type:"file", name:"File 08", ext:".eng" },
+        { type:"file", name:"File 09", ext:".eng" },
+      ]},
+    ]},
+    { type:"folder", name:"Folder C", children:[
+      { type:"file", name:"File 10", ext:".eng" },
+      { type:"file", name:"File 11", ext:".eng" },
+      { type:"file", name:"File 12", ext:".eng" },
+      { type:"folder", name:"Subfolder C1", collapsed:true, children:[
+        { type:"file", name:"File 13", ext:".eng" },
+      ]},
+    ]},
+    { type:"file", name:"README", ext:".eng" },
+    { type:"file", name:"Index", ext:".eng" },
+  ];
+
+  function renderTree() {
+    const root = document.getElementById("tree");
+    root.innerHTML = "";
+    function walk(nodes, depth, parentEl) {
+      nodes.forEach((node, i) => {
+        const el = document.createElement("div");
+        el.className = "tree-node";
+        el.dataset.type = node.type;
+        if (node.active) el.dataset.active = "true";
+        const gt = ">".repeat(depth + 1);
+        const caret = node.type === "folder" ? (node.collapsed ? "▸" : "▾") : " ";
+        el.innerHTML = `
+          <span class="caret">${caret}</span>
+          <span class="gt">${gt}</span>
+          <span class="name">${node.name}</span>
+          <span class="ext">${node.ext || ""}</span>
+        `;
+        parentEl.appendChild(el);
+        if (node.type === "folder" && node.children) {
+          const kids = document.createElement("div");
+          kids.className = "tree-children";
+          if (node.collapsed) kids.dataset.collapsed = "true";
+          parentEl.appendChild(kids);
+          walk(node.children, depth + 1, kids);
+          el.addEventListener("click", () => {
+            const c = kids.dataset.collapsed === "true";
+            kids.dataset.collapsed = c ? "false" : "true";
+            el.querySelector(".caret").textContent = c ? "▾" : "▸";
+          });
+        } else if (node.type === "file") {
+          el.addEventListener("click", () => {
+            document.querySelectorAll(".tree-node[data-active='true']")
+              .forEach(n => n.removeAttribute("data-active"));
+            el.dataset.active = "true";
+            loadDoc(node.name);
+          });
+        }
+      });
+    }
+    walk(TREE, 0, root);
+  }
+
+  // ============== TREE FILTER ==============
+  document.getElementById("tree-filter").addEventListener("input", (e) => {
+    const q = e.target.value.toLowerCase().trim();
+    document.querySelectorAll(".tree-node").forEach(n => {
+      if (n.dataset.type !== "file") return;
+      const name = n.querySelector(".name").textContent.toLowerCase();
+      n.style.display = (!q || name.includes(q)) ? "" : "none";
+    });
+  });
+
+  // ============== DOC LOADING ==============
+  // This represents what the user's renderer would inject as ready-to-go HTML.
+  function buildSampleDoc(title) {
+    return `
+      <h1>${title}</h1>
+      <div class="doc-meta">
+        <span>EDITED 2026-05-07 11:42</span>
+        <span>SIZE 4.7 KB</span>
+        <span>TAGS theory · linear-algebra</span>
+      </div>
+      <p>The <strong>spectral theorem</strong> is one of those ideas that keeps showing up — every time you think you've moved past it, it reappears wearing a slightly different hat. The core claim is simple enough: a real symmetric matrix can be diagonalised by an orthogonal matrix, and the diagonal it produces is its spectrum.</p>
+
+      <p>What's interesting isn't the statement, it's the <em>shape</em> of the proof. You build it out of two facts that don't obviously fit together — that symmetric operators have real eigenvalues, and that eigenvectors for distinct eigenvalues are orthogonal. The proof is the gluing.</p>
+
+      <h2>Setup</h2>
+      <p>Let \\(A \\in \\mathbb{R}^{n \\times n}\\) with \\(A^\\top = A\\). We want to find an orthogonal \\(Q\\) and diagonal \\(D\\) such that:</p>
+      <pre data-lang="math"><code>A = Q D Q^T,    where Q^T Q = I</code></pre>
+
+      <p>The columns of <code>Q</code> are an orthonormal basis of eigenvectors. Read this aloud once or twice — it's the whole punchline.</p>
+
+      <h3>A small example</h3>
+      <p>Take the matrix:</p>
+      <pre data-lang="math"><code>A = | 4  1 |
+    | 1  2 |</code></pre>
+      <p>Its characteristic polynomial is <code>(λ-4)(λ-2) - 1 = λ² - 6λ + 7</code>, giving eigenvalues <code>3 ± √2</code>. Both real — as promised.</p>
+
+      <div class="callout">
+        Symmetry isn't aesthetic here. It's a structural promise: the operator agrees with its own transpose, which forces the algebra to behave.
+      </div>
+
+      <h2>Why this matters</h2>
+      <ul>
+        <li>PCA falls out of this — the principal components are the eigenvectors of the covariance matrix.</li>
+        <li>Quadratic forms become trivially classifiable: positive-definite ⇔ all eigenvalues positive.</li>
+        <li>It generalises cleanly to compact self-adjoint operators on a Hilbert space.</li>
+      </ul>
+
+      <h3>Pseudocode</h3>
+      <pre data-lang="python"><code>import numpy as np
+
+def spectral_decompose(A):
+    assert np.allclose(A, A.T), "A must be symmetric"
+    eigvals, eigvecs = np.linalg.eigh(A)
+    # eigh returns sorted real eigenvalues for symmetric A
+    return eigvecs, np.diag(eigvals)
+
+Q, D = spectral_decompose(A)
+# A == Q @ D @ Q.T  (up to floating point)</code></pre>
+
+      <blockquote>
+        "Diagonalisation isn't a trick. It's the act of finding the coordinate system the operator was always speaking in."
+      </blockquote>
+
+      <h2>Open questions</h2>
+      <ol>
+        <li>What is the cleanest proof of the orthogonality of eigenvectors that doesn't go through complex numbers?</li>
+        <li>How does this break for non-normal matrices, and what replaces it (Schur, SVD)?</li>
+        <li>Numerically: when does <code>eigh</code> drift, and how do we detect it?</li>
+      </ol>
+
+      <hr>
+
+      <table>
+        <thead>
+          <tr><th>Property</th><th>Symmetric</th><th>Normal</th><th>General</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Real eigenvalues</td><td>✓</td><td>—</td><td>—</td></tr>
+          <tr><td>Orthogonal eigenvectors</td><td>✓</td><td>✓</td><td>—</td></tr>
+          <tr><td>Diagonalisable</td><td>✓</td><td>✓</td><td>—</td></tr>
+        </tbody>
+      </table>
+
+      <p>Next time: link this to the <a href="#">SVD note</a> and to the <a href="#">PCA derivation</a>.</p>
+    `;
+  }
+
+  function loadDoc(title) {
+    const target = document.getElementById("engram-doc");
+    target.style.opacity = 0;
+    setTimeout(() => {
+      target.innerHTML = buildSampleDoc(title);
+      target.style.transition = "opacity 0.35s";
+      target.style.opacity = 1;
+      updateDocMeta(title);
+      updateCrumbs(title);
+    }, 120);
+  }
+
+  function updateDocMeta(title) {
+    const text = document.getElementById("engram-doc").innerText;
+    const words = text.trim().split(/\s+/).length;
+    const bytes = new Blob([text]).size;
+    const lines = text.split("\n").length;
+    const read = Math.max(1, Math.round(words / 220));
+    document.getElementById("m-words").textContent = words.toLocaleString();
+    document.getElementById("m-bytes").textContent = bytes.toLocaleString();
+    document.getElementById("m-lines").textContent = lines.toLocaleString();
+    document.getElementById("m-read").textContent = read + " MIN";
+    const frame = document.getElementById("doc-frame");
+    frame.dataset.docId = title.toUpperCase().replace(/\s+/g, "-").slice(0,24);
+    frame.dataset.docBytes = bytes.toLocaleString();
+    frame.dataset.docWords = words.toLocaleString();
+    document.getElementById("status-doc").textContent =
+      title.toUpperCase().replace(/[^\w]+/g, "-") + ".ENGRAM";
+  }
+
+  function updateCrumbs(title) {
+    const slug = title.toLowerCase().replace(/[^\w]+/g, "-");
+    document.getElementById("doc-path").innerHTML = `
+      <span>~</span>
+      <span style="color:var(--fg-faint)">/</span>
+      <span>folder-a</span>
+      <span style="color:var(--fg-faint)">/</span>
+      <span>subfolder-a1</span>
+      <span style="color:var(--fg-faint)">/</span>
+      <span class="here">${slug}.engram</span>`;
+    const cb = document.getElementById("crumbs");
+    cb.innerHTML = `
+      <span class="dim">~/notes</span>
+      <span class="sep">›</span><span>Folder A</span>
+      <span class="sep">›</span><span>Subfolder A1</span>
+      <span class="sep">›</span><span class="here">${title}</span>`;
+  }
+
+  // ============== CLOCK ==============
+  const startTime = Date.now();
+  function tick() {
+    const now = new Date();
+    const pad = (n) => String(n).padStart(2, "0");
+    const hms = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+    document.getElementById("clock-time").textContent = hms;
+    document.getElementById("topbar-clock").textContent = hms;
+    const dateStr = now.toLocaleDateString("en-GB", { weekday:"short", day:"2-digit", month:"short", year:"numeric" }).toUpperCase();
+    document.getElementById("clock-date").textContent = dateStr;
+    const up = Math.floor((Date.now() - startTime) / 1000);
+    const uH = pad(Math.floor(up / 3600));
+    const uM = pad(Math.floor((up % 3600) / 60));
+    const uS = pad(up % 60);
+    document.getElementById("clock-uptime").textContent = `UPTIME ${uH}:${uM}:${uS}`;
+  }
+  setInterval(tick, 1000); tick();
+
+  // ============== STATS ==============
+  const statTargets = { cpu: 32, mem: 47, net: 18, io: 60 };
+  function jiggle() {
+    for (const key of Object.keys(statTargets)) {
+      let v = statTargets[key] + (Math.random() - 0.5) * 8;
+      v = Math.max(4, Math.min(98, v));
+      statTargets[key] = v;
+      const fill = document.getElementById("bar-" + key);
+      const val = document.getElementById("val-" + key);
+      if (fill) fill.style.transform = `scaleX(${v/100})`;
+      if (val) val.textContent = Math.round(v) + "%";
+    }
+  }
+  setInterval(jiggle, 1500); jiggle();
+
+  // ============== WAVEFORM ==============
+  const wf = document.getElementById("waveform");
+  for (let i = 0; i < 32; i++) {
+    const b = document.createElement("div");
+    b.className = "bar";
+    b.style.height = "4px";
+    wf.appendChild(b);
+  }
+  function tickWave() {
+    [...wf.children].forEach((b, i) => {
+      const t = Date.now() / 200 + i * 0.4;
+      const h = 6 + Math.abs(Math.sin(t)) * 22 + Math.random() * 4;
+      b.style.height = h + "px";
+    });
+  }
+  setInterval(tickWave, 90);
+
+  // ============== GLOBE ==============
+  // True 3D point-cloud projection. Each meridian and parallel is a set of
+  // sample points on a unit sphere. We rotate them by the phase angle around
+  // the Y axis, project to 2D (drop Z, keep front-facing only), and draw.
+  // Constant phase advance => constant rotation, no cusps.
+  const meridiansEl = document.getElementById("globe-meridians");
+  const NS = "http://www.w3.org/2000/svg";
+  const R = 48;
+
+  // Build sample points: meridians (12 lines of constant longitude),
+  // parallels (5 lines of constant latitude). Each as an array of {lat,lon}.
+  const SAMPLES = [];
+  const MERIDIANS = 12;
+  const PARALLELS = 5;
+  const POINTS_PER_LINE = 36;
+  // meridians
+  for (let m = 0; m < MERIDIANS; m++) {
+    const lon0 = (m / MERIDIANS) * Math.PI * 2;
+    const pts = [];
+    for (let i = 0; i <= POINTS_PER_LINE; i++) {
+      const lat = -Math.PI / 2 + (i / POINTS_PER_LINE) * Math.PI;
+      pts.push({ lat, lon: lon0, kind: "meridian" });
+    }
+    SAMPLES.push(pts);
+  }
+  // parallels (skip poles) — sample 0..2π but we'll shift seam to back at runtime
+  for (let p = 1; p < PARALLELS; p++) {
+    const lat0 = -Math.PI / 2 + (p / PARALLELS) * Math.PI;
+    const pts = [];
+    for (let i = 0; i <= POINTS_PER_LINE; i++) {
+      const lon = (i / POINTS_PER_LINE) * Math.PI * 2;
+      pts.push({ lat: lat0, lon, kind: "parallel" });
+    }
+    SAMPLES.push(pts);
+  }
+
+  // Pre-create a path per line (supports multiple M...L subpaths)
+  const lineNodes = SAMPLES.map(() => {
+    const p = document.createElementNS(NS, "path");
+    p.setAttribute("fill", "none");
+    p.setAttribute("stroke", "currentColor");
+    p.setAttribute("stroke-width", 0.5);
+    p.setAttribute("stroke-linecap", "round");
+    p.setAttribute("stroke-linejoin", "round");
+    meridiansEl.appendChild(p);
+    return p;
+  });
+
+  // A single tracking dot so the eye can lock onto rotation
+  const tracker = document.createElementNS(NS, "circle");
+  tracker.setAttribute("r", 1.4);
+  tracker.setAttribute("fill", "currentColor");
+  meridiansEl.appendChild(tracker);
+
+  window.__globeSpeed = window.__globeSpeed || 24;
+
+  function tickGlobe(now) {
+    const speed = window.__globeSpeed || 24;
+    const phase = (now / 1000 / speed) * Math.PI * 2;
+    const sinP = Math.sin(phase), cosP = Math.cos(phase);
+
+    SAMPLES.forEach((line, idx) => {
+      // For parallels (closed loops), find the most-back-facing sample and
+      // rotate the iteration to start there, so the seam where the loop
+      // begins/ends is always hidden behind the sphere — preventing the
+      // visible arc from being split into two pieces near a duplicated seam.
+      let startIdx = 0;
+      if (line[0].kind === "parallel") {
+        let minZ = Infinity;
+        for (let i = 0; i < line.length - 1; i++) {
+          const { lat, lon } = line[i];
+          const cl = Math.cos(lat);
+          const x0 = cl * Math.cos(lon);
+          const z0 = cl * Math.sin(lon);
+          const z = x0 * sinP + z0 * cosP;
+          if (z < minZ) { minZ = z; startIdx = i; }
+        }
+      }
+      const segments = [];
+      let cur = [];
+      const N = line[0].kind === "parallel" ? line.length - 1 : line.length;
+      for (let k = 0; k < N; k++) {
+        const { lat, lon } = line[(startIdx + k) % N];
+        const cl = Math.cos(lat);
+        const x0 = cl * Math.cos(lon);
+        const y0 = Math.sin(lat);
+        const z0 = cl * Math.sin(lon);
+        const x = x0 * cosP - z0 * sinP;
+        const z = x0 * sinP + z0 * cosP;
+        const y = y0;
+        if (z >= 0) {
+          cur.push((x * R).toFixed(2) + "," + (-y * R).toFixed(2));
+        } else if (cur.length) {
+          if (cur.length > 1) segments.push(cur);
+          cur = [];
+        }
+      }
+      if (cur.length > 1) segments.push(cur);
+      const d = segments.map(seg => "M" + seg[0] + " L" + seg.slice(1).join(" L")).join(" ");
+      lineNodes[idx].setAttribute("d", d);
+      lineNodes[idx].setAttribute(
+        "opacity",
+        line[0].kind === "parallel" ? 0.5 : 0.7
+      );
+    });
+
+    // tracker on equator at lon=0
+    const tx = Math.cos(phase) * R;
+    const tz = Math.sin(phase);
+    tracker.setAttribute("cx", tx.toFixed(2));
+    tracker.setAttribute("cy", 0);
+    tracker.setAttribute("opacity", tz >= 0 ? 1 : 0);
+
+    requestAnimationFrame(tickGlobe);
+  }
+  requestAnimationFrame(tickGlobe);
+
+  // ============== ACTIVITY LOG ==============
+  const logMsgs = [
+    "indexed Folder A/Subfolder A1",
+    "watcher attached → ~/notes",
+    "loaded File 02 (4.7 KB)",
+    "renderer: 12 blocks parsed",
+    "fx: scanlines @ 0.35",
+    "theme: phosphor.green active",
+    "globe rotation @ 24s/rev",
+    "search index rebuilt (42 files)",
+    "no remote — local-only mode",
+    "checksum OK · 0xA3F2",
+  ];
+  const logEl = document.getElementById("log");
+  function pushLog() {
+    const now = new Date();
+    const ts = `${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}:${String(now.getSeconds()).padStart(2,"0")}`;
+    const msg = logMsgs[Math.floor(Math.random() * logMsgs.length)];
+    const row = document.createElement("div");
+    row.className = "row";
+    row.innerHTML = `<span class="ts">${ts}</span><span class="msg">${msg}</span>`;
+    logEl.prepend(row);
+    while (logEl.children.length > 8) logEl.lastChild.remove();
+  }
+  for (let i = 0; i < 5; i++) pushLog();
+  setInterval(pushLog, 4200);
+
+  // ============== SYNC ==============
+  document.getElementById("sync-btn").addEventListener("click", (e) => {
+    const btn = e.currentTarget;
+    if (btn.dataset.syncing === "true") return;
+    btn.dataset.syncing = "true";
+    btn.querySelector(".sync-label").textContent = "SCANNING...";
+    setTimeout(() => {
+      btn.dataset.syncing = "false";
+      btn.querySelector(".sync-label").textContent = "SYNC FILES";
+      document.getElementById("last-sync").textContent = "just now";
+      pushLog();
+    }, 1600);
+  });
+
+  // ============== PANEL TOGGLES ==============
+  const app = document.getElementById("app");
+  document.getElementById("toggle-right").addEventListener("click", () => {
+    app.dataset.rightClosed = app.dataset.rightClosed === "true" ? "false" : "true";
+  });
+  document.getElementById("toggle-left").addEventListener("click", () => {
+    app.dataset.leftClosed = app.dataset.leftClosed === "true" ? "false" : "true";
+  });
+  document.getElementById("reopen-right").addEventListener("click", () => {
+    app.dataset.rightClosed = "false";
+  });
+  document.getElementById("reopen-left").addEventListener("click", () => {
+    app.dataset.leftClosed = "false";
+  });
+
+  // ============== BOOT SEQUENCE ==============
+  const BOOT_LINES = [
+    { t: "[<span class='ok'>OK</span>] engram-core v0.1.4 loaded", d: 60 },
+    { t: "[<span class='ok'>OK</span>] mounting filesystem ~/notes", d: 60 },
+    { t: "<span class='dim'>... scanning directories</span>", d: 80 },
+    { t: "<span class='dim'>... 3 folders / 14 files</span>", d: 80 },
+    { t: "[<span class='ok'>OK</span>] renderer ready (engram-html v2)", d: 80 },
+    { t: "[<span class='ok'>OK</span>] theme: phosphor.green", d: 60 },
+    { t: "[<span class='ok'>OK</span>] fx-layer: scanlines · grain · flicker", d: 60 },
+    { t: "[<span class='ok'>OK</span>] aux: chrono · globe · resources · signal", d: 60 },
+    { t: "[<span class='warn'>WARN</span>] remote sync disabled (local-only)", d: 90 },
+    { t: "[<span class='ok'>OK</span>] watcher attached", d: 60 },
+    { t: "<span class='dim'>... loading File 02 — Spectral Decomposition</span>", d: 100 },
+    { t: "[<span class='ok'>OK</span>] ready.", d: 80 },
+  ];
+  function runBoot() {
+    const boot = document.getElementById("boot");
+    boot.dataset.done = "false";
+    boot.style.opacity = "";
+    boot.style.visibility = "";
+    const lines = document.getElementById("boot-lines");
+    lines.innerHTML = "";
+    let total = 0;
+    BOOT_LINES.forEach((l, i) => {
+      total += l.d;
+      setTimeout(() => {
+        const el = document.createElement("div");
+        el.className = "line";
+        el.innerHTML = "&gt; " + l.t;
+        el.style.animationDelay = "0s";
+        el.style.opacity = 1;
+        lines.appendChild(el);
+        if (i === BOOT_LINES.length - 1) {
+          const cur = document.createElement("span");
+          cur.className = "cursor";
+          el.appendChild(cur);
+        }
+      }, total);
+    });
+    setTimeout(() => {
+      boot.dataset.done = "true";
+    }, total + 700);
+  }
+  document.getElementById("replay-boot").addEventListener("click", runBoot);
+
+  // ============== INIT ==============
+  renderTree();
+  loadDoc("File 02 — Spectral Decomposition");
+  runBoot();
+
+  // ============== TWEAK APPLICATION ==============
+  function applyTweaks(t) {
+    document.documentElement.dataset.theme = t.theme === "phosphor" ? "" : t.theme;
+    if (t.theme === "phosphor") document.documentElement.removeAttribute("data-theme");
+    const themeName = ({phosphor:"PHOSPHOR", amber:"AMBER", cyan:"CYAN", red:"RED·ALERT", mono:"MONOCHROME", calm:"CALM·FOCUS"})[t.theme] || "PHOSPHOR";
+    const ts = document.getElementById("status-theme");
+    if (ts) ts.textContent = themeName;
+    // FX intensity drives several CSS vars
+    const k = (t.fxIntensity || 0) / 100;
+    document.documentElement.style.setProperty("--scanline-opacity", t.scanlines ? (0.10 + k * 0.45) : 0);
+    document.documentElement.style.setProperty("--glow-strength", (0.4 + k * 1.2).toFixed(2));
+    document.documentElement.style.setProperty("--flicker-strength", (k * 1.2).toFixed(2));
+    document.documentElement.style.setProperty("--grain-opacity", (0.02 + k * 0.07).toFixed(3));
+    // Globe speed
+    window.__globeSpeed = t.globeSpeed || 24;
+    // Body font
+    const fontMap = {
+      "lora-jb":   { serif: '"Lora", Georgia, serif',          mono: '"JetBrains Mono", monospace' },
+      "plex-jb":   { serif: '"IBM Plex Serif", Georgia, serif', mono: '"JetBrains Mono", monospace' },
+      "all-mono":  { serif: '"JetBrains Mono", monospace',      mono: '"JetBrains Mono", monospace' },
+    };
+    const fp = fontMap[t.fontPair] || fontMap["lora-jb"];
+    document.documentElement.style.setProperty("--serif", t.monoBody ? fp.mono : fp.serif);
+    document.documentElement.style.setProperty("--mono", fp.mono);
+  }
+  // expose for tweaks panel
+  window.__applyEngramTweaks = applyTweaks;
+  applyTweaks(TWEAK_DEFAULTS);
+  // Topbar theme dropdown
+  const themeSelect = document.getElementById("theme-select");
+  themeSelect.value = TWEAK_DEFAULTS.theme;
+  themeSelect.addEventListener("change", (e) => {
+    const v = e.target.value;
+    window.parent.postMessage({type:"__edit_mode_set_keys", edits:{theme:v}}, "*");
+    applyTweaks({...TWEAK_DEFAULTS, ...window.__lastTweaks, theme:v});
+    window.__lastTweaks = {...(window.__lastTweaks||{}), theme:v};
+  });
+  const _origApply = window.__applyEngramTweaks;
+  window.__applyEngramTweaks = function(t){ _origApply(t); window.__lastTweaks = t; if (themeSelect.value !== t.theme) themeSelect.value = t.theme; };
+  </script>
+</body>
+</html>
