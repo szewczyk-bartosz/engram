@@ -10,7 +10,6 @@
 		<link rel="stylesheet" href="styles.css">
 	</head>
 	<body>
-		<!-- Boot overlay -->
 		<div class="boot" id="boot">
 			<div class="ascii">
 				███████╗███╗   ██╗ ██████╗ ██████╗  █████╗ ███╗   ███╗
@@ -23,16 +22,11 @@
 			<div class="lines" id="boot-lines"></div>
 		</div>
 
-		<!-- App shell -->
 		<div class="app" id="app" data-right-closed="false" data-left-closed="false">
-			<!-- TOPBAR -->
 			<header class="topbar">
 				<div class="brand"><span class="brand-mark"></span><span>ENGRAM</span></div>
 				<div class="crumbs" id="crumbs">
 					<span class="dim">~/notes</span>
-					<span class="sep">›</span><span>Folder A</span>
-					<span class="sep">›</span><span>Subfolder A1</span>
-					<span class="sep">›</span><span class="here">File 02 — Spectral Decomposition</span>
 				</div>
 				<div class="meta">
 					<select id="theme-select" class="theme-dd" aria-label="Theme">
@@ -50,7 +44,6 @@
 				</div>
 			</header>
 
-			<!-- LEFT -->
 			<aside class="left-pane">
 				<div class="pane-header">
 					<div class="h-title">FILES</div>
@@ -77,30 +70,20 @@
 				<div class="tree-block" id="tree"></div>
 			</aside>
 
-			<!-- CENTER -->
 			<main class="center-pane">
 				<div class="doc-header">
-					<div class="doc-path" id="doc-path">
-						<span>~</span>
-						<span style="color:var(--fg-faint)">/</span>
-						<span>folder-a</span>
-						<span style="color:var(--fg-faint)">/</span>
-						<span>subfolder-a1</span>
-						<span style="color:var(--fg-faint)">/</span>
-						<span class="here">file-02.engram</span>
-					</div>
+					<div class="doc-path" id="doc-path"></div>
 					<div class="doc-actions">
 						<button class="icon-btn" title="Replay boot" id="replay-boot">[ ↻ ]</button>
 					</div>
 				</div>
 				<div class="doc-scroll" id="doc-scroll">
-					<article class="doc-frame" id="doc-frame" data-doc-id="FILE-02" data-doc-bytes="—" data-doc-words="—">
+					<article class="doc-frame" id="doc-frame">
 						<div class="engram-doc" id="engram-doc"></div>
 					</article>
 				</div>
 			</main>
 
-			<!-- RIGHT -->
 			<aside class="right-pane">
 				<div class="pane-header">
 					<div class="h-right" style="order:-1">
@@ -139,10 +122,8 @@
 								</defs>
 								<circle r="48" cx="0" cy="0" fill="none" stroke="currentColor" stroke-width="0.6" opacity="0.85"/>
 								<g clip-path="url(#globe-clip)">
-									<!-- meridians and parallels (animated by JS) -->
 									<g id="globe-meridians"></g>
 								</g>
-								<!-- crosshairs above -->
 								<line x1="-52" y1="0" x2="-50" y2="0" stroke="currentColor" stroke-width="0.6"/>
 								<line x1="50" y1="0" x2="52" y2="0" stroke="currentColor" stroke-width="0.6"/>
 								<line x1="0" y1="-52" x2="0" y2="-50" stroke="currentColor" stroke-width="0.6"/>
@@ -190,12 +171,11 @@
 				</div>
 			</aside>
 
-			<!-- STATUS -->
 			<footer class="statusbar">
 				<span class="item">ENGRAM v0.1.4</span>
 				<span class="item">UTF-8</span>
 				<span class="item">LF</span>
-				<span class="item" id="status-doc">FILE-02.ENGRAM</span>
+				<span class="item" id="status-doc"></span>
 				<span class="spacer"></span>
 				<span class="item"><span class="blink">●</span>
 				READY</span>
@@ -206,7 +186,6 @@
 		<button class="right-collapsed-toggle" id="reopen-right">‹</button>
 		<button class="left-collapsed-toggle" id="reopen-left">›</button>
 
-		<!-- FX LAYER -->
 		<div class="fx" id="fx">
 			<div class="fx-scanlines"></div>
 			<div class="fx-grain"></div>
