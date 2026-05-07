@@ -1,0 +1,881 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta name="theme-color" content="#0a0e0a" />
+<title>Engram · mobile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+
+<style>
+  /* ============= THEME TOKENS (synced with desktop) ============= */
+  :root {
+    --bg: #0a0e0a;
+    --bg-deep: #050805;
+    --bg-elev: #0f140f;
+    --fg: #c9ffd8;
+    --fg-dim: #7CFFB2;
+    --fg-mute: rgba(124, 255, 178, 0.45);
+    --fg-faint: rgba(124, 255, 178, 0.18);
+    --accent: #7CFFB2;
+    --accent-glow: rgba(124, 255, 178, 0.6);
+    --rule: rgba(124, 255, 178, 0.22);
+    --rule-strong: rgba(124, 255, 178, 0.5);
+    --serif: "Lora", Georgia, serif;
+    --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+    --reading-bg: #0a0e0a;
+    --reading-fg: #d8f5e1;
+    --reading-mute: rgba(216, 245, 225, 0.6);
+    --reading-rule: rgba(124, 255, 178, 0.18);
+    --reading-code-bg: rgba(124, 255, 178, 0.07);
+    --scanline-opacity: 0.20;
+    --glow-strength: 0.8;
+    --grain-opacity: 0.04;
+  }
+  [data-theme="amber"] {
+    --bg:#120a04; --bg-deep:#080502; --bg-elev:#1a0f06;
+    --fg:#ffe2b0; --fg-dim:#FFB454; --fg-mute:rgba(255,180,84,.45); --fg-faint:rgba(255,180,84,.18);
+    --accent:#FFB454; --accent-glow:rgba(255,180,84,.6);
+    --rule:rgba(255,180,84,.22); --rule-strong:rgba(255,180,84,.5);
+    --reading-bg:#120a04; --reading-fg:#f3e3c4; --reading-mute:rgba(243,227,196,.6);
+    --reading-rule:rgba(255,180,84,.18); --reading-code-bg:rgba(255,180,84,.07);
+  }
+  [data-theme="cyan"] {
+    --bg:#07111c; --bg-deep:#03080f; --bg-elev:#0a1828;
+    --fg:#d6ecff; --fg-dim:#7CC8FF; --fg-mute:rgba(124,200,255,.45); --fg-faint:rgba(124,200,255,.18);
+    --accent:#7CC8FF; --accent-glow:rgba(124,200,255,.6);
+    --rule:rgba(124,200,255,.22); --rule-strong:rgba(124,200,255,.5);
+    --reading-bg:#07111c; --reading-fg:#dbecff; --reading-mute:rgba(219,236,255,.6);
+    --reading-rule:rgba(124,200,255,.18); --reading-code-bg:rgba(124,200,255,.07);
+  }
+  [data-theme="red"] {
+    --bg:#140505; --bg-deep:#090202; --bg-elev:#1c0808;
+    --fg:#ffd6d6; --fg-dim:#FF6B6B; --fg-mute:rgba(255,107,107,.45); --fg-faint:rgba(255,107,107,.18);
+    --accent:#FF4D4D; --accent-glow:rgba(255,77,77,.6);
+    --rule:rgba(255,77,77,.22); --rule-strong:rgba(255,77,77,.5);
+    --reading-bg:#140505; --reading-fg:#f5d8d8; --reading-mute:rgba(245,216,216,.6);
+    --reading-rule:rgba(255,77,77,.18); --reading-code-bg:rgba(255,77,77,.07);
+  }
+  [data-theme="mono"] {
+    --bg:#0a0a0f; --bg-deep:#050507; --bg-elev:#111114;
+    --fg:#e8e8e8; --fg-dim:#c8c8c8; --fg-mute:rgba(232,232,232,.45); --fg-faint:rgba(232,232,232,.18);
+    --accent:#fff; --accent-glow:rgba(255,255,255,.5);
+    --rule:rgba(232,232,232,.22); --rule-strong:rgba(232,232,232,.5);
+    --reading-bg:#0a0a0f; --reading-fg:#e8e8e8; --reading-mute:rgba(232,232,232,.55);
+    --reading-rule:rgba(232,232,232,.18); --reading-code-bg:rgba(255,255,255,.05);
+  }
+  [data-theme="calm"] {
+    --bg:#f5f1e8; --bg-deep:#ebe5d6; --bg-elev:#fbf8f0;
+    --fg:#2a2620; --fg-dim:#5a5246; --fg-mute:rgba(42,38,32,.55); --fg-faint:rgba(42,38,32,.15);
+    --accent:#8b6f3c; --accent-glow:rgba(139,111,60,.25);
+    --rule:rgba(42,38,32,.18); --rule-strong:rgba(42,38,32,.4);
+    --reading-bg:#fbf8f0; --reading-fg:#2a2620; --reading-mute:rgba(42,38,32,.65);
+    --reading-rule:rgba(42,38,32,.15); --reading-code-bg:rgba(42,38,32,.05);
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--mono);
+    font-size: 14px;
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+
+  /* ============= TOP BAR ============= */
+  .topbar {
+    position: fixed; inset: 0 0 auto 0;
+    height: calc(48px + env(safe-area-inset-top));
+    padding-top: env(safe-area-inset-top);
+    display: flex; align-items: center;
+    padding-left: 14px; padding-right: 14px;
+    background: var(--bg-deep);
+    border-bottom: 1px solid var(--rule);
+    z-index: 50;
+    gap: 10px;
+  }
+  .brand {
+    display: flex; align-items: center; gap: 8px;
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-shadow: 0 0 calc(8px * var(--glow-strength)) var(--accent-glow);
+  }
+  .brand .mark {
+    width: 10px; height: 10px;
+    border: 1px solid currentColor;
+    transform: rotate(45deg);
+    position: relative;
+  }
+  .brand .mark::before {
+    content:""; position:absolute; inset:2px;
+    background: currentColor; opacity: 0.6;
+  }
+  .doc-id {
+    flex: 1;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    color: var(--fg-mute);
+    text-transform: uppercase;
+    text-align: right;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ============= READING PANE ============= */
+  .reader {
+    position: fixed;
+    inset: calc(48px + env(safe-area-inset-top)) 0 0 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    padding: 24px 20px calc(120px + env(safe-area-inset-bottom));
+    background: var(--reading-bg);
+  }
+
+  .doc-frame {
+    max-width: 720px;
+    margin: 0 auto;
+    position: relative;
+  }
+  .doc-frame::before {
+    content: "// BEGIN " attr(data-doc-id);
+    display: block;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--fg-faint);
+    letter-spacing: 0.14em;
+    margin-bottom: 18px;
+  }
+  .doc-frame::after {
+    content: "// EOF — " attr(data-doc-bytes) " B · " attr(data-doc-words) " WORDS";
+    display: block;
+    margin-top: 36px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--reading-rule);
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--fg-faint);
+    letter-spacing: 0.14em;
+  }
+
+  /* engram-doc styles — synced with desktop (slightly tighter for mobile) */
+  .engram-doc {
+    font-family: var(--serif);
+    color: var(--reading-fg);
+    font-size: 16px;
+    line-height: 1.65;
+    text-wrap: pretty;
+  }
+  .engram-doc h1, .engram-doc h2, .engram-doc h3 {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0.02em;
+    line-height: 1.3;
+    text-shadow: 0 0 calc(6px * var(--glow-strength)) var(--accent-glow);
+    text-wrap: balance;
+  }
+  [data-theme="calm"] .engram-doc h1,
+  [data-theme="calm"] .engram-doc h2,
+  [data-theme="calm"] .engram-doc h3 {
+    font-family: var(--serif); color: var(--fg); text-shadow: none; font-weight: 700;
+  }
+  .engram-doc h1 {
+    font-size: 26px; margin: 0 0 8px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--reading-rule);
+  }
+  .engram-doc h1::before { content:"# "; color:var(--fg-mute); font-weight:400; }
+  .engram-doc h2 { font-size: 19px; margin: 32px 0 10px; }
+  .engram-doc h2::before { content:"## "; color:var(--fg-mute); font-weight:400; }
+  .engram-doc h3 { font-size: 16px; margin: 24px 0 6px; }
+  .engram-doc h3::before { content:"### "; color:var(--fg-mute); font-weight:400; }
+  [data-theme="calm"] .engram-doc h1::before,
+  [data-theme="calm"] .engram-doc h2::before,
+  [data-theme="calm"] .engram-doc h3::before { content:""; }
+
+  .engram-doc .doc-meta {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--fg-mute);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 22px;
+    display: flex; gap: 14px; flex-wrap: wrap;
+  }
+  .engram-doc .doc-meta span::before { content:"▸ "; color:var(--accent); }
+  .engram-doc p { margin: 0 0 14px; }
+  .engram-doc strong { color: var(--accent); font-weight: 600; }
+  .engram-doc em { font-style: italic; }
+  .engram-doc a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px dashed var(--accent);
+  }
+  .engram-doc code {
+    font-family: var(--mono);
+    font-size: 0.88em;
+    background: var(--reading-code-bg);
+    color: var(--accent);
+    padding: 1px 5px;
+    border: 1px solid var(--reading-rule);
+    border-radius: 2px;
+  }
+  .engram-doc pre {
+    font-family: var(--mono);
+    font-size: 12px;
+    background: var(--reading-code-bg);
+    color: var(--reading-fg);
+    padding: 12px 14px;
+    border-left: 2px solid var(--accent);
+    border-top: 1px solid var(--reading-rule);
+    border-right: 1px solid var(--reading-rule);
+    border-bottom: 1px solid var(--reading-rule);
+    overflow-x: auto;
+    margin: 14px 0;
+    line-height: 1.55;
+    -webkit-overflow-scrolling: touch;
+  }
+  .engram-doc pre code { background:transparent; border:none; padding:0; color:inherit; font-size:inherit; }
+  .engram-doc blockquote {
+    margin: 14px 0;
+    padding: 4px 14px;
+    border-left: 2px solid var(--accent);
+    color: var(--reading-mute);
+    font-style: italic;
+  }
+  .engram-doc ul, .engram-doc ol { margin: 0 0 14px; padding-left: 20px; }
+  .engram-doc ul li::marker { content:"▸ "; color:var(--accent); }
+  .engram-doc li { margin-bottom: 4px; }
+  .engram-doc hr { border: none; border-top: 1px dashed var(--reading-rule); margin: 24px 0; }
+  .engram-doc table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0;
+    font-family: var(--mono);
+    font-size: 12px;
+    display: block;
+    overflow-x: auto;
+  }
+  .engram-doc th, .engram-doc td {
+    text-align: left;
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--reading-rule);
+    white-space: nowrap;
+  }
+  .engram-doc th {
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 10px;
+    border-bottom: 1px solid var(--rule-strong);
+  }
+  .engram-doc .callout {
+    margin: 14px 0; padding: 12px 14px;
+    border: 1px solid var(--reading-rule);
+    border-left: 2px solid var(--accent);
+    background: var(--reading-code-bg);
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+  .engram-doc .callout::before {
+    content:"// NOTE";
+    display: block;
+    color: var(--accent);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    margin-bottom: 6px;
+  }
+
+  /* ============= BOTTOM-RIGHT BURGER ============= */
+  .burger {
+    position: fixed;
+    right: calc(20px + env(safe-area-inset-right));
+    bottom: calc(20px + env(safe-area-inset-bottom));
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: var(--bg-deep);
+    border: 1px solid var(--rule-strong);
+    color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    z-index: 70;
+    box-shadow: 0 0 calc(20px * var(--glow-strength)) var(--accent-glow),
+                0 6px 24px rgba(0,0,0,0.6);
+    transition: transform 0.25s cubic-bezier(.7,0,.2,1), border-color 0.15s;
+  }
+  .burger:active { transform: scale(0.94); }
+  .burger:hover { border-color: var(--accent); }
+  .burger .lines {
+    position: relative; width: 22px; height: 14px;
+  }
+  .burger .lines span {
+    position: absolute;
+    left: 0; right: 0;
+    height: 1.5px;
+    background: var(--accent);
+    box-shadow: 0 0 calc(4px * var(--glow-strength)) var(--accent-glow);
+    transition: transform 0.3s, opacity 0.2s, top 0.3s;
+  }
+  .burger .lines span:nth-child(1) { top: 0; }
+  .burger .lines span:nth-child(2) { top: 6px; }
+  .burger .lines span:nth-child(3) { top: 12px; }
+  .burger[data-open="true"] .lines span:nth-child(1) { top: 6px; transform: rotate(45deg); }
+  .burger[data-open="true"] .lines span:nth-child(2) { opacity: 0; }
+  .burger[data-open="true"] .lines span:nth-child(3) { top: 6px; transform: rotate(-45deg); }
+
+  /* ============= DRAWER ============= */
+  .scrim {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(2px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s;
+    z-index: 60;
+  }
+  .scrim[data-open="true"] {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .drawer {
+    position: fixed;
+    top: 0; bottom: 0; right: 0;
+    width: min(86vw, 360px);
+    background: var(--bg-deep);
+    border-left: 1px solid var(--rule);
+    transform: translateX(100%);
+    transition: transform 0.32s cubic-bezier(.7,0,.2,1);
+    z-index: 65;
+    display: flex; flex-direction: column;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .drawer[data-open="true"] { transform: translateX(0); }
+  .drawer-head {
+    padding: 14px 16px 10px;
+    border-bottom: 1px solid var(--rule);
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--fg-mute);
+  }
+  .drawer-head .h-title { display:flex; align-items:center; gap:8px; }
+  .drawer-head .h-title::before { content:"▸"; color: var(--accent); }
+  .drawer-head .h-id { font-size: 9px; color: var(--fg-faint); }
+
+  .sync-block { padding: 14px 16px; border-bottom: 1px solid var(--rule); }
+  .sync-btn {
+    width: 100%;
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 14px;
+    background: transparent;
+    border: 1px solid var(--rule-strong);
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-shadow: 0 0 calc(6px * var(--glow-strength)) var(--accent-glow);
+  }
+  .sync-btn:active { background: var(--fg-faint); }
+  .sync-btn .sync-icon {
+    display: inline-block;
+    width: 12px; height: 12px;
+    border: 1px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+  }
+  .sync-btn[data-syncing="true"] .sync-icon { animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .sync-meta {
+    display: flex; justify-content: space-between;
+    margin-top: 8px;
+    font-size: 9px;
+    color: var(--fg-mute);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .filter-block { padding: 8px 16px; }
+  .filter-block input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px dashed var(--rule);
+    color: var(--fg);
+    font-family: var(--mono);
+    font-size: 13px;
+    padding: 6px 0 6px 14px;
+    outline: none;
+    background-image: linear-gradient(var(--accent), var(--accent));
+    background-repeat: no-repeat;
+    background-size: 0% 1px;
+    background-position: 0 100%;
+    transition: background-size 0.3s;
+  }
+  .filter-block input:focus { background-size: 100% 1px; }
+  .filter-block .wrap { position: relative; }
+  .filter-block .wrap::before {
+    content: "/";
+    position: absolute;
+    left: 0; top: 6px;
+    color: var(--accent);
+    font-size: 13px;
+  }
+
+  .tree-block {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 6px 0 12px;
+  }
+  .tree-block::-webkit-scrollbar { width: 4px; }
+  .tree-block::-webkit-scrollbar-thumb { background: var(--rule); }
+
+  .tree-node {
+    display: flex; align-items: center;
+    padding: 8px 16px;
+    cursor: pointer;
+    color: var(--fg);
+    font-family: var(--mono);
+    font-size: 13px;
+    white-space: nowrap;
+    position: relative;
+    min-height: 38px;
+  }
+  .tree-node:active { background: var(--fg-faint); }
+  .tree-node[data-active="true"] {
+    background: var(--fg-faint);
+    color: var(--accent);
+    text-shadow: 0 0 calc(6px * var(--glow-strength)) var(--accent-glow);
+  }
+  .tree-node[data-active="true"]::before {
+    content:""; position:absolute; left:0; top:0; bottom:0;
+    width: 2px; background: var(--accent);
+    box-shadow: 0 0 calc(6px * var(--glow-strength)) var(--accent-glow);
+  }
+  .tree-node .caret { width: 14px; color: var(--fg-mute); font-size: 11px; text-align:center; }
+  .tree-node .gt { color: var(--fg-mute); margin-right: 6px; }
+  .tree-node[data-type="folder"] .name { color: var(--fg-dim); }
+  .tree-node[data-type="file"] .name { opacity: 0.85; }
+  .tree-node .ext {
+    margin-left: auto;
+    color: var(--fg-faint);
+    font-size: 10px;
+    padding-left: 8px;
+  }
+  .tree-children[data-collapsed="true"] { display: none; }
+
+  /* drawer footer: theme picker */
+  .drawer-foot {
+    border-top: 1px solid var(--rule);
+    padding: 12px 16px;
+    display: flex; align-items: center; gap: 10px;
+    font-size: 10px;
+    color: var(--fg-mute);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .drawer-foot .theme-dd {
+    flex: 1;
+    background: transparent;
+    border: 1px solid var(--rule-strong);
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 6px 8px;
+    outline: none;
+  }
+  .drawer-foot .theme-dd option { background: var(--bg-deep); color: var(--fg); }
+
+  /* ============= FX LAYER (lower default) ============= */
+  .fx { position: fixed; inset: 0; pointer-events: none; z-index: 5; mix-blend-mode: screen; }
+  [data-theme="calm"] .fx { display: none; }
+  .fx-scanlines {
+    position: absolute; inset: 0;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0px,
+      transparent 2px,
+      rgba(0, 0, 0, 0.45) 3px,
+      rgba(0, 0, 0, 0.45) 3px
+    );
+    opacity: var(--scanline-opacity);
+  }
+  .fx-vignette {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.55) 100%);
+    mix-blend-mode: multiply;
+  }
+  .fx-grain {
+    position: absolute; inset: 0;
+    opacity: var(--grain-opacity);
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+
+  /* ============= BOOT (simpler) ============= */
+  .boot {
+    position: fixed; inset: 0;
+    background: var(--bg-deep);
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.6;
+    z-index: 9999;
+    padding: 32px 22px;
+    overflow: hidden;
+    text-shadow: 0 0 calc(6px * var(--glow-strength)) var(--accent-glow);
+    opacity: 1;
+    transition: opacity 0.5s ease;
+  }
+  .boot[data-done="true"] {
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+    transition: opacity 0.5s ease, visibility 0s linear 0.5s;
+  }
+  .boot .ascii {
+    color: var(--accent);
+    white-space: pre;
+    font-size: 9px;
+    line-height: 1.1;
+    margin-bottom: 18px;
+    opacity: 0.9;
+  }
+  .boot .lines { display: flex; flex-direction: column; gap: 2px; }
+  .boot .line .ok { color: var(--accent); }
+  .boot .line .warn { color: #ffcb6b; }
+  .boot .line .dim { opacity: 0.5; }
+  .boot .cursor {
+    display: inline-block;
+    width: 0.6em; height: 1em;
+    background: var(--accent);
+    vertical-align: -2px;
+    animation: blink 1s steps(2) infinite;
+    margin-left: 4px;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+</style>
+</head>
+<body>
+
+  <!-- Boot -->
+  <div class="boot" id="boot">
+    <div class="ascii">  ███████╗███╗   ██╗ ██████╗ ██████╗  █████╗ ███╗   ███╗
+  ██╔════╝████╗  ██║██╔════╝ ██╔══██╗██╔══██╗████╗ ████║
+  █████╗  ██╔██╗ ██║██║  ███╗██████╔╝███████║██╔████╔██║
+  ██╔══╝  ██║╚██╗██║██║   ██║██╔══██╗██╔══██║██║╚██╔╝██║
+  ███████╗██║ ╚████║╚██████╔╝██║  ██║██║  ██║██║ ╚═╝ ██║
+  ╚══════╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝</div>
+    <div class="lines" id="boot-lines"></div>
+  </div>
+
+  <!-- Top bar -->
+  <header class="topbar">
+    <div class="brand"><span class="mark"></span>ENGRAM</div>
+    <div class="doc-id" id="doc-id">FILE-02 — SPECTRAL DECOMPOSITION</div>
+  </header>
+
+  <!-- Reading pane -->
+  <main class="reader">
+    <article class="doc-frame" id="doc-frame" data-doc-id="FILE-02" data-doc-bytes="—" data-doc-words="—">
+      <div class="engram-doc" id="engram-doc"></div>
+    </article>
+  </main>
+
+  <!-- FX -->
+  <div class="fx">
+    <div class="fx-scanlines"></div>
+    <div class="fx-grain"></div>
+    <div class="fx-vignette"></div>
+  </div>
+
+  <!-- Drawer + scrim -->
+  <div class="scrim" id="scrim"></div>
+  <aside class="drawer" id="drawer" aria-hidden="true">
+    <div class="drawer-head">
+      <div class="h-title">FILES</div>
+      <div class="h-id">/INDEX.0</div>
+    </div>
+    <div class="sync-block">
+      <button class="sync-btn" id="sync-btn">
+        <span class="sync-icon"></span>
+        <span class="sync-label">SYNC FILES</span>
+      </button>
+      <div class="sync-meta">
+        <span>LAST <span id="last-sync">2m ago</span></span>
+        <span id="file-count">42 FILES</span>
+      </div>
+    </div>
+    <div class="filter-block">
+      <div class="wrap">
+        <input type="text" id="tree-filter" placeholder="filter..." style="padding-left:14px"/>
+      </div>
+    </div>
+    <div class="tree-block" id="tree"></div>
+    <div class="drawer-foot">
+      <span>THEME</span>
+      <select id="theme-select" class="theme-dd">
+        <option value="phosphor">PHOSPHOR</option>
+        <option value="amber">AMBER</option>
+        <option value="cyan">CYAN</option>
+        <option value="red">RED ALERT</option>
+        <option value="mono">MONOCHROME</option>
+        <option value="calm">CALM FOCUS</option>
+      </select>
+    </div>
+  </aside>
+
+  <!-- Burger -->
+  <button class="burger" id="burger" aria-label="Toggle menu">
+    <div class="lines"><span></span><span></span><span></span></div>
+  </button>
+
+<script>
+  /*EDITMODE-BEGIN*/
+  const TWEAK_DEFAULTS = {
+    "theme": "phosphor"
+  };
+  /*EDITMODE-END*/
+
+  // ============== TREE ==============
+  const TREE = [
+    { type:"folder", name:"Folder A", children:[
+      { type:"folder", name:"Subfolder A1", children:[
+        { type:"file", name:"File 01", ext:".eng" },
+        { type:"file", name:"File 02 — Spectral Decomposition", ext:".eng", active:true },
+        { type:"file", name:"File 03", ext:".eng" },
+      ]},
+      { type:"folder", name:"Subfolder A2", children:[
+        { type:"file", name:"File 04", ext:".eng" },
+        { type:"file", name:"File 05", ext:".eng" },
+      ]},
+      { type:"file", name:"File 06 (root of A)", ext:".eng" },
+    ]},
+    { type:"folder", name:"Folder B", collapsed:true, children:[
+      { type:"file", name:"File 07", ext:".eng" },
+      { type:"folder", name:"Subfolder B1", children:[
+        { type:"file", name:"File 08", ext:".eng" },
+        { type:"file", name:"File 09", ext:".eng" },
+      ]},
+    ]},
+    { type:"folder", name:"Folder C", children:[
+      { type:"file", name:"File 10", ext:".eng" },
+      { type:"file", name:"File 11", ext:".eng" },
+      { type:"file", name:"File 12", ext:".eng" },
+    ]},
+    { type:"file", name:"README", ext:".eng" },
+    { type:"file", name:"Index", ext:".eng" },
+  ];
+
+  function renderTree() {
+    const root = document.getElementById("tree");
+    root.innerHTML = "";
+    function walk(nodes, depth, parentEl) {
+      nodes.forEach((node) => {
+        const el = document.createElement("div");
+        el.className = "tree-node";
+        el.dataset.type = node.type;
+        if (node.active) el.dataset.active = "true";
+        const gt = ">".repeat(depth + 1);
+        const caret = node.type === "folder" ? (node.collapsed ? "▸" : "▾") : " ";
+        el.innerHTML = `
+          <span class="caret">${caret}</span>
+          <span class="gt">${gt}</span>
+          <span class="name">${node.name}</span>
+          <span class="ext">${node.ext || ""}</span>`;
+        parentEl.appendChild(el);
+        if (node.type === "folder" && node.children) {
+          const kids = document.createElement("div");
+          kids.className = "tree-children";
+          if (node.collapsed) kids.dataset.collapsed = "true";
+          parentEl.appendChild(kids);
+          walk(node.children, depth + 1, kids);
+          el.addEventListener("click", () => {
+            const c = kids.dataset.collapsed === "true";
+            kids.dataset.collapsed = c ? "false" : "true";
+            el.querySelector(".caret").textContent = c ? "▾" : "▸";
+          });
+        } else if (node.type === "file") {
+          el.addEventListener("click", () => {
+            document.querySelectorAll(".tree-node[data-active='true']")
+              .forEach(n => n.removeAttribute("data-active"));
+            el.dataset.active = "true";
+            loadDoc(node.name);
+            closeDrawer();
+          });
+        }
+      });
+    }
+    walk(TREE, 0, root);
+  }
+
+  document.getElementById("tree-filter").addEventListener("input", (e) => {
+    const q = e.target.value.toLowerCase().trim();
+    document.querySelectorAll(".tree-node").forEach(n => {
+      if (n.dataset.type !== "file") return;
+      const name = n.querySelector(".name").textContent.toLowerCase();
+      n.style.display = (!q || name.includes(q)) ? "" : "none";
+    });
+  });
+
+  // ============== DOC ==============
+  function buildSampleDoc(title) {
+    return `
+      <h1>${title}</h1>
+      <div class="doc-meta">
+        <span>EDITED 2026-05-07 11:42</span>
+        <span>SIZE 4.7 KB</span>
+        <span>TAGS theory · linear-algebra</span>
+      </div>
+      <p>The <strong>spectral theorem</strong> is one of those ideas that keeps showing up — every time you think you've moved past it, it reappears wearing a slightly different hat. The core claim is simple enough: a real symmetric matrix can be diagonalised by an orthogonal matrix, and the diagonal it produces is its spectrum.</p>
+      <p>What's interesting isn't the statement, it's the <em>shape</em> of the proof. You build it out of two facts that don't obviously fit together — that symmetric operators have real eigenvalues, and that eigenvectors for distinct eigenvalues are orthogonal.</p>
+      <h2>Setup</h2>
+      <p>Let A be a real symmetric matrix. We want orthogonal Q and diagonal D such that:</p>
+      <pre><code>A = Q D Q^T,    where Q^T Q = I</code></pre>
+      <p>The columns of <code>Q</code> are an orthonormal basis of eigenvectors.</p>
+      <h3>A small example</h3>
+      <pre><code>A = | 4  1 |
+    | 1  2 |</code></pre>
+      <p>Its characteristic polynomial gives eigenvalues <code>3 ± √2</code>. Both real.</p>
+      <div class="callout">Symmetry isn't aesthetic here. It's a structural promise: the operator agrees with its own transpose, which forces the algebra to behave.</div>
+      <h2>Why this matters</h2>
+      <ul>
+        <li>PCA falls out of this — principal components are eigenvectors of the covariance matrix.</li>
+        <li>Quadratic forms become trivially classifiable.</li>
+        <li>It generalises to compact self-adjoint operators on a Hilbert space.</li>
+      </ul>
+      <blockquote>"Diagonalisation isn't a trick. It's the act of finding the coordinate system the operator was always speaking in."</blockquote>
+      <h3>Pseudocode</h3>
+      <pre><code>import numpy as np
+
+def spectral_decompose(A):
+    assert np.allclose(A, A.T)
+    eigvals, eigvecs = np.linalg.eigh(A)
+    return eigvecs, np.diag(eigvals)</code></pre>
+      <hr>
+      <p>Next time: link this to the <a href="#">SVD note</a> and to the <a href="#">PCA derivation</a>.</p>
+    `;
+  }
+
+  function loadDoc(title) {
+    const target = document.getElementById("engram-doc");
+    target.style.opacity = 0;
+    setTimeout(() => {
+      target.innerHTML = buildSampleDoc(title);
+      target.style.transition = "opacity 0.3s";
+      target.style.opacity = 1;
+      const text = target.innerText;
+      const words = text.trim().split(/\s+/).length;
+      const bytes = new Blob([text]).size;
+      const frame = document.getElementById("doc-frame");
+      frame.dataset.docId = title.toUpperCase().replace(/\s+/g,"-").slice(0,24);
+      frame.dataset.docBytes = bytes.toLocaleString();
+      frame.dataset.docWords = words.toLocaleString();
+      document.getElementById("doc-id").textContent = title.toUpperCase();
+    }, 100);
+  }
+
+  // ============== DRAWER ==============
+  const drawer = document.getElementById("drawer");
+  const scrim = document.getElementById("scrim");
+  const burger = document.getElementById("burger");
+  function openDrawer() {
+    drawer.dataset.open = "true";
+    scrim.dataset.open = "true";
+    burger.dataset.open = "true";
+    drawer.setAttribute("aria-hidden","false");
+  }
+  function closeDrawer() {
+    drawer.dataset.open = "false";
+    scrim.dataset.open = "false";
+    burger.dataset.open = "false";
+    drawer.setAttribute("aria-hidden","true");
+  }
+  function toggleDrawer() {
+    (drawer.dataset.open === "true" ? closeDrawer : openDrawer)();
+  }
+  burger.addEventListener("click", toggleDrawer);
+  scrim.addEventListener("click", closeDrawer);
+
+  // ============== SYNC ==============
+  document.getElementById("sync-btn").addEventListener("click", (e) => {
+    const btn = e.currentTarget;
+    if (btn.dataset.syncing === "true") return;
+    btn.dataset.syncing = "true";
+    btn.querySelector(".sync-label").textContent = "SCANNING...";
+    setTimeout(() => {
+      btn.dataset.syncing = "false";
+      btn.querySelector(".sync-label").textContent = "SYNC FILES";
+      document.getElementById("last-sync").textContent = "just now";
+    }, 1600);
+  });
+
+  // ============== THEME ==============
+  function applyTheme(t) {
+    if (t === "phosphor") document.documentElement.removeAttribute("data-theme");
+    else document.documentElement.dataset.theme = t;
+  }
+  const themeSelect = document.getElementById("theme-select");
+  themeSelect.value = TWEAK_DEFAULTS.theme;
+  applyTheme(TWEAK_DEFAULTS.theme);
+  themeSelect.addEventListener("change", (e) => {
+    const v = e.target.value;
+    applyTheme(v);
+    window.parent.postMessage({type:"__edit_mode_set_keys", edits:{theme:v}}, "*");
+  });
+
+  // ============== BOOT ==============
+  const BOOT_LINES = [
+    { t:"[<span class='ok'>OK</span>] engram-mobile v0.1.4", d:80 },
+    { t:"[<span class='ok'>OK</span>] mounting ~/notes", d:80 },
+    { t:"<span class='dim'>... 3 folders / 14 files</span>", d:90 },
+    { t:"[<span class='ok'>OK</span>] renderer ready", d:80 },
+    { t:"[<span class='ok'>OK</span>] theme: " + TWEAK_DEFAULTS.theme, d:80 },
+    { t:"[<span class='ok'>OK</span>] ready.", d:80 },
+  ];
+  function runBoot() {
+    const boot = document.getElementById("boot");
+    boot.dataset.done = "false";
+    boot.style.opacity = "";
+    boot.style.visibility = "";
+    const lines = document.getElementById("boot-lines");
+    lines.innerHTML = "";
+    let total = 0;
+    BOOT_LINES.forEach((l, i) => {
+      total += l.d;
+      setTimeout(() => {
+        const el = document.createElement("div");
+        el.className = "line";
+        el.innerHTML = "&gt; " + l.t;
+        lines.appendChild(el);
+        if (i === BOOT_LINES.length - 1) {
+          const cur = document.createElement("span");
+          cur.className = "cursor";
+          el.appendChild(cur);
+        }
+      }, total);
+    });
+    setTimeout(() => { boot.dataset.done = "true"; }, total + 500);
+  }
+
+  // ============== INIT ==============
+  renderTree();
+  loadDoc("File 02 — Spectral Decomposition");
+  runBoot();
+</script>
+</body>
+</html>
