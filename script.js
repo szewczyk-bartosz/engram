@@ -1,6 +1,6 @@
 /*EDITMODE-BEGIN*/
-const TWEAK_DEFAULTS = {
-  theme: "phosphor",
+const settings = {
+  theme: "red",
   fxIntensity: 65,
   scanlines: true,
   globeSpeed: 24,
@@ -11,87 +11,62 @@ const TWEAK_DEFAULTS = {
 /*EDITMODE-END*/
 
 // ============== TREE DATA ==============
-const TREE = [
-  {
-    type: "folder",
-    name: "Folder A",
-    children: [
-      {
-        type: "folder",
-        name: "Subfolder A1",
-        children: [
-          { type: "file", name: "File 01", ext: ".eng" },
-          {
-            type: "file",
-            name: "File 02 — Spectral Decomposition",
-            ext: ".eng",
-            active: true,
-          },
-          { type: "file", name: "File 03", ext: ".eng" },
-        ],
-      },
-      {
-        type: "folder",
-        name: "Subfolder A2",
-        children: [
-          { type: "file", name: "File 04", ext: ".eng" },
-          { type: "file", name: "File 05", ext: ".eng" },
-        ],
-      },
-      { type: "file", name: "File 06 (root of A)", ext: ".eng" },
-    ],
-  },
-  {
-    type: "folder",
-    name: "Folder B",
-    collapsed: true,
-    children: [
-      { type: "file", name: "File 07", ext: ".eng" },
-      {
-        type: "folder",
-        name: "Subfolder B1",
-        children: [
-          { type: "file", name: "File 08", ext: ".eng" },
-          { type: "file", name: "File 09", ext: ".eng" },
-        ],
-      },
-    ],
-  },
-  {
-    type: "folder",
-    name: "Folder C",
-    children: [
-      { type: "file", name: "File 10", ext: ".eng" },
-      { type: "file", name: "File 11", ext: ".eng" },
-      { type: "file", name: "File 12", ext: ".eng" },
-      {
-        type: "folder",
-        name: "Subfolder C1",
-        collapsed: true,
-        children: [{ type: "file", name: "File 13", ext: ".eng" }],
-      },
-    ],
-  },
-  { type: "file", name: "README", ext: ".eng" },
-  { type: "file", name: "Index", ext: ".eng" },
-];
+let INDEX = [];
+let lastSyncTime = null;
 
-function renderTree() {
+function relTime(ts) {
+  const s = Math.floor((Date.now() - ts) / 1000);
+  if (s < 10) return "Just now";
+  if (s < 60) return s + "s ago";
+  const m = Math.floor(s / 60);
+  if (m < 60) return m + "m ago";
+  const h = Math.floor(m / 60);
+  if (h < 24) return h + "h ago";
+  return Math.floor(h / 24) + "d ago";
+}
+
+function countFiles(nodes) {
+  let n = 0;
+  for (const node of nodes) {
+    if (node.type === "file") n++;
+    else if (node.children) n += countFiles(node.children);
+  }
+  return n;
+}
+
+function renderTreeError() {
+  const root = document.getElementById("tree");
+  root.innerHTML = "";
+  const el = document.createElement("div");
+  el.className = "tree-node";
+  el.dataset.type = "file";
+  el.innerHTML = `
+							<span class="caret"> </span>
+							<span class="gt">></span>
+							<span class="name">FAILED TO LOAD INDEX</span>
+							<span class="ext"></span>
+							`;
+  root.appendChild(el);
+}
+
+function renderTree(index) {
   const root = document.getElementById("tree");
   root.innerHTML = "";
   function walk(nodes, depth, parentEl) {
-    nodes.forEach((node, i) => {
+    nodes.forEach((node) => {
       const el = document.createElement("div");
       el.className = "tree-node";
       el.dataset.type = node.type;
-      if (node.active) el.dataset.active = "true";
       const gt = ">".repeat(depth + 1);
       const caret = node.type === "folder" ? (node.collapsed ? "▸" : "▾") : " ";
+      const extMatch = node.type === "file" ? node.name.match(/(\.[^.]+)$/) : null;
+      const displayName = extMatch ? node.name.slice(0, -extMatch[1].length) : node.name;
+      const displayExt = node.ext || (extMatch ? extMatch[1] : "");
       el.innerHTML = `
 							<span class="caret">${caret}</span>
 							<span class="gt">${gt}</span>
-							<span class="name">${node.name}</span>
-							<span class="ext">${node.ext || ""}</span>
+							<span class="name">${displayName}</span>
+							<span class="ext">${displayExt}</span>
 							`;
       parentEl.appendChild(el);
       if (node.type === "folder" && node.children) {
@@ -111,12 +86,34 @@ function renderTree() {
             .querySelectorAll(".tree-node[data-active='true']")
             .forEach((n) => n.removeAttribute("data-active"));
           el.dataset.active = "true";
-          loadDoc(node.name);
+          loadDoc(node);
         });
       }
     });
   }
-  walk(TREE, 0, root);
+  walk(index, 0, root);
+}
+
+// ============== FETCH INDEX ==============
+async function fetchIndex() {
+  const btn = document.getElementById("sync-btn");
+  if (btn.dataset.syncing === "true") return;
+  btn.dataset.syncing = "true";
+  btn.querySelector(".sync-label").textContent = "SCANNING...";
+  try {
+    const res = await fetch("./engram-data/index.json");
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    INDEX = await res.json();
+    lastSyncTime = Date.now();
+    renderTree(INDEX);
+    document.getElementById("file-count").textContent = countFiles(INDEX) + " FILES";
+    document.getElementById("last-sync").textContent = relTime(lastSyncTime);
+  } catch (_) {
+    renderTreeError();
+  } finally {
+    btn.dataset.syncing = "false";
+    btn.querySelector(".sync-label").textContent = "SYNC FILES";
+  }
 }
 
 // ============== TREE FILTER ==============
@@ -130,128 +127,52 @@ document.getElementById("tree-filter").addEventListener("input", (e) => {
 });
 
 // ============== DOC LOADING ==============
-// This represents what the user's renderer would inject as ready-to-go HTML.
-function buildSampleDoc(title) {
-  return `
-											<h1>${title}</h1>
-											<div class="doc-meta">
-											<span>EDITED 2026-05-07 11:42</span>
-											<span>SIZE 4.7 KB</span>
-											<span>TAGS theory · linear-algebra</span>
-											</div>
-											<p>The <strong>spectral theorem</strong> is one of those ideas that keeps showing up — every time you think you've moved past it, it reappears wearing a slightly different hat. The core claim is simple enough: a real symmetric matrix can be diagonalised by an orthogonal matrix, and the diagonal it produces is its spectrum.</p>
-											
-											<p>What's interesting isn't the statement, it's the <em>shape</em> of the proof. You build it out of two facts that don't obviously fit together — that symmetric operators have real eigenvalues, and that eigenvectors for distinct eigenvalues are orthogonal. The proof is the gluing.</p>
-											
-											<h2>Setup</h2>
-											<p>Let \\(A \\in \\mathbb{R}^{n \\times n}\\) with \\(A^\\top = A\\). We want to find an orthogonal \\(Q\\) and diagonal \\(D\\) such that:</p>
-											<pre data-lang="math"><code>A = Q D Q^T,    where Q^T Q = I</code></pre>
-											
-											<p>The columns of <code>Q</code> are an orthonormal basis of eigenvectors. Read this aloud once or twice — it's the whole punchline.</p>
-											
-											<h3>A small example</h3>
-											<p>Take the matrix:</p>
-											<pre data-lang="math"><code>A = | 4  1 |
-											| 1  2 |</code></pre>
-											<p>Its characteristic polynomial is <code>(λ-4)(λ-2) - 1 = λ² - 6λ + 7</code>, giving eigenvalues <code>3 ± √2</code>. Both real — as promised.</p>
-											
-											<div class="callout">
-											Symmetry isn't aesthetic here. It's a structural promise: the operator agrees with its own transpose, which forces the algebra to behave.
-											</div>
-											
-											<h2>Why this matters</h2>
-											<ul>
-											<li>PCA falls out of this — the principal components are the eigenvectors of the covariance matrix.</li>
-											<li>Quadratic forms become trivially classifiable: positive-definite ⇔ all eigenvalues positive.</li>
-											<li>It generalises cleanly to compact self-adjoint operators on a Hilbert space.</li>
-											</ul>
-											
-											<h3>Pseudocode</h3>
-											<pre data-lang="python"><code>import numpy as np
-											
-											def spectral_decompose(A):
-											assert np.allclose(A, A.T), "A must be symmetric"
-											eigvals, eigvecs = np.linalg.eigh(A)
-											# eigh returns sorted real eigenvalues for symmetric A
-											return eigvecs, np.diag(eigvals)
-											
-											Q, D = spectral_decompose(A)
-											# A == Q @ D @ Q.T  (up to floating point)</code></pre>
-											
-											<blockquote>
-											"Diagonalisation isn't a trick. It's the act of finding the coordinate system the operator was always speaking in."
-											</blockquote>
-											
-											<h2>Open questions</h2>
-											<ol>
-											<li>What is the cleanest proof of the orthogonality of eigenvectors that doesn't go through complex numbers?</li>
-											<li>How does this break for non-normal matrices, and what replaces it (Schur, SVD)?</li>
-											<li>Numerically: when does <code>eigh</code> drift, and how do we detect it?</li>
-											</ol>
-											
-											<hr>
-											
-											<table>
-											<thead>
-											<tr><th>Property</th><th>Symmetric</th><th>Normal</th><th>General</th></tr>
-											</thead>
-											<tbody>
-											<tr><td>Real eigenvalues</td><td>✓</td><td>—</td><td>—</td></tr>
-											<tr><td>Orthogonal eigenvectors</td><td>✓</td><td>✓</td><td>—</td></tr>
-											<tr><td>Diagonalisable</td><td>✓</td><td>✓</td><td>—</td></tr>
-											</tbody>
-											</table>
-											
-											<p>Next time: link this to the <a href="#">SVD note</a> and to the <a href="#">PCA derivation</a>.</p>
-											`;
-}
-
-function loadDoc(title) {
+async function loadDoc(node) {
   const target = document.getElementById("engram-doc");
   target.style.opacity = 0;
-  setTimeout(() => {
-    target.innerHTML = buildSampleDoc(title);
-    target.style.transition = "opacity 0.35s";
-    target.style.opacity = 1;
-    updateDocMeta(title);
-    updateCrumbs(title);
-  }, 120);
+  await new Promise((r) => setTimeout(r, 120));
+  const url = "./engram-data/rendered/" + node.path;
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(res.status);
+    target.innerHTML = await res.text();
+  } catch (_) {
+    target.innerHTML = `<h1>404</h1><p>Fragment not found at <code>${url}</code></p>`;
+  }
+  target.style.transition = "opacity 0.35s";
+  target.style.opacity = 1;
+  updateDocMeta(node);
+  updateCrumbs(node);
 }
 
-function updateDocMeta(title) {
-  const text = document.getElementById("engram-doc").innerText;
-  const words = text.trim().split(/\s+/).length;
-  const bytes = new Blob([text]).size;
-  const lines = text.split("\n").length;
-  const read = Math.max(1, Math.round(words / 220));
-  document.getElementById("m-words").textContent = words.toLocaleString();
-  document.getElementById("m-bytes").textContent = bytes.toLocaleString();
-  document.getElementById("m-lines").textContent = lines.toLocaleString();
+function updateDocMeta(node) {
+  const read = Math.max(1, Math.ceil(node.words / 220));
+  document.getElementById("m-words").textContent = node.words.toLocaleString();
+  document.getElementById("m-bytes").textContent = node.size.toLocaleString();
+  document.getElementById("m-lines").textContent = node.lines.toLocaleString();
   document.getElementById("m-read").textContent = read + " MIN";
   const frame = document.getElementById("doc-frame");
-  frame.dataset.docId = title.toUpperCase().replace(/\s+/g, "-").slice(0, 24);
-  frame.dataset.docBytes = bytes.toLocaleString();
-  frame.dataset.docWords = words.toLocaleString();
+  const basename = node.path.split("/").pop();
+  frame.dataset.docId = basename.toUpperCase().slice(0, 24);
+  frame.dataset.docBytes = node.size.toLocaleString();
+  frame.dataset.docWords = node.words.toLocaleString();
   document.getElementById("status-doc").textContent =
-    title.toUpperCase().replace(/[^\w]+/g, "-") + ".ENGRAM";
+    basename.replace(/\.eng$/, "").toUpperCase() + ".ENGRAM";
 }
 
-function updateCrumbs(title) {
-  const slug = title.toLowerCase().replace(/[^\w]+/g, "-");
-  document.getElementById("doc-path").innerHTML = `
-												<span>~</span>
-												<span style="color:var(--fg-faint)">/</span>
-												<span>folder-a</span>
-												<span style="color:var(--fg-faint)">/</span>
-												<span>subfolder-a1</span>
-												<span style="color:var(--fg-faint)">/</span>
-												<span class="here">${slug}.engram</span>`;
-  const cb = document.getElementById("crumbs");
-  cb.innerHTML = `
-												<span class="dim">~/notes</span>
-												<span class="sep">›</span><span>Folder A</span>
-												<span class="sep">›</span><span>Subfolder A1</span>
-												<span class="sep">›</span><span class="here">${title}</span>`;
+function updateCrumbs(node) {
+  const parts = node.path.split("/");
+  const folders = parts.slice(0, -1);
+  const basename = parts[parts.length - 1];
+  const sep = `<span style="color:var(--fg-faint)">/</span>`;
+  const docFolders = folders.map((f) => sep + `<span>${f}</span>`).join("");
+  document.getElementById("doc-path").innerHTML =
+    `<span>~</span>${docFolders}${sep}<span class="here">${basename}</span>`;
+  const crumbFolders = folders
+    .map((f) => `<span class="sep">›</span><span>${f}</span>`)
+    .join("");
+  document.getElementById("crumbs").innerHTML =
+    `<span class="dim">~/notes</span>${crumbFolders}<span class="sep">›</span><span class="here">${node.name}</span>`;
 }
 
 // ============== CLOCK ==============
@@ -465,18 +386,12 @@ for (let i = 0; i < 5; i++) pushLog();
 setInterval(pushLog, 4200);
 
 // ============== SYNC ==============
-document.getElementById("sync-btn").addEventListener("click", (e) => {
-  const btn = e.currentTarget;
-  if (btn.dataset.syncing === "true") return;
-  btn.dataset.syncing = "true";
-  btn.querySelector(".sync-label").textContent = "SCANNING...";
-  setTimeout(() => {
-    btn.dataset.syncing = "false";
-    btn.querySelector(".sync-label").textContent = "SYNC FILES";
-    document.getElementById("last-sync").textContent = "just now";
-    pushLog();
-  }, 1600);
-});
+document.getElementById("sync-btn").addEventListener("click", () => fetchIndex());
+setInterval(() => {
+  if (lastSyncTime) {
+    document.getElementById("last-sync").textContent = relTime(lastSyncTime);
+  }
+}, 30000);
 
 // ============== PANEL TOGGLES ==============
 const app = document.getElementById("app");
@@ -552,8 +467,7 @@ function runBoot() {
 document.getElementById("replay-boot").addEventListener("click", runBoot);
 
 // ============== INIT ==============
-renderTree();
-loadDoc("File 02 — Spectral Decomposition");
+fetchIndex();
 runBoot();
 
 // ============== TWEAK APPLICATION ==============
@@ -617,17 +531,17 @@ function applyTweaks(t) {
 }
 // expose for tweaks panel
 window.__applyEngramTweaks = applyTweaks;
-applyTweaks(TWEAK_DEFAULTS);
+applyTweaks(settings);
 // Topbar theme dropdown
 const themeSelect = document.getElementById("theme-select");
-themeSelect.value = TWEAK_DEFAULTS.theme;
+themeSelect.value = settings.theme;
 themeSelect.addEventListener("change", (e) => {
   const v = e.target.value;
   window.parent.postMessage(
     { type: "__edit_mode_set_keys", edits: { theme: v } },
     "*",
   );
-  applyTweaks({ ...TWEAK_DEFAULTS, ...window.__lastTweaks, theme: v });
+  applyTweaks({ ...settings, ...window.__lastTweaks, theme: v });
   window.__lastTweaks = { ...(window.__lastTweaks || {}), theme: v };
 });
 const _origApply = window.__applyEngramTweaks;
