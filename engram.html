@@ -6,7 +6,7 @@
 		<title>Engram</title>
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,600;1,400&display=swap">
 		<link rel="stylesheet" href="styles.css">
 	</head>
 	<body>
@@ -29,6 +29,12 @@
 					<span class="dim">~/notes</span>
 				</div>
 				<div class="meta">
+					<select id="font-select" class="theme-dd" aria-label="Body font">
+						<option value="inter-jb">INTER</option>
+						<option value="lora-jb">LORA</option>
+						<option value="plex-jb">PLEX SERIF</option>
+						<option value="all-mono">MONO</option>
+					</select>
 					<select id="theme-select" class="theme-dd" aria-label="Theme">
 						<option value="phosphor">PHOSPHOR</option>
 						<option value="amber">AMBER</option>
@@ -39,8 +45,6 @@
 					</select>
 					<span style="color:var(--fg-faint)">|</span>
 					<span class="led"></span><span>READ-ONLY</span>
-					<span style="color:var(--fg-faint)">|</span>
-					<span id="topbar-clock">00:00:00</span>
 				</div>
 			</header>
 

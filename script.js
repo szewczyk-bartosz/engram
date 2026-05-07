@@ -6,7 +6,7 @@ const settings = {
   globeSpeed: 24,
   showLeftBrackets: false,
   monoBody: false,
-  fontPair: "lora-jb",
+  fontPair: "all-mono",
 };
 /*EDITMODE-END*/
 
@@ -59,8 +59,11 @@ function renderTree(index) {
       el.dataset.type = node.type;
       const gt = ">".repeat(depth + 1);
       const caret = node.type === "folder" ? (node.collapsed ? "▸" : "▾") : " ";
-      const extMatch = node.type === "file" ? node.name.match(/(\.[^.]+)$/) : null;
-      const displayName = extMatch ? node.name.slice(0, -extMatch[1].length) : node.name;
+      const extMatch =
+        node.type === "file" ? node.name.match(/(\.[^.]+)$/) : null;
+      const displayName = extMatch
+        ? node.name.slice(0, -extMatch[1].length)
+        : node.name;
       const displayExt = node.ext || (extMatch ? extMatch[1] : "");
       el.innerHTML = `
 							<span class="caret">${caret}</span>
@@ -106,7 +109,8 @@ async function fetchIndex() {
     INDEX = await res.json();
     lastSyncTime = Date.now();
     renderTree(INDEX);
-    document.getElementById("file-count").textContent = countFiles(INDEX) + " FILES";
+    document.getElementById("file-count").textContent =
+      countFiles(INDEX) + " FILES";
     document.getElementById("last-sync").textContent = relTime(lastSyncTime);
   } catch (_) {
     renderTreeError();
@@ -182,7 +186,6 @@ function tick() {
   const pad = (n) => String(n).padStart(2, "0");
   const hms = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
   document.getElementById("clock-time").textContent = hms;
-  document.getElementById("topbar-clock").textContent = hms;
   const dateStr = now
     .toLocaleDateString("en-GB", {
       weekday: "short",
@@ -360,16 +363,14 @@ requestAnimationFrame(tickGlobe);
 
 // ============== ACTIVITY LOG ==============
 const logMsgs = [
-  "indexed Folder A/Subfolder A1",
-  "watcher attached → ~/notes",
-  "loaded File 02 (4.7 KB)",
-  "renderer: 12 blocks parsed",
-  "fx: scanlines @ 0.35",
-  "theme: phosphor.green active",
-  "globe rotation @ 24s/rev",
-  "search index rebuilt (42 files)",
+  "Database indexed...",
+  "Loaded themes...",
+  "Parser success...",
+  "Renderer success",
+  "theme applied...",
+  "globe animation frames loaded...",
   "no remote — local-only mode",
-  "checksum OK · 0xA3F2",
+  "checksum OK · 0xJP2137",
 ];
 const logEl = document.getElementById("log");
 function pushLog() {
@@ -386,7 +387,9 @@ for (let i = 0; i < 5; i++) pushLog();
 setInterval(pushLog, 4200);
 
 // ============== SYNC ==============
-document.getElementById("sync-btn").addEventListener("click", () => fetchIndex());
+document
+  .getElementById("sync-btn")
+  .addEventListener("click", () => fetchIndex());
 setInterval(() => {
   if (lastSyncTime) {
     document.getElementById("last-sync").textContent = relTime(lastSyncTime);
@@ -509,6 +512,10 @@ function applyTweaks(t) {
   window.__globeSpeed = t.globeSpeed || 24;
   // Body font
   const fontMap = {
+    "inter-jb": {
+      serif: '"Inter", system-ui, sans-serif',
+      mono: '"JetBrains Mono", monospace',
+    },
     "lora-jb": {
       serif: '"Lora", Georgia, serif',
       mono: '"JetBrains Mono", monospace',
@@ -522,7 +529,7 @@ function applyTweaks(t) {
       mono: '"JetBrains Mono", monospace',
     },
   };
-  const fp = fontMap[t.fontPair] || fontMap["lora-jb"];
+  const fp = fontMap[t.fontPair] || fontMap["all-mono"];
   document.documentElement.style.setProperty(
     "--serif",
     t.monoBody ? fp.mono : fp.serif,
@@ -544,9 +551,22 @@ themeSelect.addEventListener("change", (e) => {
   applyTweaks({ ...settings, ...window.__lastTweaks, theme: v });
   window.__lastTweaks = { ...(window.__lastTweaks || {}), theme: v };
 });
+// Topbar font dropdown
+const fontSelect = document.getElementById("font-select");
+fontSelect.value = settings.fontPair;
+fontSelect.addEventListener("change", (e) => {
+  const v = e.target.value;
+  window.parent.postMessage(
+    { type: "__edit_mode_set_keys", edits: { fontPair: v } },
+    "*",
+  );
+  applyTweaks({ ...settings, ...window.__lastTweaks, fontPair: v });
+  window.__lastTweaks = { ...(window.__lastTweaks || {}), fontPair: v };
+});
 const _origApply = window.__applyEngramTweaks;
 window.__applyEngramTweaks = function (t) {
   _origApply(t);
   window.__lastTweaks = t;
   if (themeSelect.value !== t.theme) themeSelect.value = t.theme;
+  if (fontSelect.value !== t.fontPair) fontSelect.value = t.fontPair;
 };
