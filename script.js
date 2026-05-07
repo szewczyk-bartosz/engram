@@ -130,6 +130,15 @@ document.getElementById("tree-filter").addEventListener("input", (e) => {
   });
 });
 
+document.getElementById("expand-all").addEventListener("click", () => {
+	document.querySelectorAll(".tree-children").forEach(el => { el.dataset.collapsed = "false"; });
+	document.querySelectorAll(".tree-node[data-type='folder'] .caret").forEach(el => { el.textContent = "▾"; });
+});
+document.getElementById("collapse-all").addEventListener("click", () => {
+	document.querySelectorAll(".tree-children").forEach(el => { el.dataset.collapsed = "true"; });
+	document.querySelectorAll(".tree-node[data-type='folder'] .caret").forEach(el => { el.textContent = "▸"; });
+});
+
 // ============== DOC LOADING ==============
 async function loadDoc(node) {
   const target = document.getElementById("engram-doc");
