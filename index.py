@@ -94,6 +94,8 @@ def main():
         description="Generate an index for a rendered engram directory."
     )
     parser.add_argument("root", type=Path, help="Root directory to index")
+
+    parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
 
     index_path = Path("engram-data/index.json")
@@ -102,6 +104,10 @@ def main():
     rawIndex = createIndex(args.root)
     new_tree = flatten_files([asdict(i) for i in rawIndex])
     old_tree = flatten_files(load_index(index_path))
+
+    if args.check:
+        for i in rawIndex:
+            print(i)
 
     for path, new_node in new_tree.items():
         old_node = old_tree.get(path)
