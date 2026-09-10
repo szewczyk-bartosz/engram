@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1">
+		<title>Engram</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+		<script type="module" crossorigin src="/assets/index-_eMKkm9S.js"></script>
+		<link rel="stylesheet" crossorigin href="/assets/index-BmrVJBDb.css">
+	</head>
+	<body>
+		<div class="boot" id="boot">
+			<div class="ascii">
+				███████╗███╗   ██╗ ██████╗ ██████╗  █████╗ ███╗   ███╗
+				██╔════╝████╗  ██║██╔════╝ ██╔══██╗██╔══██╗████╗ ████║
+				█████╗  ██╔██╗ ██║██║  ███╗██████╔╝███████║██╔████╔██║
+				██╔══╝  ██║╚██╗██║██║   ██║██╔══██╗██╔══██║██║╚██╔╝██║
+				███████╗██║ ╚████║╚██████╔╝██║  ██║██║  ██║██║ ╚═╝ ██║
+				╚══════╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝
+			</div>
+			<div class="lines" id="boot-lines"></div>
+		</div>
+
+		<div class="app" id="app" data-right-closed="false" data-left-closed="false">
+			<header class="topbar">
+				<div class="brand"><span class="brand-mark"></span><span>ENGRAM</span></div>
+				<div class="crumbs" id="crumbs">
+					<span class="dim">~/notes</span>
+				</div>
+				<div class="meta">
+					<span style="color:var(--fg-faint)">|</span>
+					<span class="led"></span><span>READ-ONLY</span>
+				</div>
+			</header>
+
+			<aside class="left-pane">
+				<div class="pane-header">
+					<div class="h-title">FILES</div>
+					<div class="h-right">
+						<span class="h-id">/INDEX.0</span>
+						<button class="pane-collapse" id="toggle-left" title="Collapse files pane" aria-label="Collapse files pane">[ ‹ ]</button>
+					</div>
+				</div>
+				<div class="sync-block">
+					<button class="sync-btn" id="sync-btn">
+						<span class="sync-icon"></span>
+						<span class="sync-label" id="sync-label">SYNC FILES</span>
+					</button>
+					<div class="sync-meta">
+						<span>LAST &nbsp;<span id="last-sync">2m ago</span></span>
+						<span id="file-count">42 FILES</span>
+					</div>
+				</div>
+				<div class="tree-search">
+					<div class="wrap">
+						<input type="text" id="tree-filter" placeholder="filter..." style="padding-left:14px">
+					</div>
+				</div>
+				<div style="display:flex;gap:6px;padding:0 10px 6px;">
+						<button class="pane-collapse" id="expand-all">[ expand all ]</button>
+						<button class="pane-collapse" id="collapse-all">[ collapse all ]</button>
+					</div>
+				<div class="tree-block" id="tree"></div>
+			</aside>
+
+			<main class="center-pane">
+				<div class="doc-header">
+					<div class="doc-path" id="doc-path"></div>
+					<div class="doc-actions">
+						<button class="icon-btn" title="Replay boot" id="replay-boot">[ ↻ ]</button>
+					</div>
+				</div>
+				<div class="doc-scroll" id="doc-scroll">
+					<article class="doc-frame" id="doc-frame">
+						<div class="engram-doc" id="engram-doc"></div>
+					</article>
+				</div>
+			</main>
+
+			<aside class="right-pane">
+				<div class="pane-header">
+					<div class="h-right" style="order:-1">
+						<button class="pane-collapse" id="toggle-right" title="Collapse system pane" aria-label="Collapse system pane">[ › ]</button>
+						<span class="h-id">/AUX.1</span>
+					</div>
+					<div class="h-title">SYSTEM</div>
+				</div>
+				<div class="pane-body">
+
+					<div class="widget">
+						<div class="w-head"><span class="lbl">CHRONO</span><span class="id">001</span></div>
+						<div class="clock">
+							<div class="time" id="clock-time">--:--:--</div>
+							<div class="date" id="clock-date">—</div>
+							<div class="uptime" id="clock-uptime">UPTIME 00:00:00</div>
+						</div>
+					</div>
+
+					<div class="widget">
+						<div class="w-head"><span class="lbl">DOCUMENT</span><span class="id">002</span></div>
+						<div style="display:grid;grid-template-columns:1fr auto;gap:6px 14px;font-family:var(--mono);font-size:10px;color:var(--fg-mute);letter-spacing:0.1em;text-transform:uppercase;">
+							<span>WORDS</span><span style="color:var(--accent)" id="m-words">—</span>
+							<span>BYTES</span><span style="color:var(--accent)" id="m-bytes">—</span>
+							<span>LINES</span><span style="color:var(--accent)" id="m-lines">—</span>
+							<span>READ TIME</span><span style="color:var(--accent)" id="m-read">—</span>
+						</div>
+					</div>
+
+					<div class="widget">
+						<div class="w-head"><span class="lbl">EARTH · GMT</span><span class="id">003</span></div>
+						<div class="globe-wrap">
+							<svg class="globe-svg" viewBox="-50 -50 100 100" id="globe">
+								<defs>
+									<clipPath id="globe-clip"><circle r="48" cx="0" cy="0"/></clipPath>
+								</defs>
+								<circle r="48" cx="0" cy="0" fill="none" stroke="currentColor" stroke-width="0.6" opacity="0.85"/>
+								<g clip-path="url(#globe-clip)">
+									<g id="globe-meridians"></g>
+								</g>
+								<line x1="-52" y1="0" x2="-50" y2="0" stroke="currentColor" stroke-width="0.6"/>
+								<line x1="50" y1="0" x2="52" y2="0" stroke="currentColor" stroke-width="0.6"/>
+								<line x1="0" y1="-52" x2="0" y2="-50" stroke="currentColor" stroke-width="0.6"/>
+								<line x1="0" y1="50" x2="0" y2="52" stroke="currentColor" stroke-width="0.6"/>
+							</svg>
+						</div>
+						<div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:9px;color:var(--fg-mute);letter-spacing:0.14em;text-transform:uppercase">
+							<span>LAT 51.5°N</span><span>LON 0.1°W</span>
+						</div>
+					</div>
+
+					<div class="widget">
+						<div class="w-head"><span class="lbl">RESOURCES</span><span class="id">004</span></div>
+						<div class="stat-row">
+							<span class="lbl">CPU</span>
+							<span class="bar"><span class="fill" id="bar-cpu" style="transform:scaleX(0.32)"></span></span>
+							<span class="val" id="val-cpu">32%</span>
+						</div>
+						<div class="stat-row">
+							<span class="lbl">MEM</span>
+							<span class="bar"><span class="fill" id="bar-mem" style="transform:scaleX(0.47)"></span></span>
+							<span class="val" id="val-mem">47%</span>
+						</div>
+						<div class="stat-row">
+							<span class="lbl">NET</span>
+							<span class="bar"><span class="fill" id="bar-net" style="transform:scaleX(0.18)"></span></span>
+							<span class="val" id="val-net">18%</span>
+						</div>
+						<div class="stat-row">
+							<span class="lbl">I/O</span>
+							<span class="bar"><span class="fill" id="bar-io" style="transform:scaleX(0.6)"></span></span>
+							<span class="val" id="val-io">60%</span>
+						</div>
+					</div>
+
+					<div class="widget">
+						<div class="w-head"><span class="lbl">SIGNAL</span><span class="id">005</span></div>
+						<div class="waveform" id="waveform"></div>
+					</div>
+
+					<div class="widget">
+						<div class="w-head"><span class="lbl">ACTIVITY</span><span class="id">006</span></div>
+						<div class="log" id="log"></div>
+					</div>
+				</div>
+			</aside>
+
+			<footer class="statusbar">
+				<span class="item">ENGRAM v0.1.4</span>
+				<span class="item">UTF-8</span>
+				<span class="item">LF</span>
+				<span class="item" id="status-doc"></span>
+				<span class="spacer"></span>
+				<span class="item"><span class="blink">●</span>
+				READY</span>
+			</footer>
+		</div>
+
+		<button class="right-collapsed-toggle" id="reopen-right">‹</button>
+		<button class="left-collapsed-toggle" id="reopen-left">›</button>
+
+		<div class="fx" id="fx">
+			<div class="fx-scanlines"></div>
+			<div class="fx-grain"></div>
+			<div class="fx-flicker"></div>
+			<div class="fx-vignette"></div>
+		</div>
+	</body>
+</html>

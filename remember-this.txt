@@ -1,0 +1,71 @@
+REMEMBER THIS: theme / font / FX options removed from the frontend on 2026-09-10
+================================================================================
+
+The demo frontend (Claude Design output) had a "tweaks" mechanism: a `settings`
+object at the top of script.js, an applyTweaks() function, two <select> dropdowns
+in the topbar, and postMessage hooks to a parent frame. All of that was deleted in
+the TypeScript rewrite. It is meant to come back later as a proper settings feature.
+This file records what the options were so nothing is lost.
+
+The [data-theme="..."] CSS token blocks in styles.css were NOT removed; they still
+hold the palettes listed below.
+
+
+1. settings defaults
+--------------------
+  theme:            "red"        (dropdown default; CSS default with no attribute is phosphor)
+  fxIntensity:      65           (0-100)
+  scanlines:        true
+  globeSpeed:       24           (seconds per full rotation of the globe)
+  showLeftBrackets: false        (never read by the JS; CSS has .bracket.tl/.tr/.bl/.br rules)
+  monoBody:         false
+  fontPair:         "all-mono"
+
+
+2. Colour themes  (applied as data-theme="<value>" on <html>)
+-------------------------------------------------------------
+  value      dropdown label   status-bar label   notes
+  ---------  ---------------  -----------------  -------------------------------------------
+  phosphor   PHOSPHOR         PHOSPHOR           default; remove the data-theme attribute
+  amber      AMBER            AMBER
+  cyan       CYAN             CYAN
+  red        RED ALERT        RED·ALERT
+  mono       MONOCHROME       MONOCHROME
+  calm       CALM FOCUS       CALM·FOCUS         light "warm paper" theme; CSS also hides the
+                                                 .fx layer and renders headings in the serif
+                                                 face without the #/## prefixes
+
+  The status bar showed:  THEME: <current label>  (element id was "status-theme").
+
+
+3. Font pairs  (applied via the --serif and --mono CSS custom properties)
+-------------------------------------------------------------------------
+  value      dropdown label   --serif (body text)                     --mono
+  ---------  ---------------  --------------------------------------  ------------------------------
+  inter-jb   INTER            "Inter", system-ui, sans-serif          "JetBrains Mono", monospace
+  lora-jb    LORA             "Lora", Georgia, serif                  "JetBrains Mono", monospace
+  plex-jb    PLEX SERIF       "IBM Plex Serif", Georgia, serif        "JetBrains Mono", monospace
+  all-mono   MONO             "JetBrains Mono", monospace             "JetBrains Mono", monospace
+
+  monoBody: true  =>  --serif is set to the pair's mono stack instead (body text in mono).
+
+  The Google Fonts <link> in index.html still loads Inter, JetBrains Mono, Lora and
+  IBM Plex Serif, so all four pairs are still available to CSS.
+
+
+4. FX intensity  (k = fxIntensity / 100, written as CSS custom properties on <html>)
+------------------------------------------------------------------------------------
+  --scanline-opacity  =  scanlines ? 0.1 + k * 0.45 : 0
+  --glow-strength     =  0.4 + k * 1.2
+  --flicker-strength  =  k * 1.2
+  --grain-opacity     =  0.02 + k * 0.07
+
+  styles.css ships static fallbacks for these on :root
+  (0.35, 1, 1, 0.05 respectively), which is what the site uses now.
+
+
+5. Globe speed
+--------------
+  globeSpeed was seconds per rotation, read by the globe animation loop via a
+  window.__globeSpeed global. The TypeScript globe takes it as the `periodSeconds`
+  option of startGlobe() in src/widgets/globe.ts, default 24.

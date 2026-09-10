@@ -29,20 +29,6 @@
 					<span class="dim">~/notes</span>
 				</div>
 				<div class="meta">
-					<select id="font-select" class="theme-dd" aria-label="Body font">
-						<option value="inter-jb">INTER</option>
-						<option value="lora-jb">LORA</option>
-						<option value="plex-jb">PLEX SERIF</option>
-						<option value="all-mono">MONO</option>
-					</select>
-					<select id="theme-select" class="theme-dd" aria-label="Theme">
-						<option value="phosphor">PHOSPHOR</option>
-						<option value="amber">AMBER</option>
-						<option value="cyan">CYAN</option>
-						<option value="red">RED ALERT</option>
-						<option value="mono">MONOCHROME</option>
-						<option value="calm">CALM FOCUS</option>
-					</select>
 					<span style="color:var(--fg-faint)">|</span>
 					<span class="led"></span><span>READ-ONLY</span>
 				</div>
@@ -59,7 +45,7 @@
 				<div class="sync-block">
 					<button class="sync-btn" id="sync-btn">
 						<span class="sync-icon"></span>
-						<span class="sync-label">SYNC FILES</span>
+						<span class="sync-label" id="sync-label">SYNC FILES</span>
 					</button>
 					<div class="sync-meta">
 						<span>LAST &nbsp;<span id="last-sync">2m ago</span></span>
@@ -187,7 +173,6 @@
 				<span class="spacer"></span>
 				<span class="item"><span class="blink">●</span>
 				READY</span>
-				<span class="item">THEME: <span id="status-theme" style="color:var(--accent)">PHOSPHOR</span></span>
 			</footer>
 		</div>
 
@@ -200,6 +185,6 @@
 			<div class="fx-flicker"></div>
 			<div class="fx-vignette"></div>
 		</div>
-		<script src="script.js"></script>
+		<script type="module" src="/src/main.ts"></script>
 	</body>
 </html>

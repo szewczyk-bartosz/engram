@@ -540,6 +540,9 @@ body {
 .doc-header .doc-path .here {
   color: var(--accent);
 }
+.doc-header .doc-path .sep {
+  color: var(--fg-faint);
+}
 .doc-header .doc-actions {
   display: flex;
   gap: 4px;
