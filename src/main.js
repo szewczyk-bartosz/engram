@@ -74,7 +74,7 @@ expandAllButton.addEventListener("click", () => {
 
 const syncButton = document.getElementById("sync-button")
 syncButton.addEventListener("click", async () => {
-    await fetch("http://localhost:8001/api/sync", { method: "POST" });
+    await fetch("/api/sync", { method: "POST" });
     loadIndex();
 })
 
