@@ -1,2 +1,4 @@
-node_modules/
-dist/engram-data
+__pycache__/
+engrams/
+styles.old.css
+*.pyc

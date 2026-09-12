@@ -1,11 +1,17 @@
 from __future__ import annotations
 
-import sys
+import argparse
 import hashlib
 import json
-from dataclasses import dataclass
+import subprocess
+from dataclasses import asdict, dataclass
 from pathlib import Path
-from venv import create
+
+# All output lives in ./engrams/ next to this script, regardless of cwd.
+SCRIPT_DIR = Path(__file__).resolve().parent
+ENGRAMS_DIR = SCRIPT_DIR / "engrams"
+INDEX_PATH = ENGRAMS_DIR / "index.json"
+RENDER_DIR = ENGRAMS_DIR / "rendered"
 
 
 def sha256_of(path: Path, chunk_size: int = 1 << 20) -> str:
@@ -84,26 +90,28 @@ def flatten_files(tree):
     return result
 
 
-import argparse
-from dataclasses import asdict
-import subprocess
-
-
 def main():
     parser = argparse.ArgumentParser(
-        description="Generate an index for a rendered engram directory."
+        description="Render .eng files from a source directory into ./engrams/ "
+        "and generate an index."
     )
-    parser.add_argument("root", type=Path, help="Root directory to index")
+    parser.add_argument(
+        "root", type=Path, help="Source directory containing raw .eng files"
+    )
 
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
 
-    index_path = Path("engram-data/index.json")
-    render_dir = Path("engram-data/rendered/")
-    raw_dir = Path("engram-data/raw/")
-    rawIndex = createIndex(args.root)
+    source_dir: Path = args.root
+    if not source_dir.is_dir():
+        parser.error(f"source directory does not exist: {source_dir}")
+
+    ENGRAMS_DIR.mkdir(parents=True, exist_ok=True)
+    RENDER_DIR.mkdir(parents=True, exist_ok=True)
+
+    rawIndex = createIndex(source_dir)
     new_tree = flatten_files([asdict(i) for i in rawIndex])
-    old_tree = flatten_files(load_index(index_path))
+    old_tree = flatten_files(load_index(INDEX_PATH))
 
     if args.check:
         for i in rawIndex:
@@ -112,7 +120,7 @@ def main():
     for path, new_node in new_tree.items():
         old_node = old_tree.get(path)
 
-        output_path = render_dir / new_node["path"]
+        output_path = RENDER_DIR / new_node["path"]
         if (
             old_node
             and old_node["source_hash"] == new_node["source_hash"]
@@ -126,13 +134,13 @@ def main():
                 [
                     "bmd",
                     "-i",
-                    str(raw_dir / new_node["path"]),
+                    str(source_dir / new_node["path"]),
                     "-o",
                     str(output_path),
                     "--engram",
                 ]
             )
-    save_index(index_path, rawIndex)
+    save_index(INDEX_PATH, rawIndex)
 
 
 def save_index(path: Path, tree: list) -> None:
