@@ -1,4 +1,30 @@
-/* ============= THEME TOKENS ============= */
+/* ==========================================================================
+   ENGRAM — styles.css
+
+   1. Design tokens (theme variables)
+   2. Reset & base
+   3. Form controls (inputs, buttons)
+   4. App shell (top bar, main grid, bottom bar)
+   5. Left panel (controls, sync, file selector, file tree)
+   6. Centre panel (reading pane)
+   7. Rendered document (.engram-doc)
+   Widget header
+   Widget: clock
+   Widget: waveform
+   Widget: activity log
+   Top bar
+   Bottom bar
+   8. Right panel
+   9. Settings dialog
+   Boot overlay
+   ========================================================================== */
+
+
+/* ==========================================================================
+   1. DESIGN TOKENS
+   ========================================================================== */
+
+/* Default: GREEN PHOSPHOR */
 :root {
   --bg: #0a0e0a;
   --bg-deep: #050805;
@@ -125,236 +151,200 @@
   --reading-code-bg: rgba(42, 38, 32, 0.05);
 }
 
-* {
+
+/* ==========================================================================
+   2. RESET & BASE
+   ========================================================================== */
+
+*, *::before, *::after {
   box-sizing: border-box;
-}
-html,
-body {
   margin: 0;
   padding: 0;
+}
+
+html, body {
   height: 100%;
-  background: var(--bg-deep);
+  overflow: hidden;
+  background: var(--bg);
   color: var(--fg);
   font-family: var(--mono);
   font-size: 13px;
-  overflow: hidden;
 }
 
-body {
-  background: var(--bg);
-}
 
-/* ============= APP SHELL ============= */
-.app {
-  position: fixed;
-  inset: 0;
-  display: grid;
-  grid-template-columns: 280px 1fr 320px;
-  grid-template-rows: 28px 1fr 22px;
-  grid-template-areas:
-    "topbar topbar topbar"
-    "left   center right"
-    "status status status";
-  gap: 0;
-  transition: grid-template-columns 0.4s cubic-bezier(0.7, 0, 0.2, 1);
-}
-.app[data-right-closed="true"] {
-  grid-template-columns: 280px 1fr 0px;
-}
-.app[data-left-closed="true"] {
-  grid-template-columns: 0px 1fr 320px;
-}
-.app[data-left-closed="true"][data-right-closed="true"] {
-  grid-template-columns: 0px 1fr 0px;
-}
+/* ==========================================================================
+   3. FORM CONTROLS
+   ========================================================================== */
 
-/* ============= TOPBAR ============= */
-.topbar {
-  grid-area: topbar;
-  display: flex;
-  align-items: stretch;
+/* --- Inputs --- */
+input {
+  background: none;
+  border: none;
   border-bottom: 1px solid var(--rule);
-  background: var(--bg-deep);
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--fg-mute);
-  user-select: none;
-}
-.topbar .brand {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0 14px;
-  border-right: 1px solid var(--rule);
-  color: var(--accent);
-  text-shadow: 0 0 calc(8px * var(--glow-strength)) var(--accent-glow);
-  font-weight: 600;
-}
-.brand-mark {
-  width: 10px;
-  height: 10px;
-  border: 1px solid currentColor;
-  transform: rotate(45deg);
-  position: relative;
-}
-.brand-mark::before {
-  content: "";
-  position: absolute;
-  inset: 2px;
-  background: currentColor;
-  opacity: 0.6;
-}
-.topbar .crumbs {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 0 14px;
-  flex: 1;
-  overflow: hidden;
-  white-space: nowrap;
-}
-.topbar .crumbs .sep {
-  color: var(--fg-faint);
-}
-.topbar .crumbs .here {
   color: var(--fg);
-}
-.topbar .meta {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 0 14px;
-  border-left: 1px solid var(--rule);
-}
-.theme-dd {
-  background: transparent;
-  border: 1px solid var(--rule-strong);
-  color: var(--accent);
   font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  padding: 2px 6px;
-  cursor: pointer;
+  font-size: 13px;
+  padding: 4px 8px;
+  width: 100%;
   outline: none;
 }
-.theme-dd:hover {
-  background: var(--fg-faint);
-}
-.theme-dd option {
-  background: var(--bg-deep);
-  color: var(--fg);
-}
-.led {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 calc(8px * var(--glow-strength)) var(--accent-glow);
-  animation: pulse 2s ease-in-out infinite;
-}
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 0.5;
-  }
-  50% {
-    opacity: 1;
-  }
+
+input::placeholder {
+  color: var(--fg-mute);
 }
 
-/* ============= LEFT SIDEBAR ============= */
-.left-pane {
-  grid-area: left;
-  border-right: 1px solid var(--rule);
-  background: var(--bg-deep);
+input:focus {
+  border-bottom-color: var(--accent);
+}
+
+/* --- Buttons --- */
+button {
+  background: none;
+  border: 1px solid var(--rule);
+  color: var(--fg);
+  font-family: var(--mono);
+  font-size: 13px;
+  padding: 2px 8px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+button:active {
+  background: var(--fg-faint);
+}
+
+
+/* ==========================================================================
+   4. APP SHELL
+   Vertical stack: top bar / main grid / bottom bar
+   ========================================================================== */
+
+body {
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  min-width: 0;
-}
-.pane-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 14px 8px;
-  border-bottom: 1px solid var(--rule);
-  font-size: 10px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--fg-mute);
-}
-.pane-header .h-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.pane-header .h-right {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.pane-collapse {
-  background: transparent;
-  border: 1px solid var(--rule);
-  color: var(--fg-mute);
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.1em;
-  padding: 2px 6px;
-  cursor: pointer;
-  line-height: 1;
-  transition:
-    color 0.15s,
-    border-color 0.15s,
-    background 0.15s;
-}
-.pane-collapse:hover {
-  color: var(--accent);
-  border-color: var(--rule-strong);
-  background: var(--fg-faint);
-}
-.pane-header .h-title::before {
-  content: "▸";
-  color: var(--accent);
-}
-.pane-header .h-id {
-  font-size: 9px;
-  color: var(--fg-faint);
 }
 
-.sync-block {
-  padding: 12px 14px;
-  border-bottom: 1px solid var(--rule);
+/* Main three-column grid */
+#app {
+  --left-width: 280px;
+  --right-width: 320px;
+  --left-slide: 0.25s ease;
+
+  flex: 1;
+  display: grid;
+  grid-template-columns: var(--left-width) 1fr var(--right-width);
+  grid-template-areas: "left centre right";
+  overflow: hidden;
+  /* Anchor for the floating reopen button */
+  position: relative;
+  transition: grid-template-columns var(--left-slide);
 }
-.sync-btn {
-  width: 100%;
+
+#left-panel   { grid-area: left; }
+#centre-panel { grid-area: centre; }
+#right-panel  { grid-area: right; }
+
+
+/* ==========================================================================
+   5. LEFT PANEL
+   ========================================================================== */
+
+#left-panel {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  flex-direction: column;
+  background: var(--bg-deep);
+  border-right: 1px solid var(--rule);
+  /* Fixed width so contents don't reflow while the column animates */
+  width: var(--left-width);
+  transform: translateX(0);
+  visibility: visible;
+  transition:
+    transform var(--left-slide),
+    visibility 0s linear 0s;
+}
+
+/* --- Collapse / reopen toggle --- */
+/* Closing shrinks the left column to zero while the panel slides out to the
+   left in sync. The reopen button is not part of the grid: it floats in the
+   top-left corner of #app (just under the top bar) and fades in once closed. */
+#left-reopen {
+  position: absolute;
+  /* Same inset as the close button inside #left-panel-controls */
+  top: 8px;
+  left: 8px;
+  z-index: 2;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity var(--left-slide),
+    visibility 0s linear 0.25s;
+}
+
+#left-open-button,
+#left-close-button {
+  padding: 2px 6px;
+}
+
+/* Close button segment: same inset as the floating reopen button */
+#left-panel-controls {
+  padding: 8px;
+}
+
+#app[data-left-closed="true"] {
+  grid-template-columns: 0px 1fr var(--right-width);
+}
+
+#app[data-left-closed="true"] #left-panel {
+  transform: translateX(-100%);
+  /* Hide from focus/pointer only once the slide has finished */
+  visibility: hidden;
+  transition:
+    transform var(--left-slide),
+    visibility 0s linear 0.25s;
+}
+
+#app[data-left-closed="true"] #left-reopen {
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity var(--left-slide),
+    visibility 0s linear 0s;
+}
+
+/* --- Sidebar segments --- */
+.sidebar-segment {
+  border-top: 1px solid var(--rule);
+}
+
+.sidebar-segment:first-child {
+  border-top: none;
+}
+
+/* --- Sync segment --- */
+#file-sync-segment {
+  padding: 12px 14px;
+}
+
+#sync-button {
+  width: 100%;
   padding: 10px 12px;
-  background: transparent;
-  border: 1px solid var(--rule-strong);
+  border-color: var(--rule-strong);
   color: var(--accent);
-  font-family: var(--mono);
   font-size: 11px;
   letter-spacing: 0.16em;
-  text-transform: uppercase;
-  cursor: pointer;
-  text-shadow: 0 0 calc(6px * var(--glow-strength)) var(--accent-glow);
-  transition:
-    background 0.15s,
-    border-color 0.15s;
+  text-shadow: 0 0 6px var(--accent-glow);
   position: relative;
   overflow: hidden;
 }
-.sync-btn:hover {
-  background: var(--fg-faint);
-  border-color: var(--accent);
-}
-.sync-btn::before {
+
+/* Sweep highlight on hover */
+#sync-button::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -362,109 +352,108 @@ body {
   transform: translateX(-100%);
   transition: transform 0.6s;
 }
-.sync-btn:hover::before {
+
+#sync-button:hover::before {
   transform: translateX(100%);
 }
-.sync-btn .sync-icon {
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  border: 1px solid currentColor;
-  border-right-color: transparent;
-  border-radius: 50%;
-}
-.sync-btn[data-syncing="true"] .sync-icon {
-  animation: spin 0.8s linear infinite;
-}
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
 
-.sync-meta {
+/* --- File selector segment (filter + controls + tree) --- */
+#file-selector {
   display: flex;
-  justify-content: space-between;
-  margin-top: 8px;
-  font-size: 9px;
-  color: var(--fg-mute);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  flex-direction: column;
+  overflow: hidden;
+  flex: 1;
 }
 
-.tree-block {
-  padding: 8px 0;
+/* Filter input: short-dash underline with breathing room below it.
+   Drawn as a repeating gradient (rather than border-style: dashed) so the
+   dash length and gap are controllable: 6px dash, 8px gap. */
+#filter {
+  --dash: 6px;
+  --gap: 8px;
+  flex-shrink: 0;
+  padding: 8px 14px;
+  text-align: center;
+  border-bottom: none;
+  margin-bottom: 8px;
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--rule-strong) 0 var(--dash),
+    transparent var(--dash) calc(var(--dash) + var(--gap))
+  );
+  background-repeat: no-repeat;
+  background-size: 100% 1px;
+  background-position: 0 100%;
+}
+
+#filter:focus {
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--accent) 0 var(--dash),
+    transparent var(--dash) calc(var(--dash) + var(--gap))
+  );
+}
+
+/* Expand / collapse controls: inset from the panel edges, compact buttons */
+#tree-controls {
+  flex-shrink: 0;
+  display: flex;
+  gap: 6px;
+  padding: 0 14px;
+}
+
+#tree-controls button {
+  flex: 1;
+  padding: 2px 6px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+}
+
+/* --- File tree --- */
+#file-tree {
   flex: 1;
   overflow-y: auto;
-  overflow-x: hidden;
-  font-family: var(--mono);
+  padding: 8px 0;
   font-size: 12px;
   scrollbar-width: thin;
   scrollbar-color: var(--rule) transparent;
 }
-.tree-block::-webkit-scrollbar {
-  width: 6px;
-}
-.tree-block::-webkit-scrollbar-thumb {
-  background: var(--rule);
-}
-
-.tree-search {
-  padding: 4px 14px 10px;
-}
-.tree-search input {
-  width: 100%;
-  background: transparent;
-  border: none;
-  border-bottom: 1px dashed var(--rule);
-  color: var(--fg);
-  font-family: var(--mono);
-  font-size: 11px;
-  padding: 4px 0 4px 14px;
-  outline: none;
-  background-image: linear-gradient(var(--accent), var(--accent));
-  background-repeat: no-repeat;
-  background-size: 0% 1px;
-  background-position: 0 100%;
-  transition: background-size 0.3s;
-}
-.tree-search input:focus {
-  background-size: 100% 1px;
-}
-.tree-search .search-prefix {
-  position: relative;
-  color: var(--fg-mute);
-}
-.tree-search .wrap {
-  position: relative;
-}
-.tree-search .wrap::before {
-  content: "/";
-  position: absolute;
-  left: 0;
-  top: 4px;
-  color: var(--accent);
-  font-size: 11px;
-}
 
 .tree-node {
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* Fixed row height keeps connector geometry predictable (mid = half of this) */
+.tree-label {
   display: flex;
   align-items: center;
-  padding: 3px 14px 3px 14px;
-  cursor: pointer;
+  height: 22px;
+  padding: 0 14px;
   color: var(--fg);
-  white-space: nowrap;
   position: relative;
 }
-.tree-node:hover {
+
+/* Indentation lives on the child containers so the vertical connector can
+   ride their left edge. The script also sets an inline padding-left per
+   depth; !important is needed to override that inline value from CSS. */
+.tree-children > .tree-node > .tree-label {
+  padding-left: 14px !important;
+}
+
+.tree-label:hover {
   background: var(--fg-faint);
 }
-.tree-node[data-active="true"] {
-  background: var(--fg-faint);
+
+.tree-label[data-active="true"] {
   color: var(--accent);
-  text-shadow: 0 0 calc(6px * var(--glow-strength)) var(--accent-glow);
+  text-shadow: 0 0 6px var(--accent-glow);
+  background: var(--fg-faint);
+  position: relative;
 }
-.tree-node[data-active="true"]::before {
+
+/* Active indicator bar */
+.tree-label[data-active="true"]::before {
   content: "";
   position: absolute;
   left: 0;
@@ -472,157 +461,177 @@ body {
   bottom: 0;
   width: 2px;
   background: var(--accent);
-  box-shadow: 0 0 calc(6px * var(--glow-strength)) var(--accent-glow);
 }
-.tree-node .caret {
-  width: 12px;
-  color: var(--fg-mute);
-  font-size: 10px;
-  text-align: center;
-}
-.tree-node .gt {
-  color: var(--fg-mute);
-  margin-right: 6px;
-  letter-spacing: 0;
-}
-.tree-node[data-type="folder"] .name {
+
+/* Node type colouring */
+.tree-node[data-type="folder"] .tree-label {
   color: var(--fg-dim);
 }
-.tree-node[data-type="file"] .name {
+
+.tree-node[data-type="file"] .tree-label {
   color: var(--fg);
   opacity: 0.85;
 }
-.tree-node .ext {
-  margin-left: auto;
-  color: var(--fg-faint);
-  font-size: 10px;
-  padding-left: 8px;
-}
-.tree-node[data-active="true"] .ext {
-  color: var(--accent);
-  opacity: 0.8;
+
+/* --- Tree connector lines --- */
+/* Vertical line: runs down the left edge of every nested child list,
+   indented so it sits under the parent's marker. */
+.tree-children {
+  margin-left: 18px;
+  border-left: 1px solid var(--rule);
 }
 
+/* Horizontal connector: from the vertical line into the label text.
+   (::after, because ::before is the active-item indicator bar.) */
+.tree-children > .tree-node > .tree-label::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 12px;
+  height: 0;
+  border-top: 1px solid var(--rule);
+  pointer-events: none;
+}
+
+/* Last child: mask the vertical line below the row's midpoint so it stops
+   at the └ corner instead of running past the last item. */
+.tree-children > .tree-node:last-child {
+  position: relative;
+}
+
+.tree-children > .tree-node:last-child::before {
+  content: "";
+  position: absolute;
+  left: -1px;
+  top: 11px; /* half of .tree-label height */
+  bottom: 0;
+  width: 1px;
+  background: var(--bg-deep);
+  pointer-events: none;
+}
+
+/* Collapsed folders */
 .tree-children[data-collapsed="true"] {
   display: none;
 }
 
-/* ============= CENTER / READING PANE ============= */
-.center-pane {
-  grid-area: center;
-  background: var(--reading-bg);
-  overflow: hidden;
+
+/* ==========================================================================
+   6. CENTRE PANEL (reading pane)
+   ========================================================================== */
+
+/* Column: fixed header bar on top, scrolling document below */
+#centre-panel {
   display: flex;
   flex-direction: column;
-  min-width: 0;
-  position: relative;
+  background: var(--reading-bg);
+  overflow: hidden;
 }
+
+/* --- Document header bar (matches top bar / sidebar segments) --- */
 .doc-header {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 8px 22px;
-  border-bottom: 1px solid var(--rule);
+  /* Tall enough that the floating reopen button (8px inset, ~22px tall)
+     sits inside the bar with a little room below it */
+  height: 38px;
+  padding: 0 14px;
   background: var(--bg-deep);
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--fg-mute);
-  flex-shrink: 0;
+  border-bottom: 1px solid var(--rule);
+  transition:
+    padding-left var(--left-slide),
+    padding-right var(--left-slide);
 }
-.doc-header .doc-path {
+
+/* Make room for the floating reopen buttons when a panel is closed */
+#app[data-left-closed="true"] .doc-header {
+  padding-left: 44px;
+}
+
+#app[data-right-closed="true"] .doc-header {
+  padding-right: 44px;
+}
+
+.doc-path {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: var(--fg-dim);
-}
-.doc-header .doc-path .here {
-  color: var(--accent);
-}
-.doc-header .doc-path .sep {
-  color: var(--fg-faint);
-}
-.doc-header .doc-actions {
-  display: flex;
-  gap: 4px;
-}
-.icon-btn {
-  width: 24px;
-  height: 22px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  border: 1px solid transparent;
-  color: var(--fg-mute);
-  cursor: pointer;
+  min-width: 0;
   font-family: var(--mono);
   font-size: 11px;
-  transition:
-    border-color 0.15s,
-    color 0.15s;
-}
-.icon-btn:hover {
-  border-color: var(--rule-strong);
-  color: var(--accent);
-}
-.icon-btn[data-active="true"] {
-  color: var(--accent);
-  border-color: var(--rule-strong);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+  text-shadow: 0 0 6px var(--accent-glow);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
+/* Prompt-style prefix before the path */
+.doc-path::before {
+  content: "//";
+  flex-shrink: 0;
+  color: var(--fg-mute);
+  text-shadow: none;
+  letter-spacing: 0;
+}
+
+/* --- Scrolling document area --- */
 .doc-scroll {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: thin;
   scrollbar-color: var(--rule) transparent;
 }
+
 .doc-scroll::-webkit-scrollbar {
   width: 8px;
 }
+
 .doc-scroll::-webkit-scrollbar-thumb {
   background: var(--rule);
 }
 
-.doc-frame {
-  max-width: 760px;
-  margin: 0 auto;
-  padding: 56px 48px 120px;
-  position: relative;
-}
-.doc-frame::before {
-  content: "// BEGIN " attr(data-doc-id);
-  position: absolute;
-  top: 22px;
-  left: 48px;
+/* --- Document end marker --- */
+/* Targeted by id: each rendered file wraps itself in its own .engram-doc div,
+   so a class selector would draw the marker twice. Reads the document name
+   from a data-doc-name attribute on the container. */
+#engram-doc::after {
+  content: "// EOF \00B7 " attr(data-doc-name);
+  display: block;
   font-family: var(--mono);
   font-size: 10px;
   color: var(--fg-faint);
   letter-spacing: 0.14em;
-}
-.doc-frame::after {
-  content: "// EOF — " attr(data-doc-bytes) " B · " attr(data-doc-words)
-    " WORDS";
-  display: block;
+  text-transform: uppercase;
   margin-top: 48px;
   padding-top: 18px;
   border-top: 1px dashed var(--reading-rule);
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--fg-faint);
-  letter-spacing: 0.14em;
 }
 
-/* ============= RENDERED DOC STYLES (engram-doc) ============= */
+
+/* ==========================================================================
+   7. RENDERED DOCUMENT
+   ========================================================================== */
+
+/* Fills the reading area edge to edge, with only a small gutter around it */
 .engram-doc {
+  max-width: none;
+  margin: 0;
+  padding: 16px 20px 40px;
   font-family: var(--serif);
   color: var(--reading-fg);
   font-size: 17px;
   line-height: 1.7;
   text-wrap: pretty;
 }
+
+/* --- Headings --- */
 .engram-doc h1,
 .engram-doc h2,
 .engram-doc h3,
@@ -632,89 +641,38 @@ body {
   color: var(--accent);
   letter-spacing: 0.02em;
   line-height: 1.3;
-  text-shadow: 0 0 calc(6px * var(--glow-strength)) var(--accent-glow);
-  text-wrap: balance;
+  text-shadow: 0 0 6px var(--accent-glow);
 }
-[data-theme="calm"] .engram-doc h1,
-[data-theme="calm"] .engram-doc h2,
-[data-theme="calm"] .engram-doc h3,
-[data-theme="calm"] .engram-doc h4 {
-  font-family: var(--serif);
-  color: var(--fg);
-  text-shadow: none;
-  font-weight: 700;
-}
+
 .engram-doc h1 {
   font-size: 32px;
   margin: 0 0 8px;
   padding-bottom: 16px;
   border-bottom: 1px solid var(--reading-rule);
 }
-.engram-doc h1::before {
-  content: "# ";
-  color: var(--fg-mute);
-  font-weight: 400;
-}
-.engram-doc h2 {
-  font-size: 22px;
-  margin: 40px 0 12px;
-}
-.engram-doc h2::before {
-  content: "## ";
-  color: var(--fg-mute);
-  font-weight: 400;
-}
-.engram-doc h3 {
-  font-size: 17px;
-  margin: 28px 0 8px;
-}
-.engram-doc h3::before {
-  content: "### ";
-  color: var(--fg-mute);
-  font-weight: 400;
-}
-[data-theme="calm"] .engram-doc h1::before,
-[data-theme="calm"] .engram-doc h2::before,
-[data-theme="calm"] .engram-doc h3::before {
-  content: "";
-}
 
-.engram-doc .doc-meta {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--fg-mute);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  margin-bottom: 28px;
-  display: flex;
-  gap: 18px;
-  flex-wrap: wrap;
-}
-.engram-doc .doc-meta span::before {
-  content: "▸ ";
-  color: var(--accent);
-}
+.engram-doc h2 { font-size: 22px; margin: 40px 0 12px; }
+.engram-doc h3 { font-size: 17px; margin: 28px 0 8px; }
 
-.engram-doc p {
-  margin: 0 0 16px;
-}
-.engram-doc strong {
-  color: var(--accent);
-  font-weight: 600;
-}
-.engram-doc em {
-  color: var(--reading-fg);
-  font-style: italic;
-}
+/* Markdown-style hash prefixes */
+.engram-doc h1::before { content: "# ";   color: var(--fg-mute); font-weight: 400; }
+.engram-doc h2::before { content: "## ";  color: var(--fg-mute); font-weight: 400; }
+.engram-doc h3::before { content: "### "; color: var(--fg-mute); font-weight: 400; }
+
+/* --- Inline text --- */
+.engram-doc p { margin: 0 0 16px; }
+
+.engram-doc strong { color: var(--accent); font-weight: 600; }
+.engram-doc em { font-style: italic; }
+
 .engram-doc a {
   color: var(--accent);
   text-decoration: none;
   border-bottom: 1px dashed var(--accent);
 }
-.engram-doc a:hover {
-  background: var(--fg-faint);
-}
+.engram-doc a:hover { background: var(--fg-faint); }
 
+/* --- Code --- */
 .engram-doc code {
   font-family: var(--mono);
   font-size: 0.88em;
@@ -722,13 +680,12 @@ body {
   color: var(--accent);
   padding: 1px 6px;
   border: 1px solid var(--reading-rule);
-  border-radius: 2px;
 }
+
 .engram-doc pre {
   font-family: var(--mono);
   font-size: 13px;
   background: var(--reading-code-bg);
-  color: var(--reading-fg);
   padding: 16px 18px;
   border-left: 2px solid var(--accent);
   border-top: 1px solid var(--reading-rule);
@@ -737,26 +694,16 @@ body {
   overflow-x: auto;
   margin: 18px 0;
   line-height: 1.55;
-  position: relative;
 }
-.engram-doc pre::before {
-  content: attr(data-lang);
-  position: absolute;
-  top: 6px;
-  right: 10px;
-  font-size: 10px;
-  color: var(--fg-mute);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
+
 .engram-doc pre code {
   background: transparent;
   border: none;
   padding: 0;
-  color: inherit;
   font-size: inherit;
 }
 
+/* --- Block elements --- */
 .engram-doc blockquote {
   margin: 18px 0;
   padding: 4px 18px;
@@ -764,23 +711,18 @@ body {
   color: var(--reading-mute);
   font-style: italic;
 }
-.engram-doc ul,
-.engram-doc ol {
-  margin: 0 0 16px;
-  padding-left: 24px;
-}
-.engram-doc ul li::marker {
-  content: "▸ ";
-  color: var(--accent);
-}
-.engram-doc li {
-  margin-bottom: 6px;
-}
+
+.engram-doc ul, .engram-doc ol { margin: 0 0 16px; padding-left: 24px; }
+.engram-doc ul li::marker { content: "▸ "; color: var(--accent); }
+.engram-doc li { margin-bottom: 6px; }
+
 .engram-doc hr {
   border: none;
   border-top: 1px dashed var(--reading-rule);
   margin: 32px 0;
 }
+
+/* --- Tables --- */
 .engram-doc table {
   width: 100%;
   border-collapse: collapse;
@@ -788,12 +730,13 @@ body {
   font-family: var(--mono);
   font-size: 13px;
 }
-.engram-doc th,
-.engram-doc td {
+
+.engram-doc th, .engram-doc td {
   text-align: left;
   padding: 8px 12px;
   border-bottom: 1px solid var(--reading-rule);
 }
+
 .engram-doc th {
   color: var(--accent);
   text-transform: uppercase;
@@ -801,481 +744,466 @@ body {
   font-size: 11px;
   border-bottom: 1px solid var(--rule-strong);
 }
-.engram-doc figure {
-  margin: 24px 0;
-  padding: 14px;
-  border: 1px dashed var(--reading-rule);
-}
-.engram-doc figcaption {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--fg-mute);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  margin-top: 8px;
-}
-.engram-doc .callout {
-  margin: 18px 0;
-  padding: 14px 18px;
-  border: 1px solid var(--reading-rule);
-  border-left: 2px solid var(--accent);
-  background: var(--reading-code-bg);
-  font-family: var(--mono);
-  font-size: 13px;
-}
-.engram-doc .callout::before {
-  content: "// NOTE";
-  display: block;
-  color: var(--accent);
-  font-size: 10px;
-  letter-spacing: 0.18em;
-  margin-bottom: 6px;
-}
 
-/* ============= RIGHT SIDEBAR ============= */
-.right-pane {
-  grid-area: right;
-  border-left: 1px solid var(--rule);
-  background: var(--bg-deep);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-.right-pane .pane-body {
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  scrollbar-width: thin;
-  scrollbar-color: var(--rule) transparent;
-}
-.right-pane .pane-body::-webkit-scrollbar {
-  width: 6px;
-}
-.right-pane .pane-body::-webkit-scrollbar-thumb {
-  background: var(--rule);
-}
 
-.widget {
-  border-bottom: 1px solid var(--rule);
-  padding: 14px 16px;
-}
-.widget .w-head {
+/* ============= WIDGET HEADER ============= */
+
+.widget-header {
   display: flex;
-  align-items: center;
+  flex-direction: row;
   justify-content: space-between;
+  align-items: center;
+  /* Full width even inside widgets that centre their content */
+  width: 100%;
   margin-bottom: 10px;
+}
+
+.widget-label {
   font-size: 9px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--fg-mute);
 }
-.widget .w-head .lbl::before {
-  content: "● ";
+
+.widget-label::before {
+  content: "\25CF"; /* ● */
   color: var(--accent);
+  margin-right: 6px;
 }
-.widget .w-head .id {
+
+.widget-id {
+  font-size: 9px;
+  color: var(--fg-faint);
+  letter-spacing: 0.1em;
+}
+
+
+/* ============= WIDGET: CLOCK ============= */
+
+#widget-clock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 12px 14px;
+  gap: 4px;
+}
+
+#clock-time {
+  font-family: var(--mono);
+  font-size: 28px;
+  color: var(--accent);
+  text-shadow: 0 0 8px var(--accent-glow);
+  letter-spacing: 0.05em;
+}
+
+#clock-date,
+#clock-uptime {
+  font-size: 10px;
+  color: var(--fg-mute);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+#clock-uptime {
   color: var(--fg-faint);
 }
 
-/* Clock widget */
-.clock {
-  text-align: center;
-  padding: 8px 0 4px;
-}
-.clock .time {
-  font-family: var(--mono);
-  font-size: 30px;
-  font-weight: 600;
-  color: var(--accent);
-  letter-spacing: 0.06em;
-  text-shadow: 0 0 calc(10px * var(--glow-strength)) var(--accent-glow);
-  line-height: 1;
-}
-.clock .date {
-  margin-top: 6px;
-  font-size: 10px;
-  color: var(--fg-mute);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-.clock .uptime {
-  margin-top: 10px;
-  font-size: 10px;
-  color: var(--fg-dim);
-  letter-spacing: 0.12em;
+
+/* ============= WIDGET: WAVEFORM ============= */
+
+/* Side inset lives on the segment so the header lines up with the other
+   widgets; #waveform keeps only its vertical breathing room. */
+#widget-waveform {
+  padding: 12px 14px 0;
 }
 
-/* Globe */
-.globe-wrap {
-  position: relative;
-  aspect-ratio: 1;
-  margin: 4px auto 8px;
-  width: 100%;
-  max-width: 220px;
-}
-.globe-svg {
-  width: 100%;
-  height: 100%;
-  color: var(--accent);
-  filter: drop-shadow(0 0 calc(4px * var(--glow-strength)) var(--accent-glow));
-}
-.globe-svg .meridian {
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 0.5;
-  opacity: 0.7;
-}
-.globe-svg .meridian-faint {
-  opacity: 0.25;
-}
-.globe-svg .equator {
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 0.7;
-}
-.globe-svg .marker {
-  fill: currentColor;
-}
-/* globe spins via JS phase variable */
-
-/* System stats */
-.stat-row {
-  display: grid;
-  grid-template-columns: 50px 1fr 40px;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 6px;
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--fg-mute);
-  letter-spacing: 0.08em;
-}
-.stat-row .lbl {
-  text-transform: uppercase;
-}
-.stat-row .bar {
-  height: 8px;
-  background: var(--fg-faint);
-  border: 1px solid var(--rule);
-  position: relative;
-  overflow: hidden;
-}
-.stat-row .bar .fill {
-  position: absolute;
-  inset: 0;
-  background: var(--accent);
-  box-shadow: 0 0 calc(4px * var(--glow-strength)) var(--accent-glow);
-  transform-origin: left;
-  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.stat-row .val {
-  color: var(--accent);
-  text-align: right;
-}
-
-/* Activity log */
-.log {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--fg-mute);
-  line-height: 1.6;
-  max-height: 140px;
-  overflow: hidden;
-  position: relative;
-}
-.log::after {
-  content: "";
-  position: absolute;
-  inset: auto 0 0 0;
-  height: 36px;
-  background: linear-gradient(transparent, var(--bg-deep));
-  pointer-events: none;
-}
-.log .row {
+#waveform {
   display: flex;
-  gap: 8px;
-}
-.log .ts {
-  color: var(--accent);
-  flex-shrink: 0;
-  opacity: 0.85;
-}
-.log .msg {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* Waveform */
-.waveform {
-  height: 36px;
-  display: flex;
+  width: 100%;
   align-items: center;
   gap: 2px;
-}
-.waveform .bar {
-  flex: 1;
-  background: var(--accent);
-  box-shadow: 0 0 calc(3px * var(--glow-strength)) var(--accent-glow);
-  min-height: 2px;
-  transition: height 0.18s ease-out;
+  height: 71px;
+  padding: 16px 0 31px;
 }
 
-/* ============= STATUS BAR ============= */
-.statusbar {
-  grid-area: status;
-  border-top: 1px solid var(--rule);
-  background: var(--bg-deep);
+.bar {
+  flex: 1 1 0;
+  min-width: 0;
+  background: var(--accent);
+  opacity: 0.7;
+  border-radius: 0;
+  transition: height 0.22s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+
+/* ============= WIDGET: ACTIVITY LOG ============= */
+
+#widget-activity-log {
+  padding: 12px 14px;
+}
+
+.log-row {
   display: flex;
+  gap: 10px;
+}
+
+/* Keep the timestamp column intact when a long message wraps */
+.log-ts {
+  flex-shrink: 0;
+}
+
+
+/* ============= TOP BAR ============= */
+
+#top-bar {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
   align-items: center;
+  width: 100%;
+  height: 28px;
+  flex-shrink: 0;
   padding: 0 14px;
-  gap: 18px;
+  background: var(--bg-deep);
+  border-bottom: 1px solid var(--rule);
   font-family: var(--mono);
   font-size: 9px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--fg-mute);
 }
-.statusbar .item {
+
+/* App name on the left: larger and brighter than the status text */
+#top-left {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+  text-shadow: 0 0 6px var(--accent-glow);
+}
+
+/* #top-right is a plain flex child; it inherits from #top-bar.
+   .blink is defined in the bottom bar section below. */
+
+
+/* ============= BOTTOM BAR ============= */
+
+#bottom-bar {
   display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  height: 22px;
+  flex-shrink: 0;
+  padding: 0 14px;
+  gap: 18px;
+  background: var(--bg-deep);
+  border-top: 1px solid var(--rule);
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-mute);
+}
+
+.status-item {
+  display: flex;
+  flex-direction: row;
   align-items: center;
   gap: 6px;
 }
-.statusbar .item::before {
-  content: "▪";
+
+.status-item::before {
+  content: "\25AA"; /* ▪ */
   color: var(--accent);
 }
-.statusbar .spacer {
+
+.spacer {
   flex: 1;
 }
-.statusbar .blink {
+
+.blink {
+  color: var(--accent);
   animation: blink 1s steps(2) infinite;
-  color: var(--accent);
 }
+
 @keyframes blink {
-  50% {
-    opacity: 0;
-  }
+  50% { opacity: 0; }
 }
 
-/* ============= FX LAYER ============= */
-.fx {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1000;
-  mix-blend-mode: screen;
-}
-[data-theme="calm"] .fx {
-  display: none;
-}
 
-.fx-scanlines {
-  position: absolute;
-  inset: 0;
-  background-image: repeating-linear-gradient(
-    to bottom,
-    transparent 0px,
-    transparent 2px,
-    rgba(0, 0, 0, 0.45) 3px,
-    rgba(0, 0, 0, 0.45) 3px
-  );
-  opacity: var(--scanline-opacity);
-}
-.fx-vignette {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    ellipse at center,
-    transparent 50%,
-    rgba(0, 0, 0, 0.6) 100%
-  );
-  mix-blend-mode: multiply;
-}
-.fx-flicker {
-  position: absolute;
-  inset: 0;
-  background: var(--accent);
-  opacity: 0;
-  mix-blend-mode: overlay;
-  animation: flicker 4s infinite;
-}
-@keyframes flicker {
-  0%,
-  100% {
-    opacity: 0;
-  }
-  97% {
-    opacity: 0;
-  }
-  97.5% {
-    opacity: calc(0.06 * var(--flicker-strength));
-  }
-  98% {
-    opacity: 0;
-  }
-  98.5% {
-    opacity: calc(0.04 * var(--flicker-strength));
-  }
-  99% {
-    opacity: 0;
-  }
-}
-.fx-grain {
-  position: absolute;
-  inset: 0;
-  opacity: var(--grain-opacity);
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-}
+/* ==========================================================================
+   8. RIGHT PANEL
+   ========================================================================== */
 
-/* ============= BOOT OVERLAY ============= */
-.boot {
-  position: fixed;
-  inset: 0;
-  background: var(--bg-deep);
-  color: var(--accent);
-  font-family: var(--mono);
-  font-size: 13px;
-  line-height: 1.6;
-  z-index: 9999;
-  padding: 36px 48px;
-  overflow: hidden;
-  text-shadow: 0 0 calc(6px * var(--glow-strength)) var(--accent-glow);
-}
-.boot {
-  opacity: 1;
-  transition: opacity 0.6s ease;
-}
-.boot[data-done="true"] {
-  opacity: 0;
-  pointer-events: none;
-  visibility: hidden;
-  transition:
-    opacity 0.6s ease,
-    visibility 0s linear 0.6s;
-}
-.boot .ascii {
-  color: var(--accent);
-  white-space: pre;
-  font-size: 11px;
-  line-height: 1.1;
-  margin-bottom: 22px;
-  opacity: 0.9;
-}
-.boot .lines {
+#right-panel {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-}
-.boot .line {
-  opacity: 0;
-  animation: bootline 0.05s forwards;
-}
-@keyframes bootline {
-  to {
-    opacity: 1;
-  }
-}
-.boot .line .ok {
-  color: var(--accent);
-}
-.boot .line .warn {
-  color: #ffcb6b;
-}
-.boot .line .dim {
-  opacity: 0.5;
-}
-.boot .cursor {
-  display: inline-block;
-  width: 0.6em;
-  height: 1em;
-  background: var(--accent);
-  vertical-align: -2px;
-  animation: blink 1s steps(2) infinite;
-  margin-left: 4px;
-}
-
-/* ============= TWEAKS LAUNCHER NOTE ============= */
-.right-collapsed-toggle {
-  position: fixed;
-  top: 36px;
-  right: 0;
-  width: 18px;
-  height: 60px;
   background: var(--bg-deep);
-  border: 1px solid var(--rule);
-  border-right: none;
-  color: var(--accent);
-  font-family: var(--mono);
-  font-size: 10px;
-  cursor: pointer;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 50;
-}
-.app[data-right-closed="true"] ~ .right-collapsed-toggle {
-  display: flex;
+  border-left: 1px solid var(--rule);
+  /* Fixed width so contents don't reflow while the column animates. The
+     column's start edge moves right as it shrinks, which carries the panel
+     off-screen by itself (no transform needed, unlike the left panel). */
+  width: var(--right-width);
+  visibility: visible;
+  transition: visibility 0s linear 0s;
 }
 
-.left-collapsed-toggle {
-  position: fixed;
-  top: 36px;
-  left: 0;
-  width: 18px;
-  height: 60px;
-  background: var(--bg-deep);
-  border: 1px solid var(--rule);
-  border-left: none;
-  color: var(--accent);
-  font-family: var(--mono);
-  font-size: 10px;
-  cursor: pointer;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 50;
-}
-.app[data-left-closed="true"] ~ .left-collapsed-toggle {
+/* Close button segment: mirrors #left-panel-controls, button on the outer edge */
+#right-panel-controls {
   display: flex;
+  justify-content: flex-end;
+  padding: 8px;
 }
 
-/* corner brackets */
-.bracket {
+#right-close-button {
+  padding: 2px 6px;
+}
+
+/* Scrolling body for the widgets: the panel itself never scrolls, so the
+   segments keep their natural height instead of being squashed by flex. */
+#right-panel-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--rule) transparent;
+}
+
+/* The first widget is now first-child of the body, not of the panel, so it
+   would lose its divider from the controls segment above. Restore it. */
+#right-panel-body > .sidebar-segment:first-child {
+  border-top: 1px solid var(--rule);
+}
+
+/* --- Globe widget --- */
+#widget-globe {
+  padding: 12px 14px;
+}
+
+#globe-svg {
+  display: block;
+  width: 100%;
+  max-width: 230px;
+  aspect-ratio: 1;
+  margin: 12px auto 16px;
+  color: var(--accent);
+  filter: drop-shadow(0 0 4px var(--accent-glow));
+}
+
+/* --- Collapse / reopen toggle --- */
+/* Mirror of the left panel: the column shrinks to zero while the panel slides
+   out to the right. The reopen button floats in the top-right corner of #app
+   and fades in once closed. */
+#right-reopen {
   position: absolute;
-  width: 14px;
-  height: 14px;
-  border: 1px solid var(--accent);
-  pointer-events: none;
-  opacity: 0.6;
-}
-.bracket.tl {
-  top: 6px;
-  left: 6px;
-  border-right: none;
-  border-bottom: none;
-}
-.bracket.tr {
-  top: 6px;
-  right: 6px;
-  border-left: none;
-  border-bottom: none;
-}
-.bracket.bl {
-  bottom: 6px;
-  left: 6px;
-  border-right: none;
-  border-top: none;
-}
-.bracket.br {
-  bottom: 6px;
-  right: 6px;
-  border-left: none;
-  border-top: none;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity var(--left-slide),
+    visibility 0s linear 0.25s;
 }
 
-/* tweak panel offset so it doesn't cover right pane */
-.tweaks-panel-host {
-  z-index: 800;
+#right-open-button {
+  padding: 2px 6px;
+}
+
+#app[data-right-closed="true"] {
+  grid-template-columns: var(--left-width) 1fr 0px;
+}
+
+#app[data-right-closed="true"] #right-panel {
+  /* Hide from focus/pointer only once the slide has finished */
+  visibility: hidden;
+  transition: visibility 0s linear 0.25s;
+}
+
+#app[data-right-closed="true"] #right-reopen {
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity var(--left-slide),
+    visibility 0s linear 0s;
+}
+
+/* Both panels closed: neither side rule alone is correct, so set both to 0 */
+#app[data-left-closed="true"][data-right-closed="true"] {
+  grid-template-columns: 0px 1fr 0px;
+}
+
+
+/* ==========================================================================
+   9. SETTINGS DIALOG
+   Native <dialog> opened with showModal(). The global reset zeroes margins,
+   which also kills the auto margins the browser uses to centre a modal, so
+   they are restored here. ::backdrop dims the rest of the app.
+   ========================================================================== */
+
+#settings {
+  margin: auto;
+  width: min(360px, calc(100vw - 32px));
+  padding: 0;
+  background: var(--bg-deep);
+  color: var(--fg);
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--chrome-radius);
+  box-shadow:
+    0 0 0 1px var(--bg),
+    0 0 24px var(--fg-faint),
+    0 12px 40px rgba(0, 0, 0, 0.6);
+  font-family: var(--mono);
+}
+
+#settings::backdrop {
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(2px);
+}
+
+/* Header: mirrors the top bar chrome */
+#settings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 28px;
+  padding: 0 14px;
+  border-bottom: 1px solid var(--rule);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  text-shadow: 0 0 6px var(--accent-glow);
+}
+
+#settings-header > span::before {
+  content: "\25CF"; /* ● */
+  margin-right: 6px;
+}
+
+#settings-close {
+  border: none;
+  padding: 2px 4px;
+  font-size: 11px;
+  color: var(--fg-mute);
+  text-shadow: none;
+}
+
+#settings-close:hover {
+  color: var(--accent);
+}
+
+/* Body: same inset as the sidebar widgets */
+#settings-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 14px;
+}
+
+.settings-row {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.settings-row label {
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-mute);
+}
+
+/* Selects follow the input/button styling from section 3 */
+#settings select {
+  appearance: none;
+  width: 100%;
+  padding: 6px 28px 6px 8px;
+  background: var(--bg-elev);
+  border: 1px solid var(--rule);
+  border-radius: var(--chrome-radius);
+  color: var(--fg);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  outline: none;
+}
+
+#settings select:hover,
+#settings select:focus {
+  border-color: var(--accent);
+}
+
+#settings option {
+  background: var(--bg-deep);
+  color: var(--fg);
+}
+
+/* Custom dropdown chevron, since appearance: none removes the native one */
+.settings-row::after {
+  content: "\25BE"; /* ▾ */
+  position: absolute;
+  right: 10px;
+  bottom: 6px;
+  color: var(--accent);
+  pointer-events: none;
+}
+
+
+/* ============= BOOT OVERLAY ============= */
+
+/* The art and the boot lines stack in a column anchored to the top-left,
+   like a terminal. justify-items keeps both children flush with the left
+   edge so the lines sit directly under the art. */
+#boot-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 999;
+  display: grid;
+  place-content: start;
+  justify-items: start;
+  gap: 20px;
+  padding: 32px 40px;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--accent);
+  transition:
+    opacity 0.6s ease,
+    display 0.6s allow-discrete;
+}
+
+/* The script hides the overlay with an inline display: none. Transitioning
+   display with allow-discrete keeps the element rendered for the duration,
+   and this selector fades it out over that window. Browsers without support
+   simply hide it instantly, as before. */
+#boot-overlay[style*="display: none"] {
+  opacity: 0;
+}
+
+/* The art is indented with tabs in the HTML; tab-size: 0 collapses those so
+   the block characters line up without editing the markup. */
+.boot .ascii {
+  white-space: pre;
+  tab-size: 0;
+  font-size: 12px;
+  line-height: 1.15;
+  letter-spacing: 0;
+  text-shadow: 0 0 8px var(--accent-glow);
+  max-width: 100vw;
+  overflow: hidden;
+}
+
+#boot-lines {
+  white-space: pre;
+  line-height: 1.8;
+  text-shadow: 0 0 8px var(--accent-glow);
+  /* Reserve room for all seven lines so the art doesn't drift as they print */
+  min-height: calc(7 * 1.8em);
 }
