@@ -36,7 +36,7 @@ function walk(node, parent, depth = 1) {
         });
     } else if (node["type"] === "file") {
         label.addEventListener("click", async () => {
-            const fetched = await fetch("./engrams/rendered/" + node["path"])
+            const fetched = await fetch("./engrams/rendered/" + node["path"] + "?t=" + Date.now())
             const html = await fetched.text();
             document.getElementById("engram-doc").innerHTML = html;
             document.getElementById("doc-path").innerHTML = node["name"]
@@ -47,7 +47,7 @@ function walk(node, parent, depth = 1) {
 }
 
 async function loadIndex() {
-    const index = await fetch("./engrams/index.json")
+    const index = await fetch("./engrams/index.json?t=" + Date.now())
     const nodes = await index.json();
     console.log(nodes)
     document.getElementById("file-tree").innerHTML = "";
