@@ -9,12 +9,15 @@ startActivityLog();
 
 const savedTheme = localStorage.getItem("theme");
 if (savedTheme) document.documentElement.dataset.theme = savedTheme;
+document.getElementById("theme-select").value = savedTheme ?? "";
 
 const savedSerif = localStorage.getItem("font-serif");
 if (savedSerif) document.documentElement.style.setProperty("--serif", savedSerif);
+if (savedSerif) document.getElementById("font-serif-select").value = savedSerif;
 
 const savedMono = localStorage.getItem("font-mono");
 if (savedMono) document.documentElement.style.setProperty("--mono", savedMono);
+if (savedMono) document.getElementById("font-mono-select").value = savedMono;
 
 function walk(node, parent, depth = 1) {
     const container = document.createElement("div");
