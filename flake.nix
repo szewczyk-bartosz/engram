@@ -36,7 +36,7 @@
 
           system.activationScripts.engram-static = lib.stringAfter [ "users" ] ''
             cp -r ${self}/. /var/lib/engram/
-            chown -R ${cfg.user}:${cfg.user} /var/lib/engram
+            chown -R ${cfg.user} /var/lib/engram
           '';
 
           systemd.services.engram-api = {
