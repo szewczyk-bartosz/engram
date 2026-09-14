@@ -37,7 +37,7 @@
   --accent-glow: rgba(124, 255, 178, 0.6);
   --rule: rgba(124, 255, 178, 0.22);
   --rule-strong: rgba(124, 255, 178, 0.5);
-  --serif: "Lora", "IBM Plex Serif", Georgia, serif;
+  --serif: "Literata", "Source Serif 4", Georgia, serif;
   --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
   --reading-bg: #0a0e0a;
   --reading-fg: #d8f5e1;
@@ -619,10 +619,10 @@ body {
    7. RENDERED DOCUMENT
    ========================================================================== */
 
-/* Fills the reading area edge to edge, with only a small gutter around it */
+/* Centred reading column capped at ~70 characters; fills the pane when narrower */
 .engram-doc {
-  max-width: none;
-  margin: 0;
+  max-width: 70ch;
+  margin: 0 auto;
   padding: 16px 20px 40px;
   font-family: var(--serif);
   color: var(--reading-fg);
