@@ -8,10 +8,6 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 
 # All output lives in ./engrams/ next to this script, regardless of cwd.
-SCRIPT_DIR = Path(__file__).resolve().parent
-ENGRAMS_DIR = SCRIPT_DIR / "engrams"
-INDEX_PATH = ENGRAMS_DIR / "index.json"
-RENDER_DIR = ENGRAMS_DIR / "rendered"
 
 
 def sha256_of(path: Path, chunk_size: int = 1 << 20) -> str:
@@ -96,16 +92,21 @@ def main():
         "and generate an index."
     )
     parser.add_argument(
-        "root", type=Path, help="Source directory containing raw .eng files"
+        "-i", type=Path, help="Source directory containing raw .eng files"
     )
+
+    parser.add_argument("--web-root", type=Path, metavar="DIRECTORY", help="output HTML file")
 
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
 
-    source_dir: Path = args.root
+    source_dir: Path = args.i
     if not source_dir.is_dir():
         parser.error(f"source directory does not exist: {source_dir}")
 
+    ENGRAMS_DIR = args.web_root / "engrams/"
+    RENDER_DIR = ENGRAMS_DIR / "rendered/"
+    INDEX_PATH = ENGRAMS_DIR / "index.json"
     ENGRAMS_DIR.mkdir(parents=True, exist_ok=True)
     RENDER_DIR.mkdir(parents=True, exist_ok=True)
 
