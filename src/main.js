@@ -44,6 +44,7 @@ function walk(node, parent, depth = 1) {
             document.getElementById("engram-doc").innerHTML = html;
             document.getElementById("doc-path").innerHTML = node["name"]
             document.getElementById("centre-panel").dataset.docName = node["name"].toUpperCase();
+            Prism.highlightAllUnder(document.getElementById("engram-doc"))
         })
 
     }
