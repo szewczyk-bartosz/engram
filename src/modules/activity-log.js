@@ -1,6 +1,6 @@
 export function startActivityLog() {
     const container = document.getElementById("activity-log");
-    const maxRows = 8;
+    const maxRows = 6;
 
     const messages = [
         "Database indexed...",
@@ -37,6 +37,6 @@ export function startActivityLog() {
         }
     }
 
-    for (let i = 0; i < 5; i++) push();
+    for (let i = 0; i < 6; i++) push();
     setInterval(push, 4200);
 }
