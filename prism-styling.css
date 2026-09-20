@@ -1,0 +1,156 @@
+/* ==========================================================================
+   ENGRAM — prism-styling.css
+
+   Syntax-highlighting colors for Prism token spans (<span class="token ...">)
+   produced by Prism.highlightElement() in src/main.js. Scoped under
+   .engram-doc, the only place Prism ever runs.
+
+   Block chrome for code (background/border/padding on pre and inline code)
+   lives in styles.css and is untouched here — this file only colors tokens.
+
+   1. Token-color tokens (theme variables)
+   2. Token rules
+   ========================================================================== */
+
+
+/* ==========================================================================
+   1. TOKEN-COLOR TOKENS
+   Mirrors the theme-block pattern in styles.css section 1: a default (green)
+   :root block, then one override block per [data-theme="..."]. Switching
+   themes already just flips document.documentElement.dataset.theme, so these
+   cascade the same way --accent / --fg etc. do — no JS changes needed.
+
+   Operators and punctuation deliberately have no dedicated variable here —
+   they use the existing var(--fg-mute) so they stay muted and in sync with
+   the active theme automatically.
+   ========================================================================== */
+
+/* Default: GREEN PHOSPHOR */
+:root {
+  --code-keyword: #7cffb2;
+  --code-string: #ffcf7a;
+  --code-number: #7cd9ff;
+  --code-entity: #d99cff;
+  --code-comment: rgba(124, 255, 178, 0.4);
+}
+
+/* AMBER CRT */
+[data-theme="amber"] {
+  --code-keyword: #ffb454;
+  --code-string: #8fe0a0;
+  --code-number: #7cc8ff;
+  --code-entity: #ff9ecf;
+  --code-comment: rgba(255, 180, 84, 0.4);
+}
+
+/* RED ALERT */
+[data-theme="red"] {
+  --code-keyword: #ff4d4d;
+  --code-string: #ffcf7a;
+  --code-number: #7cc8ff;
+  --code-entity: #d99cff;
+  --code-comment: rgba(255, 107, 107, 0.4);
+}
+
+/* CYAN TERMINAL */
+[data-theme="cyan"] {
+  --code-keyword: #7cc8ff;
+  --code-string: #ffd479;
+  --code-number: #8fe0a0;
+  --code-entity: #ff9ecf;
+  --code-comment: rgba(124, 200, 255, 0.4);
+}
+
+/* MONOCHROME — no hue; token types read by weight/italic instead */
+[data-theme="mono"] {
+  --code-keyword: #ffffff;
+  --code-string: #c8c8c8;
+  --code-number: #e8e8e8;
+  --code-entity: #ffffff;
+  --code-comment: rgba(232, 232, 232, 0.4);
+}
+
+/* CALM FOCUS — warm paper, muted palette */
+[data-theme="calm"] {
+  --code-keyword: #8b6f3c;
+  --code-string: #4f7a52;
+  --code-number: #3d6b8f;
+  --code-entity: #7a4f8f;
+  --code-comment: rgba(42, 38, 32, 0.45);
+}
+
+
+/* ==========================================================================
+   2. TOKEN RULES
+   ========================================================================== */
+
+/* Plain/default text for highlighted code blocks — anything Prism doesn't
+   wrap in a token span (identifiers, dots, whitespace, ...) falls back to
+   this neutral reading color instead of the accent color .engram-doc code
+   sets for everything by default. Without this, keywords (accent) were
+   indistinguishable from ordinary identifiers (also accent). Higher
+   specificity than .engram-doc code, and lower than every .token.* rule
+   below, so token colors still win wherever a span exists. Inline (non-pre)
+   <code> in prose is untouched and keeps its accent color. */
+.engram-doc pre code {
+  color: var(--reading-fg);
+}
+
+.engram-doc .token.comment {
+  color: var(--code-comment);
+  font-style: italic;
+}
+
+.engram-doc .token.keyword {
+  color: var(--code-keyword);
+  font-weight: 600;
+}
+
+.engram-doc .token.string {
+  color: var(--code-string);
+}
+
+.engram-doc .token.number,
+.engram-doc .token.boolean,
+.engram-doc .token.constant {
+  color: var(--code-number);
+}
+
+.engram-doc .token.function,
+.engram-doc .token.class-name,
+.engram-doc .token.decorator,
+.engram-doc .token.builtin {
+  color: var(--code-entity);
+}
+
+.engram-doc .token.operator,
+.engram-doc .token.punctuation {
+  color: var(--fg-mute);
+}
+
+/* Standard Prism boilerplate — weight/style only, no color, kept for
+   robustness in case other token types show up outside Python. */
+.engram-doc .token.important,
+.engram-doc .token.bold {
+  font-weight: 700;
+}
+
+.engram-doc .token.italic {
+  font-style: italic;
+}
+
+.engram-doc .token.entity {
+  cursor: help;
+}
+
+.engram-doc .token.namespace {
+  opacity: 0.7;
+}
+
+/* MONOCHROME: keep the "named things" group hue-free but still distinct */
+[data-theme="mono"] .engram-doc .token.function,
+[data-theme="mono"] .engram-doc .token.class-name,
+[data-theme="mono"] .engram-doc .token.decorator,
+[data-theme="mono"] .engram-doc .token.builtin {
+  font-style: italic;
+}
