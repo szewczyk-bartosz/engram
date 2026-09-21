@@ -47,6 +47,12 @@ function walk(node, parent, depth = 1) {
 document.getElementById("engram-doc").querySelectorAll("code").forEach(element => {
     Prism.highlightElement(element);
 });
+document.getElementById("engram-doc").querySelectorAll(".math-block").forEach(el => {
+    katex.render(el.dataset.latex, el, { displayMode: true, throwOnError: false });
+});
+document.getElementById("engram-doc").querySelectorAll(".math-inline").forEach(el => {
+    katex.render(el.dataset.latex, el, { displayMode: false, throwOnError: false });
+});
         })
 
     }
