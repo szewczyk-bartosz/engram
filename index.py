@@ -98,6 +98,7 @@ def main():
     parser.add_argument("--web-root", type=Path, metavar="DIRECTORY", help="output HTML file")
 
     parser.add_argument("--check", action="store_true")
+    parser.add_argument("--hard", action="store_true")
     args = parser.parse_args()
 
     source_dir: Path = args.i
@@ -126,6 +127,7 @@ def main():
             old_node
             and old_node["source_hash"] == new_node["source_hash"]
             and output_path.exists()
+            and not args.hard
         ):
             continue
         else:
