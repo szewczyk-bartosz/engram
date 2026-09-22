@@ -12,6 +12,7 @@ def make_handler(source_dir: Path, web_root: Path):
                     str(Path(__file__).parent / "index.py"),
                     "-i", str(source_dir),
                     "--web-root", str(web_root),
+                    "--hard"
                 ])
                 self.send_response(200)
                 self.send_header("Content-Type", "application/json")
