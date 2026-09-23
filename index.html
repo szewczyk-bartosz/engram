@@ -114,57 +114,6 @@
 						</div>
 						<div id="activity-log"></div>
 					</div>
-					<!-- Temporary -->
-					<div class="sidebar-segment" id="widget-countdown">
-						<div class="widget-header">
-							<span class="widget-label">COUNTDOWN</span>
-						</div>
-						<div id="countdown-label">NASTIA IS BACK IN:</div>
-						<div id="countdown-display"></div>
-					</div>
-					<script>
-						const target = new Date("2026-09-18T17:00:00");
-						const display = document.getElementById("countdown-display");
-						
-						function tick() {
-							const diff = target - Date.now();
-							if (diff <= 0) { display.textContent = "00D 00:00:00"; return; }
-							const s = Math.floor(diff / 1000);
-							const d = Math.floor(s / 86400);
-							const h = Math.floor((s % 86400) / 3600);
-							const m = Math.floor((s % 3600) / 60);
-							const sec = s % 60;
-							display.textContent = `${String(d).padStart(2,"0")}D ${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(sec).padStart(2,"0")}`;
-						}
-						
-						tick();
-						setInterval(tick, 1000);
-					</script>
-					<style>
-						#widget-countdown {
-							display: flex;
-							flex-direction: column;
-							align-items: center;
-							text-align: center;
-							padding: 12px 14px;
-							gap: 4px;
-						}
-						
-						#countdown-display {
-							font-family: var(--mono);
-							font-size: 28px;
-							color: var(--accent);
-							text-shadow: 0 0 8px var(--accent-glow);
-							letter-spacing: 0.05em;
-						}
-						
-						#countdown-label {
-							font-size: 15px;
-							color: var(--accent);
-							letter-spacing: 0.14em;
-							text-transform: uppercase;
-						}
-					</style>
 				</div>
 			</div>
 		</div>
