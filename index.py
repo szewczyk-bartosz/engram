@@ -105,7 +105,8 @@ def main():
     if not source_dir.is_dir():
         parser.error(f"source directory does not exist: {source_dir}")
 
-    ENGRAMS_DIR = args.web_root / "engrams/"
+    MEDIA_DIR = args.web_root / "dynamic"
+    ENGRAMS_DIR = MEDIA_DIR / "engrams/"
     RENDER_DIR = ENGRAMS_DIR / "rendered/"
     INDEX_PATH = ENGRAMS_DIR / "index.json"
     ENGRAMS_DIR.mkdir(parents=True, exist_ok=True)
