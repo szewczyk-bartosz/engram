@@ -2,7 +2,7 @@
   description = "Engram notes server";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-stable";
+    nixpkgs.url = "nixpkgs/nixos-26.05";
     engramware.url = "github:szewczyk-bartosz/engramware";
   };
 
