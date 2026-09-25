@@ -26,6 +26,15 @@ def make_handler(source_dir: Path, web_root: Path):
         def log_message(self, format, *args):
             pass
 
+        def do_GET(self):
+            if self.path == "/api/index":
+                pass
+            elif self.path.startswith("/api/files/"):
+                pass
+            else:
+                self.send_response(404)
+                self.end_headers()
+
     return Handler
 
 if __name__ == "__main__":
