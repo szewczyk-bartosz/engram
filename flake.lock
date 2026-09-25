@@ -5,11 +5,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1790086486,
-        "narHash": "sha256-5KXCy3rMR9gcoVdmKOdJZscrnRyvMT5Hh+r7qSaUTRE=",
+        "lastModified": 1790346013,
+        "narHash": "sha256-oI5WG+EYuB2hwbrfgMNO/uIcmxMGBMZ2naiTKKl8xXU=",
         "owner": "szewczyk-bartosz",
         "repo": "engramware",
-        "rev": "1feccb7c5dfe4b8091e03dbda822568c029756f7",
+        "rev": "1b569eee4eafb6286dd926795391e635c98269c8",
         "type": "github"
       },
       "original": {
@@ -20,16 +20,15 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1777954456,
-        "narHash": "sha256-hGdgeU2Nk87RAuZyYjyDjFL6LK7dAZN5RE9+hrDTkDU=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "549bd84d6279f9852cae6225e372cc67fb91a4c1",
-        "type": "github"
+        "lastModified": 1790218706,
+        "narHash": "sha256-qdM4Skrqq9Xps3OPNi9PWC6/hrWK9eDx5DUAUUaoz+o=",
+        "rev": "c508844df6c28fa6dabc1b6af70f3ccbd65c5201",
+        "type": "tarball",
+        "url": "https://releases.nixos.org/nixos/26.05/nixos-26.05.10529.c508844df6c2/nixexprs.tar.zst"
       },
       "original": {
         "id": "nixpkgs",
-        "ref": "nixos-unstable",
+        "ref": "nixos-26.05",
         "type": "indirect"
       }
     },
