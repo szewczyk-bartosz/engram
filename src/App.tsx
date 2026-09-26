@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { act, useState } from "react";
 import TopBar from "./TopBar";
 import {views, ViewTypes} from "./Views";
-
+        
 
 export default function App() {
   const [activeView, setActiveView] = useState<ViewTypes>("notes");
@@ -10,7 +10,7 @@ export default function App() {
 
   return (
     <>
-      <TopBar />
+      <TopBar activeView={activeView} setActiveView={setActiveView} />
       <View />
       <div></div>
     </>
