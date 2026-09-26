@@ -68,19 +68,20 @@ def createIndex(root: Path):
 
         return children
 
-    return walk(root)
+    wrapped = FolderNode("root", walk(root))
+    return wrapped
 
 
 def flatten_files(tree):
     """Walk the tree and return {path: file_node} for every file."""
     result = {}
 
-    def visit(nodes):
-        for node in nodes:
-            if node["type"] == "file":
-                result[node["path"]] = node
-            else:
-                visit(node["children"])
+    def visit(node):
+        if node["type"] == "file":
+            result[node["path"]] = node
+        else:
+            for child in node["children"]:
+                visit(child)
 
     visit(tree)
     return result
@@ -105,20 +106,16 @@ def main():
     if not source_dir.is_dir():
         parser.error(f"source directory does not exist: {source_dir}")
 
-    MEDIA_DIR = args.web_root / "dynamic"
-    ENGRAMS_DIR = MEDIA_DIR / "engrams/"
+    ENGRAMS_DIR = args.web_root / "engrams/"
     RENDER_DIR = ENGRAMS_DIR / "rendered/"
     INDEX_PATH = ENGRAMS_DIR / "index.json"
     ENGRAMS_DIR.mkdir(parents=True, exist_ok=True)
     RENDER_DIR.mkdir(parents=True, exist_ok=True)
 
     rawIndex = createIndex(source_dir)
-    new_tree = flatten_files([asdict(i) for i in rawIndex])
+    new_tree = flatten_files(asdict(rawIndex))
+    print(load_index(INDEX_PATH))
     old_tree = flatten_files(load_index(INDEX_PATH))
-
-    if args.check:
-        for i in rawIndex:
-            print(i)
 
     for path, new_node in new_tree.items():
         old_node = old_tree.get(path)
@@ -147,9 +144,9 @@ def main():
     save_index(INDEX_PATH, rawIndex)
 
 
-def save_index(path: Path, tree: list) -> None:
+def save_index(path: Path, tree: FolderNode) -> None:
     with path.open("w", encoding="utf-8") as f:
-        json.dump([asdict(n) for n in tree], f, indent=2, ensure_ascii=False)
+        json.dump(asdict(tree), f, indent=2, ensure_ascii=False)
 
 
 def load_index(path: Path):
