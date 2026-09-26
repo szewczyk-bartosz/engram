@@ -252,6 +252,104 @@ body {
 
 
 /* ==========================================================================
+   4.5 SIDE PANEL — src/SidePanel.tsx
+   Generic left/right panel component. Recreates the look of the old
+   #left-panel / #right-panel / #left-reopen / #right-reopen chrome (see
+   sections 5 & 8 below) via the .left / .right / .hidden classes the
+   component actually renders, since it no longer emits those ids.
+   ========================================================================== */
+
+/* Row container for a view's left panel / doc frame / right panel, e.g.
+   src/Notes.tsx's .noteAppView. Fills the space between the top and bottom
+   bars and lays its three children out side by side. */
+.noteAppView {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+}
+
+#doc-frame {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+}
+
+.sidepanel {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-deep);
+  color: var(--fg);
+  font-family: var(--mono);
+  font-size: 13px;
+  transition: transform 0.25s ease, visibility 0s linear 0s;
+}
+
+.sidepanel.left {
+  width: var(--left-width);
+  border-right: 1px solid var(--rule);
+}
+
+.sidepanel.right {
+  width: var(--right-width);
+  border-left: 1px solid var(--rule);
+}
+
+/* Slide out of view on the side it belongs to, same easing as the old
+   #app[data-left-closed] transform. */
+.sidepanel.left.hidden {
+  transform: translateX(-100%);
+  visibility: hidden;
+  transition: transform 0.25s ease, visibility 0s linear 0.25s;
+}
+
+.sidepanel.right.hidden {
+  transform: translateX(100%);
+  visibility: hidden;
+  transition: transform 0.25s ease, visibility 0s linear 0.25s;
+}
+
+/* Floating reopen chip: fixed under the top bar since this component has no
+   positioned #app ancestor to anchor to like the original did. Shown by
+   default; .hidden hides it once the matching panel is open. */
+.sidepanel-reopen-button {
+  position: fixed;
+  top: 44px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--rule);
+  background: var(--bg-deep);
+  color: var(--fg);
+  font-family: var(--mono);
+  font-size: 13px;
+  cursor: pointer;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.25s ease, visibility 0s linear 0s;
+}
+
+.sidepanel-reopen-button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.sidepanel-reopen-button.left  { left: 8px; }
+.sidepanel-reopen-button.right { right: 8px; }
+
+.sidepanel-reopen-button.hidden {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0s linear 0.25s;
+}
+
+
+/* ==========================================================================
    5. LEFT PANEL
    ========================================================================== */
 
@@ -318,11 +416,13 @@ body {
 }
 
 /* --- Sidebar segments --- */
-.sidebar-segment {
+.sidebar-segment,
+.sidepanel > * {
   border-top: 1px solid var(--rule);
 }
 
-.sidebar-segment:first-child {
+.sidebar-segment:first-child,
+.sidepanel > *:first-child {
   border-top: none;
 }
 
