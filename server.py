@@ -28,9 +28,36 @@ def make_handler(source_dir: Path, web_root: Path):
 
         def do_GET(self):
             if self.path == "/api/index":
-                pass
+                try:
+                    data = (web_root / "engrams/index.json").read_bytes()
+                    self.send_response(200)
+                    self.send_header("Content-Type", "application/json")
+                    self.send_header("Access-Control-Allow-Origin", "*")
+                    self.end_headers()
+                    self.wfile.write(data)
+                    print("I was hit up for the index")
+                except FileNotFoundError:
+                    print("Index file not found")
+                    self.send_response(404)
+                    self.end_headers()
+
             elif self.path.startswith("/api/files/"):
-                pass
+                requestedPath = Path(self.path.removeprefix("/api/files/"))
+                try:
+                    finalPath = (web_root / requestedPath).resolve(strict=True);
+                    if web_root in finalPath.parents and finalPath.is_file():
+                        data = finalPath.read_bytes()
+                        self.send_response(200)
+                        self.send_header("Content-Type", "application/json")
+                        self.send_header("Access-Control-Allow-Origin", "*")
+                        self.end_headers()
+                        self.wfile.write(data)
+                    else:
+                        self.send_response(404)
+                        self.end_headers()
+                except OSError:
+                    self.send_response(404)
+                    self.end_headers()
             else:
                 self.send_response(404)
                 self.end_headers()
