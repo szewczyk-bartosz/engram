@@ -3,3 +3,5 @@ engrams/
 engrams-old/
 styles.old.css
 *.pyc
+node_modules/
+dist/

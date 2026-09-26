@@ -1,0 +1,26 @@
+{
+  "name": "engram",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/szewczyk-bartosz/engram.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/szewczyk-bartosz/engram/issues"
+  },
+  "homepage": "https://github.com/szewczyk-bartosz/engram#readme",
+  "devDependencies": {
+    "vite": "^8.3.1"
+  }
+}
