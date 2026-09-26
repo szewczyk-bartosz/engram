@@ -20,11 +20,21 @@
   }:
     flake-utils.lib.eachDefaultSystem (system: let
       pkgs = nixpkgs.legacyPackages.${system};
+      lib = pkgs.lib;
     in {
       devShells.default = pkgs.mkShell {
         packages = with pkgs; [nodejs_26 python3 engramware.packages.${system}.bmd];
         shellHook = ''
           echo "Engram dev shell loaded!"
+        '';
+      };
+      packages.default = pkgs.buildNpmPackage {
+        name = "engram";
+        src = ./.;
+        npmDepsHash = "sha256-TkzZ0dXCPkLKZ1LH5479zT+VLkXxbW9g9jT3fJ2w67Y=";
+        npmBuildScript = "build";
+        installPhase = ''
+          cp -r dist $out
         '';
       };
     })
@@ -62,15 +72,8 @@
         config = lib.mkIf cfg.enable {
           systemd.tmpfiles.rules = [
             "d ${cfg.webRoot}          0755 ${cfg.user} ${cfg.user} - -"
-            "d ${cfg.webRoot}/dynamic  0755 ${cfg.user} ${cfg.user} - -"
-            "d ${cfg.webRoot}/static  0755 ${cfg.user} ${cfg.user} - -"
           ];
 
-          system.activationScripts.engram-static = lib.stringAfter ["users"] ''
-            cp -r ${self}/. ${cfg.webRoot}/static
-            chmod -R u+w ${cfg.webRoot}
-            chown -R ${cfg.user} ${cfg.webRoot}
-          '';
 
           systemd.services.engram-api = {
             description = "Engram sync API";
@@ -92,7 +95,7 @@
           services.caddy = {
             enable = true;
             virtualHosts."http://${config.networking.hostName}".extraConfig = ''
-              root * ${cfg.webRoot}/static
+              root * ${self.packages.${pkgs.system}.default}
               handle /api/* {
                 reverse_proxy localhost:8001
               }
