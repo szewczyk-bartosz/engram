@@ -74,7 +74,7 @@
         services.caddy = {
           enable = true;
           virtualHosts."http://${config.networking.hostName}".extraConfig = ''
-            root * ${cfg.webRoot}
+            root * ${cfg.webRoot}/static
             handle /api/* {
               reverse_proxy localhost:8001
             }
