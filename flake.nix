@@ -22,7 +22,7 @@
       pkgs = nixpkgs.legacyPackages.${system};
     in {
       devShells.default = pkgs.mkShell {
-        packages = with pkgs; [nodejs_26 vite python3 engramware.packages.${system}.bmd];
+        packages = with pkgs; [nodejs_26 python3 engramware.packages.${system}.bmd];
         shellHook = ''
           echo "Engram dev shell loaded!"
         '';
