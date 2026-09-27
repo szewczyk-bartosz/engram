@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useActivityLog } from "./Main";
 
-const MAX_ROWS = 20;
+const MAX_ROWS = 5;
 
 export function trackedFetch(url: string, log: (msg: string) => void, options?: RequestInit ){
     return fetch(url, options).then(response => {
