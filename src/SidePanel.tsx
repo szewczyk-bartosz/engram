@@ -16,8 +16,9 @@ export default function SidePanel({side, extraClassNames, children, collapsedAtI
       
        <div className={`sidepanel-controls ${side}`}>
         <button className="sidepanel-close-button" onClick={() => setCollapsed(true)}>{side == "left" ? "<" : ">"}</button>
-        {children ?? ""}
+
        </div> 
+        {children ?? ""}
     </div>
     </>
 }

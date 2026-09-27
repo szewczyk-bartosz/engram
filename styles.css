@@ -417,14 +417,30 @@ button:active {
     visibility 0s linear 0s;
 }
 
+.sidepanel-controls {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+/* Each side's controls hug that panel's outer screen edge, same as the
+   original #left-panel-controls (left) / #right-panel-controls (right). */
+.sidepanel-controls.left {
+  justify-content: flex-start;
+}
+
+.sidepanel-controls.right {
+  justify-content: flex-end;
+}
+
 /* --- Sidebar segments --- */
 .sidebar-segment,
-.sidepanel-controls > * {
+.sidepanel > * {
   border-top: 1px solid var(--rule);
 }
 
 .sidebar-segment:first-child,
-.sidepanel-controls > *:first-child {
+.sidepanel > *:first-child {
   border-top: none;
 }
 
