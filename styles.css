@@ -512,6 +512,33 @@ button:active {
   );
 }
 
+/* Tree search box (src/FileTree.tsx): same dash-underline treatment as #filter */
+.tree-search-box {
+  --dash: 6px;
+  --gap: 8px;
+  flex-shrink: 0;
+  padding: 8px 14px;
+  text-align: center;
+  border-bottom: none;
+  margin-bottom: 8px;
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--rule-strong) 0 var(--dash),
+    transparent var(--dash) calc(var(--dash) + var(--gap))
+  );
+  background-repeat: no-repeat;
+  background-size: 100% 1px;
+  background-position: 0 100%;
+}
+
+.tree-search-box:focus {
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--accent) 0 var(--dash),
+    transparent var(--dash) calc(var(--dash) + var(--gap))
+  );
+}
+
 /* Expand / collapse controls: inset from the panel edges, compact buttons */
 #tree-controls {
   flex-shrink: 0;
@@ -521,6 +548,21 @@ button:active {
 }
 
 #tree-controls button {
+  flex: 1;
+  padding: 2px 6px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+}
+
+/* File tree expand/collapse controls (src/FileTree.tsx) */
+.file-tree-expand-collapse-buttons {
+  flex-shrink: 0;
+  display: flex;
+  gap: 6px;
+  padding: 0 14px;
+}
+
+.file-tree-expand-collapse-buttons button {
   flex: 1;
   padding: 2px 6px;
   font-size: 10px;
