@@ -17,7 +17,7 @@ export default function Notes() {
     <FileTree setActivePath={setActivePath}/>
     </SidePanel>
     <DocPanel activePath={activePath}/>
-    <SidePanel side="right" collapsedAtInit={true}>
+    <SidePanel side="right" collapsedAtInit={false}>
     <div id="right-panel-body">
       <Clock />
       <Globe />
