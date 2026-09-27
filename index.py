@@ -114,7 +114,6 @@ def main():
 
     rawIndex = createIndex(source_dir)
     new_tree = flatten_files(asdict(rawIndex))
-    print(load_index(INDEX_PATH))
     old_tree = flatten_files(load_index(INDEX_PATH))
 
     for path, new_node in new_tree.items():
@@ -154,7 +153,7 @@ def load_index(path: Path):
         with path.open("r", encoding="utf-8") as f:
             return json.load(f)
     except FileNotFoundError:
-        return []
+        return {"type": "folder", "name": "root", "children": []}
 
 
 if __name__ == "__main__":
