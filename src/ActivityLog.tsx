@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useActivityLog } from "./Main";
 
-const MAX_ROWS = 6;
+const MAX_ROWS = 20;
 
 export function trackedFetch(url: string, log: (msg: string) => void, options?: RequestInit ){
     return fetch(url, options).then(response => {
@@ -29,8 +29,8 @@ export default function ActivityLog() {
         <span className="widget-label">STATUS</span>
       </div>
       <div id="activity-log">
-        {rows.slice(-6).map((row) => (
-          <div className="log-row" key={row.text}>
+        {rows.slice(-MAX_ROWS).map((row) => (
+          <div className="log-row" key={row.id}>
             <span className="log-ts">{row.time}</span>
             <span className="log-msg">{row.text}</span>
           </div>
