@@ -16,6 +16,26 @@ export default function DocPanel({ activePath }: BottomBarProps) {
     console.log(activePath);
   }, [activePath]);
 
+  useEffect(() => {
+    const Prism = (window as any).Prism;
+    const katex = (window as any).katex;
+      document
+      ?.getElementById("engram-doc")
+        ?.querySelectorAll("code")
+        .forEach((element) => {
+          Prism.highlightElement(element);
+        });
+      document
+        ?.getElementById("engram-doc")
+        ?.querySelectorAll(".math-block")
+        .forEach((el) => {
+          katex.render((el as any)?.dataset.latex, el, {
+            displayMode: true,
+            throwOnError: false,
+          });
+        });
+  }, [currentDoc]);
+
   return (
     <div id="doc-frame" className="engram-doc">
       <div
