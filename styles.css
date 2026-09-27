@@ -270,9 +270,28 @@ button:active {
   overflow: hidden;
 }
 
+/* Column wrapper for the header + scrolling doc, sitting between the two
+   side panels (src/Notes.tsx). Needs its own flex: 1 to claim the space
+   #doc-frame used to get directly, now that it's nested one level deeper. */
+.document-container {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* DocPanel.tsx puts .engram-doc on #doc-frame too (as well as the inner
+   content div), which would otherwise cap this outer scroll frame at 70ch
+   and disable flex stretch, shrinking it to content size when empty. Undo
+   that here so the frame always fills .document-container; the inner
+   #engram-doc keeps the real 70ch reading column. */
 #doc-frame {
   flex: 1;
   min-width: 0;
+  width: 100%;
+  max-width: none;
+  margin: 0;
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: var(--rule) transparent;
@@ -296,7 +315,7 @@ button:active {
   color: var(--fg);
   font-family: var(--mono);
   font-size: 13px;
-  transition: transform 0.25s ease, visibility 0s linear 0s;
+  transition: transform 0.25s ease, width 0.25s ease, visibility 0s linear 0s;
 }
 
 .sidepanel.left {
@@ -312,15 +331,19 @@ button:active {
 /* Slide out of view on the side it belongs to, same easing as the old
    #app[data-left-closed] transform. */
 .sidepanel.left.hidden {
+  width: 0;
+  border-right-width: 0;
   transform: translateX(-100%);
   visibility: hidden;
-  transition: transform 0.25s ease, visibility 0s linear 0.25s;
+  transition: transform 0.25s ease, width 0.25s ease, visibility 0s linear 0.25s;
 }
 
 .sidepanel.right.hidden {
+  width: 0;
+  border-left-width: 0;
   transform: translateX(100%);
   visibility: hidden;
-  transition: transform 0.25s ease, visibility 0s linear 0.25s;
+  transition: transform 0.25s ease, width 0.25s ease, visibility 0s linear 0.25s;
 }
 
 /* Floating reopen chip: fixed under the top bar since this component has no
@@ -761,6 +784,37 @@ button:active {
 
 /* Prompt-style prefix before the path */
 .doc-path::before {
+  content: "//";
+  flex-shrink: 0;
+  color: var(--fg-mute);
+  text-shadow: none;
+  letter-spacing: 0;
+}
+
+/* Doc header (src/DocPanel.tsx): merges the old .doc-header bar chrome and
+   .doc-path text treatment into one element. */
+.engram-header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 14px;
+  background: var(--bg-deep);
+  border-bottom: 1px solid var(--rule);
+  min-width: 0;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+  text-shadow: 0 0 6px var(--accent-glow);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.engram-header::before {
   content: "//";
   flex-shrink: 0;
   color: var(--fg-mute);
