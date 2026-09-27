@@ -13,6 +13,6 @@ export default function Notes() {
     <FileTree setActivePath={setActivePath}/>
     </SidePanel>
     <DocPanel activePath={activePath}/>
-    <SidePanel side="right" />
+    <SidePanel side="right" collapsedAtInit={true}/>
   </div>
 }
