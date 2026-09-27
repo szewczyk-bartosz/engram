@@ -419,12 +419,12 @@ button:active {
 
 /* --- Sidebar segments --- */
 .sidebar-segment,
-.sidepanel > * {
+.sidepanel-controls > * {
   border-top: 1px solid var(--rule);
 }
 
 .sidebar-segment:first-child,
-.sidepanel > *:first-child {
+.sidepanel-controls > *:first-child {
   border-top: none;
 }
 

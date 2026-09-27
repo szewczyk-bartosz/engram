@@ -13,8 +13,11 @@ export default function SidePanel({side, extraClassNames, children, collapsedAtI
     return <> 
     <button onClick={() => setCollapsed(false)} className={`sidepanel-reopen-button ${extraClassNames ?? ""} ${side} ${collapsed ? "" : "hidden"}`}>{side == "left" ? ">" : "<"}</button>
     <div className={`sidepanel ${side} ${collapsed ? "hidden" : ""}`}>
+      
+       <div className={`sidepanel-controls ${side}`}>
         <button className="sidepanel-close-button" onClick={() => setCollapsed(true)}>{side == "left" ? "<" : ">"}</button>
         {children ?? ""}
+       </div> 
     </div>
     </>
 }
