@@ -1096,6 +1096,17 @@ button:active {
   flex-shrink: 0;
 }
 
+/* Truncate long messages instead of overflowing the fixed-width panel.
+   Monospace font means a pixel-width ellipsis lands at a consistent
+   character count, so no JS-side slicing needed. */
+.log-msg {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
 
 /* ============= TOP BAR ============= */
 

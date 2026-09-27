@@ -1,5 +1,7 @@
 import { views, ViewTypes } from "./Views";
 import { act, useState, useEffect } from "react";
+import { trackedFetch } from "./ActivityLog";
+import { useActivityLog } from "./Main";
 
 interface BottomBarProps {
   activePath: string | null;
@@ -7,13 +9,13 @@ interface BottomBarProps {
 
 export default function DocPanel({ activePath }: BottomBarProps) {
   const [currentDoc, setDoc] = useState("");
+  const {activityLogFunc} = useActivityLog();
   useEffect(() => {
     if (activePath) {
-      fetch("/api/files/" + activePath)
+      trackedFetch("/api/files/" + activePath, activityLogFunc)
         .then((r) => r.text())
         .then((html) => setDoc(html));
     }
-    console.log(activePath);
   }, [activePath]);
 
   useEffect(() => {
