@@ -1,4 +1,7 @@
 import { act, useState, useEffect } from "react";
+import { trackedFetch } from "./ActivityLog";
+import { useActivityLog } from "./Main";
+
 
 type FileNode = {
   name: string;
@@ -110,13 +113,15 @@ export default function FileTree({ setActivePath }: FileTreeProps) {
   const [tree, setTree] = useState<FolderNode | null>(null);
   const [filterString, setFilterString] = useState<string>("");
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
+  const {activityLogFunc} = useActivityLog();
   useEffect(() => {
-    fetch("/api/index")
+    trackedFetch("/api/index", activityLogFunc)
       .then((response) => response.json())
       .then((data) => setTree(data));
   }, []);
   return (
     <>
+      <button onClick={() => {trackedFetch("/api/sync", activityLogFunc, {method: "POST"}).then(() => trackedFetch("/api/index", activityLogFunc).then((response) => response.json()).then((data) => setTree(data)))}}>Sync</button>
       <SearchBox setFilterString={setFilterString} />
       <div className="file-tree-expand-collapse-buttons">
       <button onClick={() => setCollapsed(new Set())}>[Expand All]</button>

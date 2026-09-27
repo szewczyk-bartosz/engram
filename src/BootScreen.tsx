@@ -50,7 +50,7 @@ export default function BootScreen() {
     <>
 		<div className={`boot ${bootscreenOn ? "" : "hidden"}`} id="boot-overlay">
 			<pre className="ascii">{ascii}</pre>
-			<div className="boot-lines" id="boot-lines">{lines.map((line) => <div>{line}</div>)}</div>
+			<div className="boot-lines" id="boot-lines">{lines.map((line) => <div key={line}>{line}</div>)}</div>
 		</div>
     </>
   );
