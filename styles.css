@@ -49,6 +49,9 @@
   --flicker-strength: 1;
   --grain-opacity: 0.05;
   --chrome-radius: 2px;
+  --left-width: 280px;
+  --right-width: 320px;
+  --left-slide: 0.25s ease;
 }
 
 /* AMBER CRT */
@@ -225,17 +228,14 @@ button:active {
    Vertical stack: top bar / main grid / bottom bar
    ========================================================================== */
 
-body {
+#root {
+  height: 100%;
   display: flex;
   flex-direction: column;
 }
 
 /* Main three-column grid */
 #app {
-  --left-width: 280px;
-  --right-width: 320px;
-  --left-slide: 0.25s ease;
-
   flex: 1;
   display: grid;
   grid-template-columns: var(--left-width) 1fr var(--right-width);
@@ -566,13 +566,24 @@ body {
 }
 
 /* Node type colouring */
-.tree-node[data-type="folder"] .tree-label {
+.tree-node[data-type="folder"] .tree-label,
+.folder-label {
   color: var(--fg-dim);
 }
 
 .tree-node[data-type="file"] .tree-label {
   color: var(--fg);
   opacity: 0.85;
+}
+
+/* Folder icon: open by default, closed when collapsed */
+.folder-label::before {
+  content: "\1F5C1"; /* 🗁 open folder */
+  margin-right: 6px;
+}
+
+.folder-label[data-collapsed="true"]::before {
+  content: "\1F5C0"; /* 🗀 folder */
 }
 
 /* --- Tree connector lines --- */
@@ -614,7 +625,7 @@ body {
 }
 
 /* Collapsed folders */
-.tree-children[data-collapsed="true"] {
+.folder-label[data-collapsed="true"] ~ .tree-children {
   display: none;
 }
 

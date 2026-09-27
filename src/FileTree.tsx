@@ -45,14 +45,14 @@ function TreeNodeComponent({node, setActivePath}: TreeNodeComponentProps) {
     if (node.type === "file") {
         return (
         <div className="tree-node">
-        <div className="tree-label" onClick={() => setActivePath(node.path)}>{node.name}</div>
+        <div className="tree-label file-label" onClick={() => setActivePath(node.path)}>{node.name}</div>
         </div>
         )
     } else {
         return (
         <div className="tree-node">
-        <div onClick={(e) => { setCollapsed(!collapsed);}} className="tree-label">{node.name}</div>
-        <div  className="tree-children" data-collapsed={collapsed}>{node.children.map((child) => <TreeNodeComponent key={child.name} node={child} setActivePath={setActivePath} />)}</div>
+        <div onClick={(e) => { setCollapsed(!collapsed);}} data-collapsed={collapsed} className="tree-label folder-label">{node.name}</div>
+        <div  className="tree-children" >{node.children.map((child) => <TreeNodeComponent key={child.name} node={child} setActivePath={setActivePath} />)}</div>
         </div>
         )
     }
