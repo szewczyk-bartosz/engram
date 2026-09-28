@@ -4,7 +4,6 @@
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-26.05";
 
-
     engramware = {
       url = "github:szewczyk-bartosz/engramware";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -21,11 +20,57 @@
     flake-utils.lib.eachDefaultSystem (system: let
       pkgs = nixpkgs.legacyPackages.${system};
       lib = pkgs.lib;
+      start-engram = pkgs.writeShellScriptBin "start-engram" ''
+        start_vite() {
+          tmux send-keys -t $1 'npm run dev' Enter
+        }
+
+        start_python() {
+          tmux send-keys -t $1 'python server.py -i ./engram-raw-for-testing/ --web-root ./.' Enter
+        }
+
+        setup_servers() {
+          local target=$1
+          start_vite $target.1
+          tmux split-window -t $target -h
+          start_python $target.2
+        }
+
+        restart_if_dead() {
+          local target=$1
+          if [ "$(tmux display-message -t $target.1 -p '#{pane_current_command}')" != "node" ]; then
+            start_vite $target.1
+          fi
+          if [ "$(tmux display-message -t $target.2 -p '#{pane_current_command}')" != "python" ]; then
+            start_python $target.2
+          fi
+        }
+
+        if [ -z "$TMUX" ]; then
+          tmux new-session -d -s engram
+          tmux rename-window -t engram servers
+          setup_servers engram:servers
+        else
+          if ! tmux list-windows | grep -q servers; then
+            tmux new-window -n servers
+            setup_servers servers
+          else
+            restart_if_dead servers
+          fi
+        fi
+      '';
     in {
       devShells.default = pkgs.mkShell {
-        packages = with pkgs; [nodejs_26 python3 engramware.packages.${system}.bmd];
+        packages = with pkgs; [tmux nodejs_26 python3 engramware.packages.${system}.bmd] ++ [start-engram];
         shellHook = ''
-          echo "Engram dev shell loaded!"
+          if [ -n "$ENGRAM_DEV_SHELL" ]; then
+            echo "WARNING!!!!"
+            echo "ALREADY IN A SHELL"
+            echo "WARNING!!!!"
+            exit
+          fi
+          export ENGRAM_DEV_SHELL=1
+          echo "Engram dev shell loaded! Run start-engram to start dev servers."
         '';
       };
       packages.default = pkgs.buildNpmPackage {
@@ -73,7 +118,6 @@
           systemd.tmpfiles.rules = [
             "d ${cfg.webRoot}          0755 ${cfg.user} ${cfg.user} - -"
           ];
-
 
           systemd.services.engram-api = {
             description = "Engram sync API";
