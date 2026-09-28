@@ -26,11 +26,10 @@
         }
 
         start_python() {
-          tmux send-keys -t $1 'python server.py -i ./engram-raw-for-testing/ --web-root ./.' Enter
+          tmux send-keys -t $1 'python3 server.py -i ./engram-raw-for-testing/ --web-root ./.' Enter
         }
 
-        setup_servers() {
-          local target=$1
+        setup_servers() { local target=$1
           start_vite $target.1
           tmux split-window -t $target -h
           start_python $target.2
