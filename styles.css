@@ -572,6 +572,18 @@ button:active {
   );
 }
 
+/* Sync button (src/FileTree.tsx): the container gives the inset margin from
+   the panel edges, and the button fills that container's full width. */
+.file-tree-sync-button-container {
+  flex-shrink: 0;
+  padding: 10px 14px;
+}
+
+.file-tree-sync-button {
+  width: 100%;
+  padding: 6px 12px;
+}
+
 /* Expand / collapse controls: inset from the panel edges, compact buttons */
 #tree-controls {
   flex-shrink: 0;

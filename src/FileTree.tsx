@@ -121,7 +121,9 @@ export default function FileTree({ setActivePath }: FileTreeProps) {
   }, []);
   return (
     <>
-      <button onClick={() => {trackedFetch("/api/sync", activityLogFunc, {method: "POST"}).then(() => trackedFetch("/api/index", activityLogFunc).then((response) => response.json()).then((data) => setTree(data)))}}>Sync</button>
+      <div className="file-tree-sync-button-container">
+      <button className="file-tree-sync-button" onClick={() => {trackedFetch("/api/sync", activityLogFunc, {method: "POST"}).then(() => trackedFetch("/api/index", activityLogFunc).then((response) => response.json()).then((data) => setTree(data)))}}>Sync</button>
+      </div>
       <SearchBox setFilterString={setFilterString} />
       <div className="file-tree-expand-collapse-buttons">
       <button onClick={() => setCollapsed(new Set())}>[Expand All]</button>
