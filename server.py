@@ -85,4 +85,6 @@ if __name__ == "__main__":
     parser.add_argument("--web-root", type=Path, required=True)
     args = parser.parse_args()
 
-    HTTPServer(("localhost", 8001), make_handler(args.i, args.web_root)).serve_forever()
+    server = HTTPServer(("localhost", 8001), make_handler(args.i, args.web_root)) 
+    print("Server initialised!")
+    server.serve_forever()
