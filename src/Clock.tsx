@@ -45,7 +45,6 @@ export default function Clock() {
       </div>
       <div id="clock-time">{time}</div>
       <div id="clock-date">{date}</div>
-      <div id="clock-uptime">{uptime}</div>
     </div>
   );
 }
