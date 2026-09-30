@@ -971,6 +971,59 @@ button:active {
 .engram-doc ul li::marker { content: "▸ "; color: var(--accent); }
 .engram-doc li { margin-bottom: 6px; }
 
+.checklist {
+  list-style: none;
+  margin: 0 0 16px;
+  padding-left: 0;
+}
+
+.checklist li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.checklist li::marker { content: none; }
+
+.checklist input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  top: 1px;
+  box-sizing: border-box;
+  width: 14px;
+  height: 14px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--accent);
+  border-radius: 3px;
+  background: transparent;
+  opacity: 1;
+}
+
+.checklist input[type="checkbox"]:checked {
+  background: var(--accent);
+}
+
+.checklist input[type="checkbox"]:checked::after {
+  content: "";
+  width: 4px;
+  height: 8px;
+  border: solid var(--bg);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg) translateY(-1px);
+}
+
+.checklist li:has(input:checked) {
+  color: var(--reading-mute);
+  text-decoration: line-through;
+}
+
 .engram-doc hr {
   border: none;
   border-top: 1px dashed var(--reading-rule);
