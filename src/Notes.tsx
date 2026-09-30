@@ -21,7 +21,7 @@ export default function Notes() {
         <div className="engram-header">{activePath?.split("/").at(-1)}</div>
         <DocPanel activePath={activePath} />
       </div>
-      <SidePanel side="right" collapsedAtInit={false}>
+      <SidePanel side="right" collapsedAtInit={true}>
         <div id="right-panel-body">
           <Clock />
           <Globe />
