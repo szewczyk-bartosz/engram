@@ -7,3 +7,4 @@ node_modules/
 dist/
 result
 engram-raw-for-testing/
+.direnv/

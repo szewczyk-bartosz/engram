@@ -69,6 +69,7 @@
             exit
           fi
           export ENGRAM_DEV_SHELL=1
+          npm install 
           echo "Engram dev shell loaded! Run start-engram to start dev servers."
         '';
       };
