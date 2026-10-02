@@ -20,9 +20,10 @@
     flake-utils.lib.eachDefaultSystem (system: let
       pkgs = nixpkgs.legacyPackages.${system};
       lib = pkgs.lib;
+      pnpm = pkgs.pnpm_10.override { nodejs-slim = pkgs.nodejs_26; };
       start-engram = pkgs.writeShellScriptBin "start-engram" ''
         start_vite() {
-          tmux send-keys -t $1 'npm run dev' Enter
+          tmux send-keys -t $1 'pnpm dev' Enter
         }
 
         start_python() {
@@ -45,7 +46,7 @@
           fi
         }
 
-        npm install
+        pnpm install
         if [ -z "$TMUX" ]; then
           tmux new-session -d -s engram
           tmux rename-window -t engram servers
@@ -61,7 +62,7 @@
       '';
     in {
       devShells.default = pkgs.mkShell {
-        packages = with pkgs; [tmux nodejs_26 python3 engramware.packages.${system}.bmd] ++ [start-engram];
+        packages = with pkgs; [tmux nodejs_26 pnpm python3 engramware.packages.${system}.bmd] ++ [start-engram];
         shellHook = ''
           if [ -n "$ENGRAM_DEV_SHELL" ]; then
             echo "WARNING!!!!"
@@ -73,15 +74,34 @@
           echo "Engram dev shell loaded! Run start-engram to start dev servers."
         '';
       };
-      packages.default = pkgs.buildNpmPackage {
-        name = "engram";
+      packages.default = pkgs.stdenv.mkDerivation (finalAttrs: {
+        pname = "engram";
+        version = "1.0.0";
         src = ./.;
-        npmDepsHash = "sha256-TkzZ0dXCPkLKZ1LH5479zT+VLkXxbW9g9jT3fJ2w67Y=";
-        npmBuildScript = "build";
+
+        nativeBuildInputs = with pkgs; [
+          nodejs_26
+          pnpmConfigHook
+          pnpm
+        ];
+
+        pnpmDeps = pkgs.fetchPnpmDeps {
+          inherit (finalAttrs) src pname;
+          inherit pnpm;
+          fetcherVersion = 4;
+          hash = "sha256-htjyF83duEJ6bmhjZEZlJWk2YFAuszWJYrCWDNgS3U4=";
+        };
+
+        buildPhase = ''
+          runHook preBuild
+          pnpm run build
+          runHook postBuild
+        '';
+
         installPhase = ''
           cp -r dist $out
         '';
-      };
+      });
     })
     // {
       nixosModules.default = {
