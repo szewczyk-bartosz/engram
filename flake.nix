@@ -45,6 +45,7 @@
           fi
         }
 
+        npm install
         if [ -z "$TMUX" ]; then
           tmux new-session -d -s engram
           tmux rename-window -t engram servers
@@ -69,7 +70,6 @@
             exit
           fi
           export ENGRAM_DEV_SHELL=1
-          npm install 
           echo "Engram dev shell loaded! Run start-engram to start dev servers."
         '';
       };
