@@ -77,7 +77,6 @@ export default function TopBar({ activeView, setActiveView }: TopBarProps) {
           </div>
         </div>
       </dialog>
-        ENGRAM MOTHERFUCKER
       </div>
     </div>
   );
