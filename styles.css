@@ -917,6 +917,17 @@ button:active {
 /* --- Inline text --- */
 .engram-doc p { margin: 0 0 16px; }
 
+/* Plain text blocks: keep the author's spaces, tabs and line breaks verbatim
+   but otherwise read like a paragraph. pre-wrap still wraps long lines, and
+   text-wrap: pretty is reset so wrapping doesn't rebalance the author's lines. */
+.plain-text {
+  margin: 0 0 16px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  tab-size: 4;
+  text-wrap: wrap;
+}
+
 .engram-doc strong { color: var(--accent); font-weight: 600; }
 .engram-doc em { font-style: italic; }
 
