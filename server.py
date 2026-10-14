@@ -7,6 +7,13 @@ from typing import final
 
 def make_handler(source_dir: Path, web_root: Path):
     class Handler(BaseHTTPRequestHandler):
+        def send_json(self, data: bytes, status: int = 200):
+            self.send_response(status)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(data)
+
         def do_POST(self):
             if self.path == "/api/sync":
                 subprocess.run(
@@ -20,11 +27,7 @@ def make_handler(source_dir: Path, web_root: Path):
                         "--hard",
                     ]
                 )
-                self.send_response(200)
-                self.send_header("Content-Type", "application/json")
-                self.send_header("Access-Control-Allow-Origin", "*")
-                self.end_headers()
-                self.wfile.write(b'{"ok": true}')
+                self.send_json(b'{"ok": true}')
             else:
                 self.send_response(404)
                 self.end_headers()
@@ -36,11 +39,7 @@ def make_handler(source_dir: Path, web_root: Path):
             if self.path == "/api/index":
                 try:
                     data = (web_root / "engrams/index.json").read_bytes()
-                    self.send_response(200)
-                    self.send_header("Content-Type", "application/json")
-                    self.send_header("Access-Control-Allow-Origin", "*")
-                    self.end_headers()
-                    self.wfile.write(data)
+                    self.send_json(data)
                 except FileNotFoundError:
                     print("Index file not found")
                     self.send_response(404)
@@ -53,11 +52,7 @@ def make_handler(source_dir: Path, web_root: Path):
                     finalPath = (engrams_dir / requestedPath).resolve(strict=True)
                     if web_root.resolve() in finalPath.parents and finalPath.is_file():
                         data = finalPath.read_bytes()
-                        self.send_response(200)
-                        self.send_header("Content-Type", "application/json")
-                        self.send_header("Access-Control-Allow-Origin", "*")
-                        self.end_headers()
-                        self.wfile.write(data)
+                        self.send_json(data)
                     else:
                         print(f"Possible attack attempt? {self.path}")
                         self.send_response(404)
