@@ -3,6 +3,7 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 from pathlib import Path
 import subprocess
 from typing import final
+from urllib.parse import unquote
 
 
 def make_handler(source_dir: Path, web_root: Path):
@@ -47,7 +48,7 @@ def make_handler(source_dir: Path, web_root: Path):
 
             elif self.path.startswith("/api/files/"):
                 try:
-                    requestedPath = Path(self.path.removeprefix("/api/files/"))
+                    requestedPath = Path(unquote(self.path.removeprefix("/api/files/")))
                     engrams_dir = web_root / "engrams/rendered"
                     finalPath = (engrams_dir / requestedPath).resolve(strict=True)
                     if web_root.resolve() in finalPath.parents and finalPath.is_file():
