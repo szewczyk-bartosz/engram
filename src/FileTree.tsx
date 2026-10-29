@@ -102,7 +102,7 @@ function SearchBox({setFilterString}: {setFilterString: (query: string) => void}
 function getAllFolderPaths(node: TreeNode, path: string): string[] {
   let thisPath: string = path + node.name + "/";
   if (node.type == "folder") {
-    return [thisPath, ...node.children.flatMap(child => getAllFolderPaths(child, path))]
+    return [thisPath, ...node.children.flatMap(child => getAllFolderPaths(child, thisPath))]
   } else {
     return []
   }
