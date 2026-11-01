@@ -51,7 +51,7 @@ def make_handler(source_dir: Path, web_root: Path):
                     requestedPath = Path(unquote(self.path.removeprefix("/api/files/")))
                     engrams_dir = web_root / "engrams/rendered"
                     finalPath = (engrams_dir / requestedPath).resolve(strict=True)
-                    if web_root.resolve() in finalPath.parents and finalPath.is_file():
+                    if engrams_dir.resolve() in finalPath.parents and finalPath.is_file():
                         data = finalPath.read_bytes()
                         self.send_json(data)
                     else:
