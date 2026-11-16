@@ -36,7 +36,7 @@ interface TreeNodeComponentProps {
 
 function hasMatch(node: TreeNode, filter: string): boolean {
   if (node.type == "file") {
-    return node.name.includes(filter);
+    return node.name.toLowerCase().includes(filter.toLowerCase());
   } else {
     return node.children.some(child => hasMatch(child, filter));
   }
