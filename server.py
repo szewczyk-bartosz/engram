@@ -17,7 +17,7 @@ def make_handler(source_dir: Path, web_root: Path):
 
         def do_POST(self):
             if self.path == "/api/sync":
-                subprocess.run(
+                result = subprocess.run(
                     [
                         "python3",
                         str(Path(__file__).parent / "index.py"),
@@ -28,7 +28,11 @@ def make_handler(source_dir: Path, web_root: Path):
                         "--hard",
                     ]
                 )
-                self.send_json(b'{"ok": true}')
+                if result.returncode == 0:
+                    self.send_json(b'{"ok": true}')
+                else:
+                    print(f"Sync failed with exit code {result.returncode}")
+                    self.send_json(b'{"ok": false}', status=500)
             else:
                 self.send_response(404)
                 self.end_headers()
