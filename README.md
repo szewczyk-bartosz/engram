@@ -9,7 +9,7 @@ A self-hosted reader for my notes. Notes are written as plain-text `.eng` files 
 
 notesDir/*.eng -> index.py -> creates index and renders notes to HTML
 
-caddy serves the static react build, which hits up server.py api endpoints for rendered files 
+caddy serves the static react build over tailscale (making it secure without a login page), which hits up server.py api endpoints for rendered files 
 
 Those rendered files are then injected into the reading view
 
