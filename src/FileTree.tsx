@@ -22,11 +22,13 @@ type FolderNode = {
 export type TreeNode = FileNode | FolderNode;
 
 interface FileTreeProps {
+  activePath: string | null;
   setActivePath: (path: string) => void;
 }
 
 interface TreeNodeComponentProps {
   node: TreeNode;
+  activePath: string | null;
   setActivePath: (path: string) => void;
   filterString: string
   collapsed: Set<string>
@@ -42,13 +44,14 @@ function hasMatch(node: TreeNode, filter: string): boolean {
   }
 };
 
-function TreeNodeComponent({ node, setActivePath, filterString, collapsed, setCollapsed, path }: TreeNodeComponentProps) {
+function TreeNodeComponent({ node, activePath, setActivePath, filterString, collapsed, setCollapsed, path }: TreeNodeComponentProps) {
   if (node.type === "file") {
     if (hasMatch(node, filterString)) {
     return (
       <div className="tree-node">
         <div
           className="tree-label file-label"
+          data-active={node.path === activePath}
           onClick={() => setActivePath(node.path)}
         >
           {node.name}
@@ -82,6 +85,7 @@ function TreeNodeComponent({ node, setActivePath, filterString, collapsed, setCo
               filterString = {filterString}
               key={child.name}
               node={child}
+              activePath={activePath}
               setActivePath={setActivePath}
               collapsed = {collapsed}
               setCollapsed = {setCollapsed}
@@ -109,7 +113,7 @@ function getAllFolderPaths(node: TreeNode, path: string): string[] {
 }
 
 
-export default function FileTree({ setActivePath }: FileTreeProps) {
+export default function FileTree({ activePath, setActivePath }: FileTreeProps) {
   const [tree, setTree] = useState<FolderNode | null>(null);
   const [filterString, setFilterString] = useState<string>("");
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
@@ -131,7 +135,7 @@ export default function FileTree({ setActivePath }: FileTreeProps) {
       </div>
       <div id="file-tree">
         {tree && (
-          <TreeNodeComponent node={tree} setActivePath={setActivePath} filterString={filterString} collapsed={collapsed} setCollapsed={setCollapsed} path="/"/>
+          <TreeNodeComponent node={tree} activePath={activePath} setActivePath={setActivePath} filterString={filterString} collapsed={collapsed} setCollapsed={setCollapsed} path="/"/>
         )}
       </div>
     </>

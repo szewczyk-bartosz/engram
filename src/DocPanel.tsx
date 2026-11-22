@@ -59,6 +59,7 @@ export default function DocPanel({ activePath }: BottomBarProps) {
         className="engram-doc"
         id="engram-doc"
         ref={docRef}
+        data-doc-name={activePath?.split("/").at(-1) ?? ""}
         dangerouslySetInnerHTML={{ __html: currentDoc ?? "" }}
       />
     </div>

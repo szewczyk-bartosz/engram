@@ -13,7 +13,7 @@ export default function Notes() {
   return (
     <div className="noteAppView">
       <SidePanel side="left">
-        <FileTree setActivePath={setActivePath} />
+        <FileTree activePath={activePath} setActivePath={setActivePath} />
       </SidePanel>
       <div className="document-container">
         <div className="engram-header">{activePath?.split("/").at(-1)}</div>
