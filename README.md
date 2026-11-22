@@ -5,13 +5,9 @@ A self-hosted reader for my notes. Notes are written as plain-text `.eng` files 
 ![Engram showing a placeholder note](assets/site-screenshot.png)
 
 ## How it works
+Caddy serves the static react build over tailscale (making it secure without a login page), which hits up server.py API endpoints for rendered files or to render files
 
-
-notesDir/*.eng -> index.py -> creates index and renders notes to HTML
-
-caddy serves the static react build over tailscale (making it secure without a login page), which hits up server.py api endpoints for rendered files 
-
-Those rendered files are then injected into the reading view
+Invoking file renderer via the API endpoint calls index.py, which creates an index and renders notes to HTML, ready to be injected into the reading view
 
 
 | Part | What it does |
