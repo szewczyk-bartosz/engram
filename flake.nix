@@ -20,7 +20,7 @@
     flake-utils.lib.eachDefaultSystem (system: let
       pkgs = nixpkgs.legacyPackages.${system};
       lib = pkgs.lib;
-      pnpm = pkgs.pnpm_10.override { nodejs-slim = pkgs.nodejs_26; };
+      pnpm = pkgs.pnpm_11;
       start-engram = pkgs.writeShellScriptBin "start-engram" ''
         start_vite() {
           tmux send-keys -t $1 'pnpm dev' Enter
@@ -62,7 +62,7 @@
       '';
     in {
       devShells.default = pkgs.mkShell {
-        packages = with pkgs; [tmux nodejs_26 pnpm python3 engramware.packages.${system}.bmd] ++ [start-engram];
+        packages = with pkgs; [tmux nodejs_24 pnpm python3 engramware.packages.${system}.bmd] ++ [start-engram];
         shellHook = ''
           if [ -n "$ENGRAM_DEV_SHELL" ]; then
             echo "WARNING!!!!"
@@ -80,7 +80,7 @@
         src = ./.;
 
         nativeBuildInputs = with pkgs; [
-          nodejs_26
+          nodejs_24
           pnpmConfigHook
           pnpm
         ];
@@ -89,7 +89,7 @@
           inherit (finalAttrs) src pname;
           inherit pnpm;
           fetcherVersion = 4;
-          hash = "sha256-htjyF83duEJ6bmhjZEZlJWk2YFAuszWJYrCWDNgS3U4=";
+          hash = "sha256-z/1JgDrWB+UNEy6aXh/Fw5LNU8H/je1LSNWvLg0Zmas=";
         };
 
         buildPhase = ''
