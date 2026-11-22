@@ -44,14 +44,9 @@
   --reading-mute: rgba(216, 245, 225, 0.6);
   --reading-rule: rgba(124, 255, 178, 0.18);
   --reading-code-bg: rgba(124, 255, 178, 0.07);
-  --scanline-opacity: 0.35;
-  --glow-strength: 1;
-  --flicker-strength: 1;
-  --grain-opacity: 0.05;
   --chrome-radius: 2px;
   --left-width: 280px;
   --right-width: 320px;
-  --left-slide: 0.25s ease;
 }
 
 /* AMBER CRT */
@@ -234,22 +229,6 @@ button:active {
   flex-direction: column;
 }
 
-/* Main three-column grid */
-#app {
-  flex: 1;
-  display: grid;
-  grid-template-columns: var(--left-width) 1fr var(--right-width);
-  grid-template-areas: "left centre right";
-  overflow: hidden;
-  /* Anchor for the floating reopen button */
-  position: relative;
-  transition: grid-template-columns var(--left-slide);
-}
-
-#left-panel   { grid-area: left; }
-#centre-panel { grid-area: centre; }
-#right-panel  { grid-area: right; }
-
 
 /* ==========================================================================
    4.5 SIDE PANEL — src/SidePanel.tsx
@@ -279,6 +258,7 @@ button:active {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  background: var(--reading-bg);
 }
 
 /* DocPanel.tsx puts .engram-doc on #doc-frame too (as well as the inner
@@ -388,68 +368,6 @@ button:active {
    5. LEFT PANEL
    ========================================================================== */
 
-#left-panel {
-  display: flex;
-  flex-direction: column;
-  background: var(--bg-deep);
-  border-right: 1px solid var(--rule);
-  /* Fixed width so contents don't reflow while the column animates */
-  width: var(--left-width);
-  transform: translateX(0);
-  visibility: visible;
-  transition:
-    transform var(--left-slide),
-    visibility 0s linear 0s;
-}
-
-/* --- Collapse / reopen toggle --- */
-/* Closing shrinks the left column to zero while the panel slides out to the
-   left in sync. The reopen button is not part of the grid: it floats in the
-   top-left corner of #app (just under the top bar) and fades in once closed. */
-#left-reopen {
-  position: absolute;
-  /* Same inset as the close button inside #left-panel-controls */
-  top: 8px;
-  left: 8px;
-  z-index: 2;
-  opacity: 0;
-  visibility: hidden;
-  transition:
-    opacity var(--left-slide),
-    visibility 0s linear 0.25s;
-}
-
-#left-open-button,
-#left-close-button {
-  padding: 2px 6px;
-}
-
-/* Close button segment: same inset as the floating reopen button */
-#left-panel-controls {
-  padding: 8px;
-}
-
-#app[data-left-closed="true"] {
-  grid-template-columns: 0px 1fr var(--right-width);
-}
-
-#app[data-left-closed="true"] #left-panel {
-  transform: translateX(-100%);
-  /* Hide from focus/pointer only once the slide has finished */
-  visibility: hidden;
-  transition:
-    transform var(--left-slide),
-    visibility 0s linear 0.25s;
-}
-
-#app[data-left-closed="true"] #left-reopen {
-  opacity: 1;
-  visibility: visible;
-  transition:
-    opacity var(--left-slide),
-    visibility 0s linear 0s;
-}
-
 .sidepanel-controls {
   display: flex;
   flex-direction: row;
@@ -475,45 +393,6 @@ button:active {
 .sidebar-segment:first-child,
 .sidepanel > *:first-child {
   border-top: none;
-}
-
-/* --- Sync segment --- */
-#file-sync-segment {
-  padding: 12px 14px;
-}
-
-#sync-button {
-  width: 100%;
-  padding: 10px 12px;
-  border-color: var(--rule-strong);
-  color: var(--accent);
-  font-size: 11px;
-  letter-spacing: 0.16em;
-  text-shadow: 0 0 6px var(--accent-glow);
-  position: relative;
-  overflow: hidden;
-}
-
-/* Sweep highlight on hover */
-#sync-button::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, transparent, var(--fg-faint), transparent);
-  transform: translateX(-100%);
-  transition: transform 0.6s;
-}
-
-#sync-button:hover::before {
-  transform: translateX(100%);
-}
-
-/* --- File selector segment (filter + controls + tree) --- */
-#file-selector {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  flex: 1;
 }
 
 /* Filter input: short-dash underline with breathing room below it.
@@ -582,21 +461,6 @@ button:active {
 .file-tree-sync-button {
   width: 100%;
   padding: 6px 12px;
-}
-
-/* Expand / collapse controls: inset from the panel edges, compact buttons */
-#tree-controls {
-  flex-shrink: 0;
-  display: flex;
-  gap: 6px;
-  padding: 0 14px;
-}
-
-#tree-controls button {
-  flex: 1;
-  padding: 2px 6px;
-  font-size: 10px;
-  letter-spacing: 0.08em;
 }
 
 /* File tree expand/collapse controls (src/FileTree.tsx) */
@@ -677,14 +541,8 @@ button:active {
 }
 
 /* Node type colouring */
-.tree-node[data-type="folder"] .tree-label,
 .folder-label {
   color: var(--fg-dim);
-}
-
-.tree-node[data-type="file"] .tree-label {
-  color: var(--fg);
-  opacity: 0.85;
 }
 
 /* Folder icon: open by default, closed when collapsed */
@@ -745,66 +603,7 @@ button:active {
    6. CENTRE PANEL (reading pane)
    ========================================================================== */
 
-/* Column: fixed header bar on top, scrolling document below */
-#centre-panel {
-  display: flex;
-  flex-direction: column;
-  background: var(--reading-bg);
-  overflow: hidden;
-}
-
-/* --- Document header bar (matches top bar / sidebar segments) --- */
-.doc-header {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  /* Tall enough that the floating reopen button (8px inset, ~22px tall)
-     sits inside the bar with a little room below it */
-  height: 38px;
-  padding: 0 14px;
-  background: var(--bg-deep);
-  border-bottom: 1px solid var(--rule);
-  transition:
-    padding-left var(--left-slide),
-    padding-right var(--left-slide);
-}
-
-/* Make room for the floating reopen buttons when a panel is closed */
-#app[data-left-closed="true"] .doc-header {
-  padding-left: 44px;
-}
-
-#app[data-right-closed="true"] .doc-header {
-  padding-right: 44px;
-}
-
-.doc-path {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--fg-dim);
-  text-shadow: 0 0 6px var(--accent-glow);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* Prompt-style prefix before the path */
-.doc-path::before {
-  content: "//";
-  flex-shrink: 0;
-  color: var(--fg-mute);
-  text-shadow: none;
-  letter-spacing: 0;
-}
-
-/* Doc header (src/DocPanel.tsx): merges the old .doc-header bar chrome and
-   .doc-path text treatment into one element. */
+/* Doc header (src/DocPanel.tsx) */
 .engram-header {
   flex-shrink: 0;
   display: flex;
@@ -832,24 +631,6 @@ button:active {
   color: var(--fg-mute);
   text-shadow: none;
   letter-spacing: 0;
-}
-
-/* --- Scrolling document area --- */
-.doc-scroll {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
-  scrollbar-width: thin;
-  scrollbar-color: var(--rule) transparent;
-}
-
-.doc-scroll::-webkit-scrollbar {
-  width: 8px;
-}
-
-.doc-scroll::-webkit-scrollbar-thumb {
-  background: var(--rule);
 }
 
 /* --- Document end marker --- */
@@ -1090,12 +871,6 @@ button:active {
   margin-right: 6px;
 }
 
-.widget-id {
-  font-size: 9px;
-  color: var(--fg-faint);
-  letter-spacing: 0.1em;
-}
-
 
 /* ============= WIDGET: CLOCK ============= */
 
@@ -1116,16 +891,11 @@ button:active {
   letter-spacing: 0.05em;
 }
 
-#clock-date,
-#clock-uptime {
+#clock-date {
   font-size: 10px;
   color: var(--fg-mute);
   letter-spacing: 0.14em;
   text-transform: uppercase;
-}
-
-#clock-uptime {
-  color: var(--fg-faint);
 }
 
 
@@ -1224,19 +994,6 @@ button:active {
   text-shadow: 0 0 6px var(--accent-glow);
 }
 
-/* App name on the left: larger and brighter than the status text */
-#top-left {
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.2em;
-  color: var(--accent);
-  text-shadow: 0 0 6px var(--accent-glow);
-}
-
-/* #top-right is a plain flex child; it inherits from #top-bar.
-   .blink is defined in the bottom bar section below. */
-
-
 /* ============= BOTTOM BAR ============= */
 
 #bottom-bar {
@@ -1277,10 +1034,6 @@ button:active {
   color: var(--accent);
 }
 
-.spacer {
-  flex: 1;
-}
-
 .blink {
   color: var(--accent);
   animation: blink 1s steps(2) infinite;
@@ -1294,30 +1047,6 @@ button:active {
 /* ==========================================================================
    8. RIGHT PANEL
    ========================================================================== */
-
-#right-panel {
-  display: flex;
-  flex-direction: column;
-  background: var(--bg-deep);
-  border-left: 1px solid var(--rule);
-  /* Fixed width so contents don't reflow while the column animates. The
-     column's start edge moves right as it shrinks, which carries the panel
-     off-screen by itself (no transform needed, unlike the left panel). */
-  width: var(--right-width);
-  visibility: visible;
-  transition: visibility 0s linear 0s;
-}
-
-/* Close button segment: mirrors #left-panel-controls, button on the outer edge */
-#right-panel-controls {
-  display: flex;
-  justify-content: flex-end;
-  padding: 8px;
-}
-
-#right-close-button {
-  padding: 2px 6px;
-}
 
 /* Scrolling body for the widgets: the panel itself never scrolls, so the
    segments keep their natural height instead of being squashed by flex. */
@@ -1349,49 +1078,6 @@ button:active {
   margin: 12px auto 16px;
   color: var(--accent);
   filter: drop-shadow(0 0 4px var(--accent-glow));
-}
-
-/* --- Collapse / reopen toggle --- */
-/* Mirror of the left panel: the column shrinks to zero while the panel slides
-   out to the right. The reopen button floats in the top-right corner of #app
-   and fades in once closed. */
-#right-reopen {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  z-index: 2;
-  opacity: 0;
-  visibility: hidden;
-  transition:
-    opacity var(--left-slide),
-    visibility 0s linear 0.25s;
-}
-
-#right-open-button {
-  padding: 2px 6px;
-}
-
-#app[data-right-closed="true"] {
-  grid-template-columns: var(--left-width) 1fr 0px;
-}
-
-#app[data-right-closed="true"] #right-panel {
-  /* Hide from focus/pointer only once the slide has finished */
-  visibility: hidden;
-  transition: visibility 0s linear 0.25s;
-}
-
-#app[data-right-closed="true"] #right-reopen {
-  opacity: 1;
-  visibility: visible;
-  transition:
-    opacity var(--left-slide),
-    visibility 0s linear 0s;
-}
-
-/* Both panels closed: neither side rule alone is correct, so set both to 0 */
-#app[data-left-closed="true"][data-right-closed="true"] {
-  grid-template-columns: 0px 1fr 0px;
 }
 
 
