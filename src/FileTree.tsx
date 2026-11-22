@@ -122,7 +122,7 @@ export default function FileTree({ setActivePath }: FileTreeProps) {
   return (
     <>
       <div className="file-tree-sync-button-container">
-      <button className="file-tree-sync-button" onClick={() => {trackedFetch("/api/sync", activityLogFunc, {method: "POST"}).then(() => trackedFetch("/api/index", activityLogFunc).then((response) => response.json()).then((data) => setTree(data)))}}>Sync</button>
+      <button className="file-tree-sync-button" onClick={() => {trackedFetch("/api/sync", activityLogFunc, {method: "POST", headers: {"X-Engram-Sync": "1"}}).then(() => trackedFetch("/api/index", activityLogFunc).then((response) => response.json()).then((data) => setTree(data)))}}>Sync</button>
       </div>
       <SearchBox setFilterString={setFilterString} />
       <div className="file-tree-expand-collapse-buttons">

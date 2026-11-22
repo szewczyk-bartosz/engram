@@ -19,6 +19,9 @@ def make_handler(source_dir: Path, web_root: Path):
 
         def do_POST(self):
             if self.path == "/api/sync":
+                if self.headers.get("X-Engram-Sync") != "1":
+                    self.send_json(b'{"ok": false}', status=403)
+                    return
                 result = subprocess.run(
                     [
                         "python3",
