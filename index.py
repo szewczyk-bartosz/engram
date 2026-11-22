@@ -94,13 +94,25 @@ def main():
         "and generate an index."
     )
     parser.add_argument(
-        "-i", type=Path, help="Source directory containing raw .eng files"
+        "-i",
+        type=Path,
+        required=True,
+        help="Source directory containing raw .eng files",
     )
 
-    parser.add_argument("--web-root", type=Path, metavar="DIRECTORY", help="output HTML file")
+    parser.add_argument(
+        "--web-root",
+        type=Path,
+        required=True,
+        metavar="DIRECTORY",
+        help="Directory that receives engrams/index.json and engrams/rendered/",
+    )
 
-    parser.add_argument("--check", action="store_true")
-    parser.add_argument("--hard", action="store_true")
+    parser.add_argument(
+        "--hard",
+        action="store_true",
+        help="Re-render every file, even ones whose hash hasn't changed",
+    )
     args = parser.parse_args()
 
     source_dir: Path = args.i
