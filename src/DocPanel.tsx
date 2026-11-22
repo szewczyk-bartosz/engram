@@ -1,7 +1,7 @@
 import { views, ViewTypes } from "./Views";
 import { act, useState, useEffect } from "react";
 import { trackedFetch } from "./ActivityLog";
-import { useActivityLog } from "./Main";
+import { useActivityLog } from "./ActivityLogContext";
 
 interface BottomBarProps {
   activePath: string | null;

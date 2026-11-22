@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useActivityLog } from "./Main";
+import { useActivityLog } from "./ActivityLogContext";
 
 const MAX_ROWS = 5;
 
