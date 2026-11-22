@@ -1,30 +1,11 @@
-/* ==========================================================================
-   ENGRAM — styles.css
-
-   1. Design tokens (theme variables)
-   2. Reset & base
-   3. Form controls (inputs, buttons)
-   4. App shell (top bar, main grid, bottom bar)
-   5. Left panel (controls, sync, file selector, file tree)
-   6. Centre panel (reading pane)
-   7. Rendered document (.engram-doc)
-   Widget header
-   Widget: clock
-   Widget: waveform
-   Widget: activity log
-   Top bar
-   Bottom bar
-   8. Right panel
-   9. Settings dialog
-   Boot overlay
-   ========================================================================== */
+/* ENGRAM — styles.css
+   Theme tokens, base, app shell, side panels, file tree, reading pane,
+   rendered document, widgets, top/bottom bars, settings, boot overlay. */
 
 
-/* ==========================================================================
-   1. DESIGN TOKENS
-   ========================================================================== */
+/* ===== THEMES ===== */
 
-/* Default: GREEN PHOSPHOR */
+/* Default: green phosphor */
 :root {
   --bg: #0a0e0a;
   --bg-deep: #050805;
@@ -44,12 +25,16 @@
   --reading-mute: rgba(216, 245, 225, 0.6);
   --reading-rule: rgba(124, 255, 178, 0.18);
   --reading-code-bg: rgba(124, 255, 178, 0.07);
+  --code-keyword: #7cffb2;
+  --code-string: #ffcf7a;
+  --code-number: #7cd9ff;
+  --code-entity: #d99cff;
+  --code-comment: rgba(124, 255, 178, 0.4);
   --chrome-radius: 2px;
   --left-width: 280px;
   --right-width: 320px;
 }
 
-/* AMBER CRT */
 [data-theme="amber"] {
   --bg: #120a04;
   --bg-deep: #080502;
@@ -67,9 +52,13 @@
   --reading-mute: rgba(243, 227, 196, 0.6);
   --reading-rule: rgba(255, 180, 84, 0.18);
   --reading-code-bg: rgba(255, 180, 84, 0.07);
+  --code-keyword: #ffb454;
+  --code-string: #8fe0a0;
+  --code-number: #7cc8ff;
+  --code-entity: #ff9ecf;
+  --code-comment: rgba(255, 180, 84, 0.4);
 }
 
-/* RED ALERT */
 [data-theme="red"] {
   --bg: #140505;
   --bg-deep: #090202;
@@ -87,9 +76,13 @@
   --reading-mute: rgba(245, 216, 216, 0.6);
   --reading-rule: rgba(255, 77, 77, 0.18);
   --reading-code-bg: rgba(255, 77, 77, 0.07);
+  --code-keyword: #ff4d4d;
+  --code-string: #ffcf7a;
+  --code-number: #7cc8ff;
+  --code-entity: #d99cff;
+  --code-comment: rgba(255, 107, 107, 0.4);
 }
 
-/* CYAN TERMINAL */
 [data-theme="cyan"] {
   --bg: #07111c;
   --bg-deep: #03080f;
@@ -107,9 +100,14 @@
   --reading-mute: rgba(219, 236, 255, 0.6);
   --reading-rule: rgba(124, 200, 255, 0.18);
   --reading-code-bg: rgba(124, 200, 255, 0.07);
+  --code-keyword: #7cc8ff;
+  --code-string: #ffd479;
+  --code-number: #8fe0a0;
+  --code-entity: #ff9ecf;
+  --code-comment: rgba(124, 200, 255, 0.4);
 }
 
-/* MONOCHROME */
+/* No hue: code tokens are told apart by weight/italic (see prism-styling.css) */
 [data-theme="mono"] {
   --bg: #0a0a0f;
   --bg-deep: #050507;
@@ -127,9 +125,14 @@
   --reading-mute: rgba(232, 232, 232, 0.55);
   --reading-rule: rgba(232, 232, 232, 0.18);
   --reading-code-bg: rgba(255, 255, 255, 0.05);
+  --code-keyword: #ffffff;
+  --code-string: #c8c8c8;
+  --code-number: #e8e8e8;
+  --code-entity: #ffffff;
+  --code-comment: rgba(232, 232, 232, 0.4);
 }
 
-/* CALM FOCUS — warm paper, low FX */
+/* Warm paper, muted palette */
 [data-theme="calm"] {
   --bg: #f5f1e8;
   --bg-deep: #ebe5d6;
@@ -147,12 +150,15 @@
   --reading-mute: rgba(42, 38, 32, 0.65);
   --reading-rule: rgba(42, 38, 32, 0.15);
   --reading-code-bg: rgba(42, 38, 32, 0.05);
+  --code-keyword: #8b6f3c;
+  --code-string: #4f7a52;
+  --code-number: #3d6b8f;
+  --code-entity: #7a4f8f;
+  --code-comment: rgba(42, 38, 32, 0.45);
 }
 
 
-/* ==========================================================================
-   2. RESET & BASE
-   ========================================================================== */
+/* ===== BASE ===== */
 
 *, *::before, *::after {
   box-sizing: border-box;
@@ -169,12 +175,6 @@ html, body {
   font-size: 13px;
 }
 
-
-/* ==========================================================================
-   3. FORM CONTROLS
-   ========================================================================== */
-
-/* --- Inputs --- */
 input {
   background: none;
   border: none;
@@ -195,7 +195,6 @@ input:focus {
   border-bottom-color: var(--accent);
 }
 
-/* --- Buttons --- */
 button {
   background: none;
   border: 1px solid var(--rule);
@@ -218,10 +217,7 @@ button:active {
 }
 
 
-/* ==========================================================================
-   4. APP SHELL
-   Vertical stack: top bar / main grid / bottom bar
-   ========================================================================== */
+/* ===== APP SHELL ===== */
 
 #root {
   height: 100%;
@@ -229,18 +225,7 @@ button:active {
   flex-direction: column;
 }
 
-
-/* ==========================================================================
-   4.5 SIDE PANEL — src/SidePanel.tsx
-   Generic left/right panel component. Recreates the look of the old
-   #left-panel / #right-panel / #left-reopen / #right-reopen chrome (see
-   sections 5 & 8 below) via the .left / .right / .hidden classes the
-   component actually renders, since it no longer emits those ids.
-   ========================================================================== */
-
-/* Row container for a view's left panel / doc frame / right panel, e.g.
-   src/Notes.tsx's .noteAppView. Fills the space between the top and bottom
-   bars and lays its three children out side by side. */
+/* A view's row: left panel / document / right panel (src/Notes.tsx) */
 .noteAppView {
   flex: 1;
   min-height: 0;
@@ -249,9 +234,7 @@ button:active {
   overflow: hidden;
 }
 
-/* Column wrapper for the header + scrolling doc, sitting between the two
-   side panels (src/Notes.tsx). Needs its own flex: 1 to claim the space
-   #doc-frame used to get directly, now that it's nested one level deeper. */
+/* Header + scrolling doc, between the two side panels */
 .document-container {
   flex: 1;
   min-width: 0;
@@ -261,11 +244,9 @@ button:active {
   background: var(--reading-bg);
 }
 
-/* DocPanel.tsx puts .engram-doc on #doc-frame too (as well as the inner
-   content div), which would otherwise cap this outer scroll frame at 70ch
-   and disable flex stretch, shrinking it to content size when empty. Undo
-   that here so the frame always fills .document-container; the inner
-   #engram-doc keeps the real 70ch reading column. */
+/* #doc-frame also has .engram-doc, which would cap it at 70ch and shrink it
+   when empty. Undo that so it fills the column; the inner #engram-doc keeps
+   the 70ch reading width. */
 #doc-frame {
   flex: 1;
   min-width: 0;
@@ -284,6 +265,9 @@ button:active {
 #doc-frame::-webkit-scrollbar-thumb {
   background: var(--rule);
 }
+
+
+/* ===== SIDE PANELS (src/SidePanel.tsx) ===== */
 
 .sidepanel {
   flex-shrink: 0;
@@ -308,8 +292,7 @@ button:active {
   border-left: 1px solid var(--rule);
 }
 
-/* Slide out of view on the side it belongs to, same easing as the old
-   #app[data-left-closed] transform. */
+/* Visibility flips only after the slide finishes */
 .sidepanel.left.hidden {
   width: 0;
   border-right-width: 0;
@@ -326,9 +309,7 @@ button:active {
   transition: transform 0.25s ease, width 0.25s ease, visibility 0s linear 0.25s;
 }
 
-/* Floating reopen chip: fixed under the top bar since this component has no
-   positioned #app ancestor to anchor to like the original did. Shown by
-   default; .hidden hides it once the matching panel is open. */
+/* Floating reopen chip, fixed just under the top bar */
 .sidepanel-reopen-button {
   position: fixed;
   top: 44px;
@@ -363,19 +344,12 @@ button:active {
   transition: opacity 0.25s ease, visibility 0s linear 0.25s;
 }
 
-
-/* ==========================================================================
-   5. LEFT PANEL
-   ========================================================================== */
-
 .sidepanel-controls {
   display: flex;
   flex-direction: row;
   align-items: center;
 }
 
-/* Each side's controls hug that panel's outer screen edge, same as the
-   original #left-panel-controls (left) / #right-panel-controls (right). */
 .sidepanel-controls.left {
   justify-content: flex-start;
 }
@@ -384,7 +358,6 @@ button:active {
   justify-content: flex-end;
 }
 
-/* --- Sidebar segments --- */
 .sidebar-segment,
 .sidepanel > * {
   border-top: 1px solid var(--rule);
@@ -395,36 +368,10 @@ button:active {
   border-top: none;
 }
 
-/* Filter input: short-dash underline with breathing room below it.
-   Drawn as a repeating gradient (rather than border-style: dashed) so the
-   dash length and gap are controllable: 6px dash, 8px gap. */
-#filter {
-  --dash: 6px;
-  --gap: 8px;
-  flex-shrink: 0;
-  padding: 8px 14px;
-  text-align: center;
-  border-bottom: none;
-  margin-bottom: 8px;
-  background-image: repeating-linear-gradient(
-    90deg,
-    var(--rule-strong) 0 var(--dash),
-    transparent var(--dash) calc(var(--dash) + var(--gap))
-  );
-  background-repeat: no-repeat;
-  background-size: 100% 1px;
-  background-position: 0 100%;
-}
 
-#filter:focus {
-  background-image: repeating-linear-gradient(
-    90deg,
-    var(--accent) 0 var(--dash),
-    transparent var(--dash) calc(var(--dash) + var(--gap))
-  );
-}
+/* ===== FILE TREE (src/FileTree.tsx) ===== */
 
-/* Tree search box (src/FileTree.tsx): same dash-underline treatment as #filter */
+/* Dashed underline drawn as a gradient so dash and gap sizes are adjustable */
 .tree-search-box {
   --dash: 6px;
   --gap: 8px;
@@ -451,8 +398,6 @@ button:active {
   );
 }
 
-/* Sync button (src/FileTree.tsx): the container gives the inset margin from
-   the panel edges, and the button fills that container's full width. */
 .file-tree-sync-button-container {
   flex-shrink: 0;
   padding: 10px 14px;
@@ -463,7 +408,6 @@ button:active {
   padding: 6px 12px;
 }
 
-/* File tree expand/collapse controls (src/FileTree.tsx) */
 .file-tree-expand-collapse-buttons {
   flex-shrink: 0;
   display: flex;
@@ -478,7 +422,6 @@ button:active {
   letter-spacing: 0.08em;
 }
 
-/* --- File tree --- */
 #file-tree {
   flex: 1;
   overflow-y: auto;
@@ -501,7 +444,7 @@ button:active {
   white-space: nowrap;
 }
 
-/* Fixed row height keeps connector geometry predictable (mid = half of this) */
+/* Fixed row height keeps the connector geometry predictable */
 .tree-label {
   display: flex;
   align-items: center;
@@ -509,13 +452,6 @@ button:active {
   padding: 0 14px;
   color: var(--fg);
   position: relative;
-}
-
-/* Indentation lives on the child containers so the vertical connector can
-   ride their left edge. The script also sets an inline padding-left per
-   depth; !important is needed to override that inline value from CSS. */
-.tree-children > .tree-node > .tree-label {
-  padding-left: 14px !important;
 }
 
 .tree-label:hover {
@@ -526,7 +462,6 @@ button:active {
   color: var(--accent);
   text-shadow: 0 0 6px var(--accent-glow);
   background: var(--fg-faint);
-  position: relative;
 }
 
 /* Active indicator bar */
@@ -540,12 +475,10 @@ button:active {
   background: var(--accent);
 }
 
-/* Node type colouring */
 .folder-label {
   color: var(--fg-dim);
 }
 
-/* Folder icon: open by default, closed when collapsed */
 .folder-label::before {
   content: "\1F5C1"; /* 🗁 open folder */
   margin-right: 6px;
@@ -555,16 +488,17 @@ button:active {
   content: "\1F5C0"; /* 🗀 folder */
 }
 
-/* --- Tree connector lines --- */
-/* Vertical line: runs down the left edge of every nested child list,
-   indented so it sits under the parent's marker. */
+.folder-label[data-collapsed="true"] ~ .tree-children {
+  display: none;
+}
+
+/* Vertical connector down the left edge of each nested list */
 .tree-children {
   margin-left: 18px;
   border-left: 1px solid var(--rule);
 }
 
-/* Horizontal connector: from the vertical line into the label text.
-   (::after, because ::before is the active-item indicator bar.) */
+/* Horizontal connector into the label (::before is the active bar) */
 .tree-children > .tree-node > .tree-label::after {
   content: "";
   position: absolute;
@@ -576,8 +510,7 @@ button:active {
   pointer-events: none;
 }
 
-/* Last child: mask the vertical line below the row's midpoint so it stops
-   at the └ corner instead of running past the last item. */
+/* Mask the vertical line below the last child's midpoint so it ends in a └ */
 .tree-children > .tree-node:last-child {
   position: relative;
 }
@@ -593,17 +526,9 @@ button:active {
   pointer-events: none;
 }
 
-/* Collapsed folders */
-.folder-label[data-collapsed="true"] ~ .tree-children {
-  display: none;
-}
 
+/* ===== READING PANE ===== */
 
-/* ==========================================================================
-   6. CENTRE PANEL (reading pane)
-   ========================================================================== */
-
-/* Doc header (src/DocPanel.tsx) */
 .engram-header {
   flex-shrink: 0;
   display: flex;
@@ -633,10 +558,8 @@ button:active {
   letter-spacing: 0;
 }
 
-/* --- Document end marker --- */
-/* Targeted by id: each rendered file wraps itself in its own .engram-doc div,
-   so a class selector would draw the marker twice. Reads the document name
-   from a data-doc-name attribute on the container. */
+/* By id: rendered files bring their own .engram-doc divs, so a class
+   selector would draw the marker more than once */
 #engram-doc::after {
   content: "// EOF \00B7 " attr(data-doc-name);
   display: block;
@@ -651,11 +574,8 @@ button:active {
 }
 
 
-/* ==========================================================================
-   7. RENDERED DOCUMENT
-   ========================================================================== */
+/* ===== RENDERED DOCUMENT (bmd output) ===== */
 
-/* Centred reading column capped at ~70 characters; fills the pane when narrower */
 .engram-doc {
   max-width: 70ch;
   margin: 0 auto;
@@ -667,11 +587,8 @@ button:active {
   text-wrap: pretty;
 }
 
-/* --- Headings --- */
 .engram-doc h1,
-.engram-doc h2,
-.engram-doc h3,
-.engram-doc h4 {
+.engram-doc h2 {
   font-family: var(--mono);
   font-weight: 600;
   color: var(--accent);
@@ -688,19 +605,13 @@ button:active {
 }
 
 .engram-doc h2 { font-size: 22px; margin: 40px 0 12px; }
-.engram-doc h3 { font-size: 17px; margin: 28px 0 8px; }
 
-/* Markdown-style hash prefixes */
-.engram-doc h1::before { content: "# ";   color: var(--fg-mute); font-weight: 400; }
-.engram-doc h2::before { content: "## ";  color: var(--fg-mute); font-weight: 400; }
-.engram-doc h3::before { content: "### "; color: var(--fg-mute); font-weight: 400; }
+.engram-doc h1::before { content: "# ";  color: var(--fg-mute); font-weight: 400; }
+.engram-doc h2::before { content: "## "; color: var(--fg-mute); font-weight: 400; }
 
-/* --- Inline text --- */
 .engram-doc p { margin: 0 0 16px; }
 
-/* Plain text blocks: keep the author's spaces, tabs and line breaks verbatim
-   but otherwise read like a paragraph. pre-wrap still wraps long lines, and
-   text-wrap: pretty is reset so wrapping doesn't rebalance the author's lines. */
+/* Keeps the author's whitespace verbatim but still wraps long lines */
 .plain-text {
   margin: 0 0 16px;
   white-space: pre-wrap;
@@ -709,17 +620,6 @@ button:active {
   text-wrap: wrap;
 }
 
-.engram-doc strong { color: var(--accent); font-weight: 600; }
-.engram-doc em { font-style: italic; }
-
-.engram-doc a {
-  color: var(--accent);
-  text-decoration: none;
-  border-bottom: 1px dashed var(--accent);
-}
-.engram-doc a:hover { background: var(--fg-faint); }
-
-/* --- Code --- */
 .engram-doc code {
   font-family: var(--mono);
   font-size: 0.88em;
@@ -750,16 +650,7 @@ button:active {
   font-size: inherit;
 }
 
-/* --- Block elements --- */
-.engram-doc blockquote {
-  margin: 18px 0;
-  padding: 4px 18px;
-  border-left: 2px solid var(--accent);
-  color: var(--reading-mute);
-  font-style: italic;
-}
-
-.engram-doc ul, .engram-doc ol { margin: 0 0 16px; padding-left: 24px; }
+.engram-doc ul { margin: 0 0 16px; padding-left: 24px; }
 .engram-doc ul li::marker { content: "▸ "; color: var(--accent); }
 .engram-doc li { margin-bottom: 6px; }
 
@@ -816,13 +707,6 @@ button:active {
   text-decoration: line-through;
 }
 
-.engram-doc hr {
-  border: none;
-  border-top: 1px dashed var(--reading-rule);
-  margin: 32px 0;
-}
-
-/* --- Tables --- */
 .engram-doc table {
   width: 100%;
   border-collapse: collapse;
@@ -846,15 +730,14 @@ button:active {
 }
 
 
-/* ============= WIDGET HEADER ============= */
+/* ===== WIDGETS ===== */
 
 .widget-header {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  /* Full width even inside widgets that centre their content */
-  width: 100%;
+  width: 100%; /* full width even in widgets that centre their content */
   margin-bottom: 10px;
 }
 
@@ -871,8 +754,20 @@ button:active {
   margin-right: 6px;
 }
 
+/* The panel itself never scrolls, so widgets keep their natural height */
+#right-panel-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--rule) transparent;
+}
 
-/* ============= WIDGET: CLOCK ============= */
+/* Restore the divider under the panel controls */
+#right-panel-body > .sidebar-segment:first-child {
+  border-top: 1px solid var(--rule);
+}
 
 #widget-clock {
   display: flex;
@@ -898,11 +793,20 @@ button:active {
   text-transform: uppercase;
 }
 
+#widget-globe {
+  padding: 12px 14px;
+}
 
-/* ============= WIDGET: WAVEFORM ============= */
+#globe-svg {
+  display: block;
+  width: 100%;
+  max-width: 230px;
+  aspect-ratio: 1;
+  margin: 12px auto 16px;
+  color: var(--accent);
+  filter: drop-shadow(0 0 4px var(--accent-glow));
+}
 
-/* Side inset lives on the segment so the header lines up with the other
-   widgets; #waveform keeps only its vertical breathing room. */
 #widget-waveform {
   padding: 12px 14px 0;
 }
@@ -925,9 +829,6 @@ button:active {
   transition: height 0.22s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
-
-/* ============= WIDGET: ACTIVITY LOG ============= */
-
 #widget-activity-log {
   padding: 12px 14px;
 }
@@ -937,14 +838,11 @@ button:active {
   gap: 10px;
 }
 
-/* Keep the timestamp column intact when a long message wraps */
 .log-ts {
   flex-shrink: 0;
 }
 
-/* Truncate long messages instead of overflowing the fixed-width panel.
-   Monospace font means a pixel-width ellipsis lands at a consistent
-   character count, so no JS-side slicing needed. */
+/* Truncate long messages instead of overflowing the panel */
 .log-msg {
   flex: 1;
   min-width: 0;
@@ -954,7 +852,7 @@ button:active {
 }
 
 
-/* ============= TOP BAR ============= */
+/* ===== TOP / BOTTOM BARS ===== */
 
 #top-bar {
   display: flex;
@@ -993,8 +891,6 @@ button:active {
   background: var(--fg-faint);
   text-shadow: 0 0 6px var(--accent-glow);
 }
-
-/* ============= BOTTOM BAR ============= */
 
 #bottom-bar {
   display: flex;
@@ -1044,50 +940,9 @@ button:active {
 }
 
 
-/* ==========================================================================
-   8. RIGHT PANEL
-   ========================================================================== */
+/* ===== SETTINGS DIALOG ===== */
 
-/* Scrolling body for the widgets: the panel itself never scrolls, so the
-   segments keep their natural height instead of being squashed by flex. */
-#right-panel-body {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
-  scrollbar-width: thin;
-  scrollbar-color: var(--rule) transparent;
-}
-
-/* The first widget is now first-child of the body, not of the panel, so it
-   would lose its divider from the controls segment above. Restore it. */
-#right-panel-body > .sidebar-segment:first-child {
-  border-top: 1px solid var(--rule);
-}
-
-/* --- Globe widget --- */
-#widget-globe {
-  padding: 12px 14px;
-}
-
-#globe-svg {
-  display: block;
-  width: 100%;
-  max-width: 230px;
-  aspect-ratio: 1;
-  margin: 12px auto 16px;
-  color: var(--accent);
-  filter: drop-shadow(0 0 4px var(--accent-glow));
-}
-
-
-/* ==========================================================================
-   9. SETTINGS DIALOG
-   Native <dialog> opened with showModal(). The global reset zeroes margins,
-   which also kills the auto margins the browser uses to centre a modal, so
-   they are restored here. ::backdrop dims the rest of the app.
-   ========================================================================== */
-
+/* The reset zeroes margins, which kills the auto margins that centre a modal */
 #settings {
   margin: auto;
   width: min(360px, calc(100vw - 32px));
@@ -1108,7 +963,6 @@ button:active {
   backdrop-filter: blur(2px);
 }
 
-/* Header: mirrors the top bar chrome */
 #settings-header {
   display: flex;
   justify-content: space-between;
@@ -1140,7 +994,6 @@ button:active {
   color: var(--accent);
 }
 
-/* Body: same inset as the sidebar widgets */
 #settings-body {
   display: flex;
   flex-direction: column;
@@ -1162,7 +1015,6 @@ button:active {
   color: var(--fg-mute);
 }
 
-/* Selects follow the input/button styling from section 3 */
 #settings select {
   appearance: none;
   width: 100%;
@@ -1189,7 +1041,7 @@ button:active {
   color: var(--fg);
 }
 
-/* Custom dropdown chevron, since appearance: none removes the native one */
+/* Custom chevron, since appearance: none removes the native one */
 .settings-row::after {
   content: "\25BE"; /* ▾ */
   position: absolute;
@@ -1200,11 +1052,9 @@ button:active {
 }
 
 
-/* ============= BOOT OVERLAY ============= */
+/* ===== BOOT OVERLAY (src/BootScreen.tsx) ===== */
 
-/* The art and the boot lines stack in a column anchored to the top-left,
-   like a terminal. justify-items keeps both children flush with the left
-   edge so the lines sit directly under the art. */
+/* Art and boot lines stack top-left, like a terminal */
 #boot-overlay {
   position: fixed;
   inset: 0;
@@ -1223,17 +1073,13 @@ button:active {
     display 0.6s allow-discrete;
 }
 
-/* React toggles a .hidden class rather than an inline display: none.
-   Transitioning display with allow-discrete keeps the element rendered for
-   the duration, and this selector fades it out over that window. Browsers
-   without support simply hide it instantly, as before. */
+/* allow-discrete keeps it rendered while it fades; older browsers hide it instantly */
 #boot-overlay.hidden {
   display: none;
   opacity: 0;
 }
 
-/* The art is indented with tabs in the HTML; tab-size: 0 collapses those so
-   the block characters line up without editing the markup. */
+/* The art is tab-indented in the source; tab-size: 0 collapses that */
 .boot .ascii {
   white-space: pre;
   tab-size: 0;
@@ -1249,6 +1095,5 @@ button:active {
   white-space: pre;
   line-height: 1.8;
   text-shadow: 0 0 8px var(--accent-glow);
-  /* Reserve room for all seven lines so the art doesn't drift as they print */
-  min-height: calc(7 * 1.8em);
+  min-height: calc(7 * 1.8em); /* room for all seven lines so the art doesn't drift */
 }
