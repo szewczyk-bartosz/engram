@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 import subprocess
+import sys
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
@@ -116,6 +117,7 @@ def main():
     new_tree = flatten_files(asdict(rawIndex))
     old_tree = flatten_files(load_index(INDEX_PATH))
 
+    failed: list[str] = []
     for path, new_node in new_tree.items():
         old_node = old_tree.get(path)
 
@@ -130,7 +132,7 @@ def main():
         else:
             print(f"{new_node} has changed! rendering it:")
             output_path.parent.mkdir(parents=True, exist_ok=True)
-            _ = subprocess.run(
+            result = subprocess.run(
                 [
                     "bmd",
                     "-i",
@@ -140,7 +142,17 @@ def main():
                     "--engram",
                 ]
             )
+            if result.returncode != 0:
+                # no output means the next soft sync retries it
+                output_path.unlink(missing_ok=True)
+                failed.append(path)
     save_index(INDEX_PATH, rawIndex)
+
+    if failed:
+        print("Failed to render:")
+        for path in failed:
+            print(f"  {path}")
+        sys.exit(1)
 
 
 def save_index(path: Path, tree: FolderNode) -> None:
