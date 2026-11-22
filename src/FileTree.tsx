@@ -1,4 +1,4 @@
-import { act, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { trackedFetch } from "./ActivityLog";
 import { useActivityLog } from "./ActivityLogContext";
 

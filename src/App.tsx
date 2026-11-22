@@ -1,4 +1,4 @@
-import { act, useState } from "react";
+import { useState } from "react";
 import TopBar from "./TopBar";
 import BottomBar from "./BottomBar"
 import {views, ViewTypes} from "./Views";

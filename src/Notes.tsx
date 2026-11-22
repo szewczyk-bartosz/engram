@@ -1,8 +1,6 @@
-import { act, useState, useEffect } from "react";
-import { views, ViewTypes } from "./Views";
+import { useState } from "react";
 import SidePanel from "./SidePanel";
 import FileTree from "./FileTree";
-import DocFile from "./DocPanel";
 import DocPanel from "./DocPanel";
 import Clock from "./Clock";
 import Globe from "./Globe";

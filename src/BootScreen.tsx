@@ -1,6 +1,4 @@
-import { act, useEffect, useState } from "react";
-import TopBar from "./TopBar";
-import BottomBar from "./BottomBar"
+import { useEffect, useState } from "react";
         
 
 const ascii = `

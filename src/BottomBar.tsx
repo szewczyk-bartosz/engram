@@ -1,4 +1,4 @@
-import { views, ViewTypes } from "./Views";
+import { ViewTypes } from "./Views";
 
 interface BottomBarProps {
   activeView: ViewTypes;

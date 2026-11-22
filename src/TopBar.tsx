@@ -1,5 +1,5 @@
 import { views, ViewTypes } from "./Views";
-import { act, useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 
 interface TopBarProps {
   activeView: ViewTypes;

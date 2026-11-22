@@ -1,5 +1,4 @@
-import { views, ViewTypes } from "./Views";
-import { act, useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { trackedFetch } from "./ActivityLog";
 import { useActivityLog } from "./ActivityLogContext";
 
