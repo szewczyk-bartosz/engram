@@ -2,7 +2,7 @@
 
 A self-hosted reader for my notes. Notes are written as plain-text `.eng` files in [BMD](https://github.com/szewczyk-bartosz/engramware), rendered to HTML on the server, and browsed through a React front end with a file tree, search, maths and syntax highlighting.
 
-![Engram showing a note on binary heaps](assets/site-screenshot.png)
+![Engram showing a placeholder note](assets/site-screenshot.png)
 
 ## How it works
 
