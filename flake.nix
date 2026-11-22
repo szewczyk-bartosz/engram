@@ -27,7 +27,7 @@
         }
 
         start_python() {
-          tmux send-keys -t $1 'python3 server.py -i ./engram-raw-for-testing/ --web-root ./.' Enter
+          tmux send-keys -t $1 'python3 server/server.py -i ./engram-raw-for-testing/ --web-root ./.' Enter
         }
 
         setup_servers() { local target=$1
@@ -144,7 +144,7 @@
             wantedBy = ["multi-user.target"];
             after = ["network.target"];
             serviceConfig = {
-              ExecStart = "${pkgs.python3}/bin/python3 ${self}/server.py -i ${cfg.notesDir} --web-root ${cfg.webRoot}";
+              ExecStart = "${pkgs.python3}/bin/python3 ${self}/server/server.py -i ${cfg.notesDir} --web-root ${cfg.webRoot}";
               Restart = "always";
               User = cfg.user;
               PrivateTmp = true;
