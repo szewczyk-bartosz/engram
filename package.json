@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/szewczyk-bartosz/engram#readme",
   "devDependencies": {
+    "@types/prismjs": "^1.26.6",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^4.7.0",
@@ -28,6 +29,8 @@
     "vite": "^7.3.6"
   },
   "dependencies": {
+    "katex": "^0.19.1",
+    "prismjs": "^1.30.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0"
   }

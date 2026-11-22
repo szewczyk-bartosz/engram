@@ -1,5 +1,5 @@
 import { views, ViewTypes } from "./Views";
-import { act, useState, useEffect } from "react";
+import { act, useState, useEffect, useRef } from "react";
 import { trackedFetch } from "./ActivityLog";
 import { useActivityLog } from "./ActivityLogContext";
 
@@ -18,24 +18,40 @@ export default function DocPanel({ activePath }: BottomBarProps) {
     }
   }, [activePath]);
 
+  const docRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
-    const Prism = (window as any).Prism;
-    const katex = (window as any).katex;
-      document
-      ?.getElementById("engram-doc")
-        ?.querySelectorAll("code")
-        .forEach((element) => {
-          Prism.highlightElement(element);
+    const doc = docRef.current;
+    if (!doc) return;
+    let cancelled = false;
+
+    const codeBlocks = doc.querySelectorAll("code");
+    if (codeBlocks.length > 0) {
+      import("prismjs")
+        .then(async ({ default: Prism }) => {
+          await import("prismjs/components/prism-python");
+          if (cancelled) return;
+          codeBlocks.forEach((element) => Prism.highlightElement(element));
         });
-      document
-        ?.getElementById("engram-doc")
-        ?.querySelectorAll(".math-block")
-        .forEach((el) => {
-          katex.render((el as any)?.dataset.latex, el, {
-            displayMode: true,
-            throwOnError: false,
+    }
+
+    const mathBlocks = doc.querySelectorAll<HTMLElement>(".math-block");
+    if (mathBlocks.length > 0) {
+      Promise.all([import("katex"), import("katex/dist/katex.css")])
+        .then(([{ default: katex }]) => {
+          if (cancelled) return;
+          mathBlocks.forEach((el) => {
+            katex.render(el.dataset.latex ?? "", el, {
+              displayMode: true,
+              throwOnError: false,
+            });
           });
         });
+    }
+
+    return () => {
+      cancelled = true;
+    };
   }, [currentDoc]);
 
   return (
@@ -43,6 +59,7 @@ export default function DocPanel({ activePath }: BottomBarProps) {
       <div
         className="engram-doc"
         id="engram-doc"
+        ref={docRef}
         dangerouslySetInnerHTML={{ __html: currentDoc ?? "" }}
       />
     </div>
