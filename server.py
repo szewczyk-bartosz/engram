@@ -2,16 +2,18 @@ import argparse
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from pathlib import Path
 import subprocess
-from typing import final
 from urllib.parse import unquote
 
 
 def make_handler(source_dir: Path, web_root: Path):
     class Handler(BaseHTTPRequestHandler):
+        def end_headers(self):
+            self.send_header("X-Content-Type-Options", "nosniff")
+            super().end_headers()
+
         def send_json(self, data: bytes, status: int = 200):
             self.send_response(status)
             self.send_header("Content-Type", "application/json")
-            self.send_header("Access-Control-Allow-Origin", "*")
             self.end_headers()
             self.wfile.write(data)
 
