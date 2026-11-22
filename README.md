@@ -16,8 +16,8 @@ Those rendered files are then injected into the reading view
 
 | Part | What it does |
 | --- | --- |
-| `index.py` | Walks the notes directory, builds a JSON tree of files and folders, and calls `bmd` only on files whose SHA-256 hash has changed. Failed renders are reported and retried on the next sync. |
-| `server.py` | Small standard-library HTTP API: `GET /api/index`, `GET /api/files/<path>`, `POST /api/sync`.
+| `server/index.py` | Walks the notes directory, builds a JSON tree of files and folders, and calls `bmd` only on files whose SHA-256 hash has changed. Failed renders are reported and retried on the next sync. |
+| `server/server.py` | Small standard-library HTTP API: `GET /api/index`, `GET /api/files/<path>`, `POST /api/sync`.
 | `src/` | React and TypeScript front end built with Vite. KaTeX and Prism for math and code
 | `flake.nix` | Dev shell, a package for the static build, and a NixOS module that runs the API under systemd and serves everything through Caddy. |
 
@@ -35,7 +35,7 @@ Without Nix you need Node, pnpm, Python 3 and `bmd` on your `PATH`:
 
 ```sh
 pnpm install && pnpm dev
-python3 server.py -i ./my-notes --web-root .
+python3 server/server.py -i ./my-notes --web-root .
 ```
 
 Press **Sync** in the file tree to render the notes.
