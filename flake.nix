@@ -41,7 +41,7 @@
           if [ "$(tmux display-message -t $target.1 -p '#{pane_current_command}')" != "node" ]; then
             start_vite $target.1
           fi
-          if [ "$(tmux display-message -t $target.2 -p '#{pane_current_command}')" != "python" ]; then
+          if [[ "$(tmux display-message -t $target.2 -p '#{pane_current_command}')" != python* ]]; then
             start_python $target.2
           fi
         }
